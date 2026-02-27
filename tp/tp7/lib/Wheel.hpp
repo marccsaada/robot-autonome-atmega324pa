@@ -1,17 +1,26 @@
 #pragma once
 #define F_CPU 8000000UL
 #include <avr/io.h>
-#include <avr/interrupt.h>
-#include <util/delay.h>
+#include "Timer.hpp"
 
 class Wheel
 {
-    public:
-    Wheel(uint8_t OCR, uint8_t pinDirection);
+public:
+    enum class OCR{
+        A,
+        B
+    };
+    Wheel(Timer &timer, uint8_t pinDirection, OCR ocrType);
 
-
-    private:
-}
+    void goForward(uint8_t speedValue);
+    void goBackward(uint8_t speedValue);
+    void adjustSpeedValue(uint8_t speedValue);
+    void stop();
+private:
+    Timer *timer_;
+    uint8_t pinDirection_;
+    OCR ocrType_;
+};
 
 
 

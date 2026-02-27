@@ -1,7 +1,6 @@
 #pragma once
 #define F_CPU 8000000UL
 #include <avr/io.h>
-#include <util/delay.h>
 
 
 class Timer {
@@ -29,7 +28,8 @@ public:
     void setModeCTC(Prescaler prescaler);
 
     // Fonction de démarrage du timer avec deux valeurs de comparaisons (deuxieme optionelle)
-    void setOCR(uint16_t compareValue1, uint16_t compareValue2 = 0);
+    void setOCRA(uint16_t compareValue);
+    void setOCRB(uint16_t compareValue);
 
     void stopTimer();
 

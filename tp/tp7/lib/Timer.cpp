@@ -96,21 +96,33 @@ void Timer::setPrescaler_(Prescaler prescaler) {
     }
 }
 
-void Timer::setOCR(uint16_t compareValue1, uint16_t compareValue2) {
+void Timer::setOCRA(uint16_t compareValue) {
     TCNTn_ = 0; // Reset du compteur
 
     switch(id_) {
         case Id::TIMER0:
-            OCR0A = compareValue1;
-            OCR0B = compareValue2;
+            OCR0A = compareValue;
             break;
         case Id::TIMER1:
-            OCR1A = compareValue1;
-            OCR1B = compareValue2;
+            OCR1A = compareValue;
             break;
         case Id::TIMER2:
-            OCR2A = compareValue1;
-            OCR2B = compareValue2;
+            OCR2A = compareValue;
+            break;
+    }
+}
+void Timer::setOCRB(uint16_t compareValue) {
+    TCNTn_ = 0; // Reset du compteur
+
+    switch(id_) {
+        case Id::TIMER0:
+            OCR0B = compareValue;
+            break;
+        case Id::TIMER1:
+            OCR1B = compareValue;
+            break;
+        case Id::TIMER2:
+            OCR2B = compareValue;
             break;
     }
 }
