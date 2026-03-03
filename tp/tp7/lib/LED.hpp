@@ -7,9 +7,8 @@ class LED {
 
 public:
 
-    LED(uint8_t* port, uint8_t pinIn, uint8_t pinOut);
+    LED(volatile uint8_t* port, uint8_t pinIn, uint8_t pinOut);
 
-    ~LED();
 
     void off();
 
@@ -20,6 +19,6 @@ public:
     void amber();
 
 private:
-        uint8_t* port_;
+        volatile uint8_t* port_;
         uint8_t pinIn_, pinOut_;
 };

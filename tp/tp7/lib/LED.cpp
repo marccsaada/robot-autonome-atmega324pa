@@ -5,7 +5,7 @@
 const uint8_t RED_DELAY   = 3;
 const uint8_t GREEN_DELAY = 3;
 
-LED::LED(uint8_t* port, uint8_t pinIn, uint8_t pinOut)
+LED::LED(volatile uint8_t* port, uint8_t pinIn, uint8_t pinOut)
           : port_(port), pinIn_(pinIn), pinOut_(pinOut) {}
 
 void LED::off() {
@@ -19,8 +19,8 @@ void LED::red() {
 }
 
 void LED::green() {
-    *port_ |= (1 << pinIn_);
-    *port_ &= ~(1 << pinOut_);
+    *port_ &= ~(1 << pinIn_);
+    *port_ |= (1 << pinOut_);
 }
 
 void LED::amber() {
