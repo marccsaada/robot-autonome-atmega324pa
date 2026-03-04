@@ -13,9 +13,14 @@ public:
         FALLING = (1 << ISC01),
         ANY = (1 << ISC00),
     };
+
+    
     Button(Mode mode);
     bool isPressed();
-    ///////destructeur
+    void init();
+    void enableInterupt();
+    void disableInterupt();
+
 private:
     Mode mode_;
 };
