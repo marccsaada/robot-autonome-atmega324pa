@@ -35,9 +35,9 @@ public:
 
 private:
     Id id_;
-    uint8_t TCCRnA_;
-    uint8_t TCCRnB_;
-    uint16_t TCNTn_;
+    volatile uint8_t* TCCRnA_;
+    volatile uint8_t* TCCRnB_;
+    // volatile uint16_t* TCNTn_;
 
     void setPrescaler_(Prescaler prescaler);
 };

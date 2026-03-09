@@ -12,7 +12,7 @@ public:
     //ajoute peut etre fct spin
 
 private:
+    Timer timer_ = Timer::Id::TIMER2;
     Wheel leftWheel_;
     Wheel rightWheel_;
-    Timer timer_;
 };

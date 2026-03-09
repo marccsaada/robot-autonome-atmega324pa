@@ -7,11 +7,10 @@
 class Button
 {
 public:
-    enum Mode
-    {
+    enum Mode {
         RISING = (1 << ISC01) | (1 << ISC00),
         FALLING = (1 << ISC01),
-        ANY = (1 << ISC00),
+        ANY = (1 << ISC00)
     };
 
     

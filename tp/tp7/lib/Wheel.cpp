@@ -2,10 +2,10 @@
 
 Wheel::Wheel(Timer &timer, uint8_t pinDirection, OCR ocrType)
     : timer_(&timer), pinDirection_(pinDirection), ocrType_(ocrType) {
-     if (pinDirection == PD4){
+     if (pinDirection == PD4) {
         DDRD |= (1 << PD4) | (1<<PD6);
      } 
-     else if (pinDirection == PD5){
+     else if (pinDirection == PD5) {
         DDRD |= (1 << PD5) | (1<<PD7); 
      }
 
