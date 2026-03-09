@@ -1,12 +1,7 @@
 #include "button.hpp"
 
 
-Button::Button(Button::Mode mode) : mode_(mode)
-{
-    cli();
-    EICRA |= mode_;
-    sei();
-}
+Button::Button(Button::Mode mode) : mode_(mode){}
 
 bool Button::isPressed()
 {
@@ -19,4 +14,26 @@ bool Button::isPressed()
         }
     }
     return false;
+}
+
+void Button::init(){
+
+
+    DDRD &= ~(1 << PD2);
+    EICRA = (EICRA & ~((1 << ISC01) | (1 << ISC00))) | mode_;
+    EIMSK |= (1 << INT0);
+    sei();
+
+}
+
+void Button::enableInterupt(){
+
+    EIMSK |= (1 << INT0);
+
+}
+
+void Button::disableInterupt(){
+
+    EIMSK &= ~(1 << INT0);
+
 }
