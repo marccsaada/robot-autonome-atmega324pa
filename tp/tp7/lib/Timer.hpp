@@ -8,7 +8,7 @@ public:
     enum class Id { 
         TIMER0, 
         TIMER1, 
-        TIMER2 
+        TIMER2          // Specifier quon peut pas utiliser TIMER2 si on utiliser PWM DANS LE RAPPORT
     };
 
     enum class PWMMode { 
@@ -29,7 +29,6 @@ public:
     void setModePWM(PWMMode mode, Prescaler prescaler);
     void setModeCTC(Prescaler prescaler);
 
-    // Fonction de démarrage du timer avec deux valeurs de comparaisons (deuxieme optionelle)
     void setOCRA(uint16_t compareValue);
     void setOCRB(uint16_t compareValue);
 

@@ -23,7 +23,7 @@ MCU=atmega324pa
 
 # Nom de votre projet
 # (utilisez un seul mot, exemple: 'monprojet')
-PROJECTNAME=motor
+PROJECTNAME=libstatique
 
 # Fichiers sources
 # Utilisez le suffixe .cpp pour les fichiers C++
@@ -62,6 +62,7 @@ AVRDUDE_PROGRAMMERID=usbasp
 
 #compilateur utilise
 CC=avr-gcc
+AR=avr-ar
 #pour copier le contenu d'un fichier objet vers un autre
 OBJCOPY=avr-objcopy
 #pour permettre le transfert vers le microcontroleur
@@ -71,7 +72,8 @@ REMOVE=rm -f
 # HEXFORMAT -- format pour les fichiers produient .hex
 HEXFORMAT=ihex
 
-
+# EXEC=libstatique.a #modif marc
+# SRC=$(wildcard *.cpp) #modif marc
 
 ####### Options de compilation #######
 
@@ -90,16 +92,16 @@ endif
 CXXFLAGS=-fno-exceptions
 
 # Linker pour lier les librairies utilisees
-LDFLAGS=-Wl,-Map,$(TRG).map -mmcu=$(MCU)
+# LDFLAGS=-Wl,-Map,$(TRG).map -mmcu=$(MCU)
 
 
 
 ####### Cible (Target) #######
 
 #Nom des cibles par defaut
-TRG=$(PROJECTNAME).elf
-HEXROMTRG=$(PROJECTNAME).hex
-HEXTRG=$(HEXROMTRG) $(PROJECTNAME).ee.hex
+TRG=$(PROJECTNAME).a
+# HEXROMTRG=$(PROJECTNAME).hex #modif marc --> il commente sa 
+# HEXTRG=$(HEXROMTRG) $(PROJECTNAME).ee.hex #modif marc --> il commente sa 
 
 
 
@@ -133,12 +135,11 @@ OBJDEPS=$(CFILES:.c=.o) \
 
 # Make all permet simplement de compiler le projet
 #
-all: $(TRG) $(HEXROMTRG)
+all: $(TRG) # modif marc --> elle a enlever $(HEXROMTRG)
 
 # Implementation de la cible
-$(TRG): $(OBJDEPS)
-	$(CC) $(LDFLAGS) -o $(TRG) $(OBJDEPS) \
-	-lm $(LIBS)
+$(TRG): $(OBJDEPS) #modif marc: $(CC) $(LDFLAGS) -o $(TRG) $(OBJDEPS) \-lm $(LIBS)
+	$(AR) -crs $(TRG) $(OBJDEPS)
 
 # Production des fichiers object
 # De C a objet
@@ -155,20 +156,29 @@ $(TRG): $(OBJDEPS)
 # http://bit.ly/2580FU8
 
 # Production des fichiers hex a partir des fichiers elf
-%.hex: %.elf
-	$(OBJCOPY) -j .text -j .data -O $(HEXFORMAT) $< $@
-
+# %.hex: %.elf												# modif marc --> il enleve sa 
+# 	$(OBJCOPY) -j .text -j .data -O $(HEXFORMAT) $< $@  	
+# modif marc --> il enleve sa 															
 # Make install permet de compiler le projet puis
 # d'ecrire le programme en memoire flash dans votre
 # microcontroleur. Celui-ci doit etre branche par cable USB
-install: $(HEXROMTRG)
-	$(AVRDUDE) -c $(AVRDUDE_PROGRAMMERID) \
-	-p $(MCU) -P usb -e -U flash:w:$(HEXROMTRG)
+# install: $(HEXROMTRG)
+# 	$(AVRDUDE) -c $(AVRDUDE_PROGRAMMERID) \
+# 	-p $(MCU) -P usb -e -U flash:w:$(HEXROMTRG)
 
 # Make clean permet d'effacer tout les fichiers generes
 # lors de la compilation
 clean:
-	$(REMOVE) $(TRG) $(TRG).map $(OBJDEPS) $(HEXTRG) *.d
+	$(REMOVE) $(TRG) $(OBJDEPS) *.d
+
+# debug: CXXFLAGS += -DDEBUG -g -fno-exceptions
+# debug: all
+
+# modif marc 
+debug: CXXFLAGS += -DDEBUG -g
+debug: CFLAGS += -DDEBUG -g
+debug: all
+	serieViaUSB -l				
 
 # Pour plus d'information sur les phony target, consulter:
 # http://bit.ly/1WBQe61

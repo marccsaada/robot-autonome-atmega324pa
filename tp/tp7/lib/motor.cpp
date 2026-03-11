@@ -2,6 +2,7 @@
 
 Motor::Motor() : leftWheel_(timer_, PD4, Wheel::OCR::A), rightWheel_(timer_, PD5, Wheel::OCR::B) {
     timer_.setModePWM(Timer::PWMMode::PHASE_CORRECT, Timer::Prescaler::PRESCALE_8);
+    timer_.startTimer();
 }
 
 void Motor::goForward(uint8_t speedValue1, uint8_t speedValue2) {

@@ -7,13 +7,20 @@
 class Button
 {
 public:
+    // Selon si on utilise le bouton externe ou sur la carte mere, le fonctionnement est different.
+    enum Location {
+        MOTHERBOARD,
+        PD3_BUTTON,
+        PB2_BUTTON
+    };
+
     enum Mode {
         RISING = (1 << ISC01) | (1 << ISC00),
         FALLING = (1 << ISC01),
         ANY = (1 << ISC00)
     };
 
-    Button(Mode mode);
+    Button(Mode mode, Location location_ = MOTHERBOARD);
     bool isPressed();
     void init();
     void enableInterupt();
@@ -21,4 +28,5 @@ public:
 
 private:
     Mode mode_;
+    Location location_;
 };

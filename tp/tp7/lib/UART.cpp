@@ -37,8 +37,9 @@ void UART::UART_Transmission(const char text[]) {
     }
 }
 
-void UART::UARTReception(uint8_t donnee) {
+uint8_t UART::UARTReception(void) {
     while ( !(UCSR0A & (1<<RXC0)) )
     ;
-    donnee = UDR0;
+    return UDR0;
 }
+

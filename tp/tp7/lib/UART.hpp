@@ -7,5 +7,5 @@ public:
     UART();
     void UART_Transmission(uint8_t donnee);
     void UART_Transmission(const char text[]);
-    void UARTReception(uint8_t donnee);
+    uint8_t UARTReception(void);
 };

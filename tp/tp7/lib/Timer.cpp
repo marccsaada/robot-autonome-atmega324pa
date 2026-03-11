@@ -23,7 +23,6 @@ Timer::Timer(Id id) : id_(id) {
 // En fonction du mode PWM choisi, on configure les bits de contrôle WGMn0, WGMn1 et WGMn2 pour les timers 0 et 2, et WGMn10, WGMn11, WGMn12 et WGMn13 pour le timer 1.
 // On sait que les WGM0n et WGM2n contiennent les memes valeurs, donc on simplifie en utilisant les memes bits de controle pour les deux timers.
 void Timer::setModePWM(PWMMode mode, Prescaler prescaler) {
-    // setPrescaler_(prescaler);
     prescaler_ = prescaler;
 
     switch(mode) {
@@ -54,7 +53,6 @@ void Timer::setModePWM(PWMMode mode, Prescaler prescaler) {
 }
 
 void Timer::setModeCTC(Prescaler prescaler) {
-        // setPrescaler_(prescaler);
     prescaler_ = prescaler;
 
     // Ajustement des masques
