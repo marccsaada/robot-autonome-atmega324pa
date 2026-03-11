@@ -4,9 +4,7 @@
 #include <util/delay.h>
 
 class LED {
-
 public:
-
     LED(volatile uint8_t* port, uint8_t pinIn, uint8_t pinOut);
 
     void off();

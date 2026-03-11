@@ -13,7 +13,6 @@ public:
         ANY = (1 << ISC00)
     };
 
-    
     Button(Mode mode);
     bool isPressed();
     void init();

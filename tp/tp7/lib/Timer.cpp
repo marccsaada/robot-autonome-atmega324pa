@@ -6,22 +6,16 @@
 Timer::Timer(Id id) : id_(id) {
     switch(id_) {
         case Id::TIMER0:
-            TIMSK0 = (1 << OCIE0A) | (1 << OCIE0B);
             TCCRnA_ = &TCCR0A;
             TCCRnB_ = &TCCR0B;
-            // TCNTn_ = &TCNT0;
             break;
         case Id::TIMER1:
-            TIMSK1 = (1 << OCIE1A) | (1 << OCIE1B);
             TCCRnA_ = &TCCR1A;
             TCCRnB_ = &TCCR1B;
-            // TCNTn_ = &TCNT1;
             break;
-        case Id::TIMER2:
-            // TIMSK2 = (1 << OCIE2A) | (1 << OCIE2B);
+        case Id::TIMER2:                             // !!! ATTENTION !!! : TIMSK2 = (1 << OCIE2A) | (1 << OCIE2B); Cette ligne a ete effacer car nous nutilisons jamais dinterruptions avec le tiemr 2
             TCCRnA_ = &TCCR2A;
             TCCRnB_ = &TCCR2B;
-            // TCNTn_ = &TCNT2;
             break;
     }
 }
@@ -29,7 +23,8 @@ Timer::Timer(Id id) : id_(id) {
 // En fonction du mode PWM choisi, on configure les bits de contrôle WGMn0, WGMn1 et WGMn2 pour les timers 0 et 2, et WGMn10, WGMn11, WGMn12 et WGMn13 pour le timer 1.
 // On sait que les WGM0n et WGM2n contiennent les memes valeurs, donc on simplifie en utilisant les memes bits de controle pour les deux timers.
 void Timer::setModePWM(PWMMode mode, Prescaler prescaler) {
-    setPrescaler_(prescaler);
+    // setPrescaler_(prescaler);
+    prescaler_ = prescaler;
 
     switch(mode) {
         case PWMMode::PHASE_CORRECT:
@@ -59,7 +54,15 @@ void Timer::setModePWM(PWMMode mode, Prescaler prescaler) {
 }
 
 void Timer::setModeCTC(Prescaler prescaler) {
-    setPrescaler_(prescaler);
+        // setPrescaler_(prescaler);
+    prescaler_ = prescaler;
+
+    // Ajustement des masques
+    if (id_ == Id::TIMER0)
+        TIMSK0 = (1 << OCIE0A) | (1 << OCIE0B);
+    else if (id_ == Id::TIMER1)
+        TIMSK1 = (1 << OCIE1A) | (1 << OCIE1B);
+
     switch(id_) {
         case Id::TIMER0:
         case Id::TIMER2:
@@ -101,44 +104,40 @@ void Timer::setPrescaler_(Prescaler prescaler) {
 }
 
 void Timer::setOCRA(uint16_t compareValue) {
-    // TCNTn_ = 0; // Reset du compteur
     switch(id_) {
-        case Id::TIMER0: TCNT0 = 0; OCR0A = compareValue; break;
-        case Id::TIMER1: TCNT1 = 0; OCR1A = compareValue; break;
-        case Id::TIMER2: TCNT2 = 0; OCR2A = compareValue; break;
+        case Id::TIMER0: 
+            TCNT0 = 0;
+            OCR0A = compareValue;
+            break;
+        case Id::TIMER1:
+            TCNT1 = 0;
+            OCR1A = compareValue;
+            break;
+        case Id::TIMER2:
+            TCNT2 = 0;
+            OCR2A = compareValue;
+            break;
     }
-
-    // switch(id_) {
-    //     case Id::TIMER0:
-    //         OCR0A = compareValue;
-    //         break;
-    //     case Id::TIMER1:
-    //         OCR1A = compareValue;
-    //         break;
-    //     case Id::TIMER2:
-    //         OCR2A = compareValue;
-    //         break;
-    // }
 }
 void Timer::setOCRB(uint16_t compareValue) {
-    // TCNTn_ = 0; // Reset du compteur
     switch(id_) {
-        case Id::TIMER0: TCNT0 = 0; OCR0B = compareValue; break;
-        case Id::TIMER1: TCNT1 = 0; OCR1B = compareValue; break;
-        case Id::TIMER2: TCNT2 = 0; OCR2B = compareValue; break;
+        case Id::TIMER0:
+            TCNT0 = 0;
+            OCR0B = compareValue;
+            break;
+        case Id::TIMER1:
+            TCNT1 = 0;
+            OCR1B = compareValue;
+            break;
+        case Id::TIMER2:
+            TCNT2 = 0;
+            OCR2B = compareValue;
+            break;
     }
+}
 
-    // switch(id_) {
-    //     case Id::TIMER0:
-    //         OCR0B = compareValue;
-    //         break;
-    //     case Id::TIMER1:
-    //         OCR1B = compareValue;
-    //         break;
-    //     case Id::TIMER2:
-    //         OCR2B = compareValue;
-    //         break;
-    // }
+void Timer::startTimer() {
+    setPrescaler_(prescaler_);
 }
 
 // Arrêt du timer en mettant les bits de prescaler à 0

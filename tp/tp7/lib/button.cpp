@@ -10,7 +10,6 @@ bool Button::isPressed() {
             return true;
         }
     }
-
     return false;
 }
 

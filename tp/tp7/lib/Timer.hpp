@@ -10,10 +10,12 @@ public:
         TIMER1, 
         TIMER2 
     };
+
     enum class PWMMode { 
         PHASE_CORRECT,
         FAST
     };
+
     enum class Prescaler {
         NO_PRESCALING,
         PRESCALE_8,
@@ -31,13 +33,14 @@ public:
     void setOCRA(uint16_t compareValue);
     void setOCRB(uint16_t compareValue);
 
+    void startTimer();
     void stopTimer();
 
 private:
     Id id_;
-    volatile uint8_t* TCCRnA_;
-    volatile uint8_t* TCCRnB_;
-    // volatile uint16_t* TCNTn_;
+    volatile uint8_t* TCCRnA_ = nullptr;
+    volatile uint8_t* TCCRnB_ = nullptr;
+    volatile Prescaler prescaler_ = Prescaler::NO_PRESCALING;
 
     void setPrescaler_(Prescaler prescaler);
 };

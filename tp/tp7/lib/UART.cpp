@@ -21,7 +21,7 @@ UART::UART(){
 
 }
 
-void UART::UART_Transmission(uint8_t donnee){
+void UART::UART_Transmission(uint8_t donnee) {
 
     while ( !( UCSR0A & (1<<UDRE0)) )
     ;
@@ -30,14 +30,14 @@ void UART::UART_Transmission(uint8_t donnee){
 
 }
 
-void UART::UART_Transmission(const char text[]){
+void UART::UART_Transmission(const char text[]) {
     uint16_t i = 0;
     while(text[i] != '\0'){ 
         UART_Transmission(text[i++]);
     }
 }
 
-void UART::UARTReception ( uint8_t donnee ){
+void UART::UARTReception(uint8_t donnee) {
     while ( !(UCSR0A & (1<<RXC0)) )
     ;
     donnee = UDR0;
