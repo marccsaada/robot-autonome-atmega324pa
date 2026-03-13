@@ -27,16 +27,9 @@
 
 int main()
 {
-  
-    Motor moteur;
-    // moteur.goForward(200, 200);
-    // _delay_ms(4000);
-    // moteur.goBackward(200, 200);
-    // _delay_ms(4000);
-    moteur.goForward(75, 75);
-    _delay_ms(4000);
-    moteur.stop();
-    return 0;
-
-
+//   DDRA |= (1 << PA0) | (1 << PA1);
+  LED led(PORTA, PA0, PA1);
+  led.green();
+  while(true) {
+  } 
 }

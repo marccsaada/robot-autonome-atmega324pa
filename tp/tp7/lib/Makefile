@@ -131,12 +131,10 @@ OBJDEPS=$(CFILES:.c=.o) \
 # En plus de la commande make qui permet de compiler
 # votre projet, vous pouvez utilisez les commandes
 # make all, make install et make clean
-.PHONY: all install clean
-
+.PHONY: all clean
 # Make all permet simplement de compiler le projet
 #
 all: $(TRG) # modif marc --> elle a enlever $(HEXROMTRG)
-
 # Implementation de la cible
 $(TRG): $(OBJDEPS) #modif marc: $(CC) $(LDFLAGS) -o $(TRG) $(OBJDEPS) \-lm $(LIBS)
 	$(AR) -crs $(TRG) $(OBJDEPS)
@@ -162,9 +160,7 @@ $(TRG): $(OBJDEPS) #modif marc: $(CC) $(LDFLAGS) -o $(TRG) $(OBJDEPS) \-lm $(LIB
 # Make install permet de compiler le projet puis
 # d'ecrire le programme en memoire flash dans votre
 # microcontroleur. Celui-ci doit etre branche par cable USB
-# install: $(HEXROMTRG)
-# 	$(AVRDUDE) -c $(AVRDUDE_PROGRAMMERID) \
-# 	-p $(MCU) -P usb -e -U flash:w:$(HEXROMTRG)
+
 
 # Make clean permet d'effacer tout les fichiers generes
 # lors de la compilation
@@ -175,10 +171,6 @@ clean:
 # debug: all
 
 # modif marc 
-debug: CXXFLAGS += -DDEBUG -g
-debug: CFLAGS += -DDEBUG -g
-debug: all
-	serieViaUSB -l				
 
 # Pour plus d'information sur les phony target, consulter:
 # http://bit.ly/1WBQe61
