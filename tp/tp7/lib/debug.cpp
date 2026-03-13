@@ -7,14 +7,10 @@ void debugPrint(const char* message) {
     uart.UART_Transmission(message);
 }
 
-void debugPrint(const char* message, const char* value) {
+void debugPrint(const char* message, uint16_t value) {
     uart.UART_Transmission(message);
-    uart.UART_Transmission(value);
-    uart.UART_Transmission("\n");
-}
-
-void debugPrint(const char* message, uint8_t value) {
-    uart.UART_Transmission(message);
-    uart.UART_Transmission('0' + value); // Conversion ASCII
+    char buffer[6]; // 5 digits + null terminator
+    itoa(value, buffer, 10); // Convertit le nombre en chaîne de caractères
+    uart.UART_Transmission(buffer);
     uart.UART_Transmission("\n");
 }

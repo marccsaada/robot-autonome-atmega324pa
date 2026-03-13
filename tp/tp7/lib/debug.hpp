@@ -5,6 +5,7 @@
 void debugPrint(const char* message);
 void debugPrint(const char* message, const char* value);
 void debugPrint(const char* message, uint8_t value);
+void debugPrint(const char* message, uint16_t value);
 
 #ifdef DEBUG
     #define DEBUG_PRINT(...) debugPrint(__VA_ARGS__)
