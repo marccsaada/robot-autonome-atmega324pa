@@ -27,7 +27,7 @@
 
 int main()
 {
-//   DDRA |= (1 << PA0) | (1 << PA1);
+
   LED led(PORTA, PA0, PA1);
   led.green();
   while(true) {
