@@ -144,7 +144,7 @@ all: lib
 all: $(TRG) $(HEXROMTRG)
 
 # Implementation de la cible
-$(TRG): $(OBJDEPS)
+$(TRG): lib $(OBJDEPS)
 	$(CC) $(LDFLAGS) -o $(TRG) $(OBJDEPS) \
 	-lm $(LIBS)
 
@@ -175,10 +175,12 @@ install: $(HEXROMTRG)
 	$(AVRDUDE) -c $(AVRDUDE_PROGRAMMERID) \
 	-p $(MCU) -P usb -e -U flash:w:$(HEXROMTRG)	
 
-debug: install
+# debug: clean install
 debug: CXXFLAGS += -DDEBUG -g
 debug: CFLAGS += -DDEBUG -g
-debug:
+debug: clean
+	$(MAKE) -C ../lib/ CXXFLAGS="$(CXXFLAGS)" CFLAGS="$(CFLAGS)"
+	$(MAKE) install
 	serieViaUSB -l				
 
 lib:

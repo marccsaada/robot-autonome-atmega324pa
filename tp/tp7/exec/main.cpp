@@ -6,30 +6,33 @@
 #include <button.hpp>
 #include <LED.hpp>
 #include <motor.hpp>
+#include <debug.hpp>
+#include <UART.hpp>
 
 
 // volatile bool gEtat = false;
-// LED led(&PORTA, PA1, PA0);
+LED led(PORTA, PA1, PA0);
+Button button(Button::ANY, Button::PB2_BUTTON);
 
-// ISR(INT0_vect)
-// {
-//     gEtat = !gEtat;
-//     if (gEtat)
-//         led.red();
-//     else
-//         led.green();
+ISR(INT2_vect)
+{
+    if (button.isPressed())
+        led.green();
+    else
+        led.red();
 
-//     _delay_ms ( 30 );
+    EIFR |= (1 << INTF2);
 
-//     EIFR |= (1 << INTF0) ;
-
-// }
+}
 
 int main()
 {
-
-  LED led(PORTA, PA0, PA1);
+  button.init();
+  button.enableInterupt();
   led.green();
+  _delay_ms(6000);
+  led.~LED();
   while(true) {
   } 
+
 }
