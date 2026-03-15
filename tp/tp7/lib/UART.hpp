@@ -4,33 +4,33 @@
 
 /**
  * @file UART.hpp
- * @brief Interface de communication série UART.
+ * @brief UART serial communication interface.
  */
 
 /**
- * @brief Fournit des fonctions de transmission et de réception UART.
+ * @brief Provides UART transmission and reception functions.
  */
 class UART {
 public:
-    /** @brief Initialise le périphérique UART (2400 bauds). */
+    /** @brief Initializes the UART peripheral (2400 baud). */
     UART();
     /**
-     * @brief Transmet un octet via UART.
+     * @brief Transmits a byte via UART.
      *
-     * @param donnee Octet à transmettre.
+     * @param donnee Byte to transmit.
      */
     void UART_Transmission(uint8_t donnee);
     /**
-     * @brief Transmet une chaîne de caractères via UART.
+     * @brief Transmits a null-terminated string via UART.
      *
-     * @param text Chaîne terminée par \0.
+     * @param text Null-terminated string.
      */
     void UART_Transmission(const char text[]);
 
     /**
-     * @brief Reçoit un octet via UART (bloquant).
+     * @brief Receives a byte via UART (blocking).
      *
-     * @return Octet reçu.
+     * @return Received byte.
      */
     uint8_t UARTReception(void);
 };

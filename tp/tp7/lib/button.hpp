@@ -6,17 +6,16 @@
 
 /**
  * @file button.hpp
- * @brief Gestion d'un bouton matériel avec interruptions.
+ * @brief Hardware button management with interrupt support.
  */
 
 /**
- * @brief Représente un bouton physique pouvant se trouver sur différentes broches.
+ * @brief Represents a physical button that can be located on different pins.
  */
-class Button
-{
+class Button {
 public:
     /**
-     * @brief Emplacements possibles pour le bouton.
+     * @brief Possible locations for the button.
      */
     enum Location {
         MOTHERBOARD,
@@ -25,7 +24,7 @@ public:
     };
 
     /**
-     * @brief Modes d'interruption possibles pour le bouton.
+     * @brief Possible interrupt modes for the button.
      */
     enum Mode {
         RISING = (1 << ISC01) | (1 << ISC00),
@@ -34,29 +33,29 @@ public:
     };
 
     /**
-     * @brief Construit un bouton et configure sa détection d'état.
+     * @brief Constructs a button and configures its state detection.
      *
-     * @param mode Mode de détection (montant/descendant/any).
-     * @param location Emplacement physique du bouton.
+     * @param mode Detection mode (rising/falling/any).
+     * @param location Physical location of the button.
      */
     Button(Mode mode, Location location_ = MOTHERBOARD);
     ~Button();
     /**
-     * @brief Vérifie si le bouton est pressé (lecture de l'état logique).
+     * @brief Checks if the button is pressed (reads the logical state).
      *
-     * @return true si le bouton est pressé, false sinon.
+     * @return true if the button is pressed, false otherwise.
      */
     bool isPressed();
 
     /**
-     * @brief Initialise la broche et active l'interruption du bouton.
+     * @brief Initializes the pin and enables the button interrupt.
      */
     void init();
 
-    /** @brief Active l'interruption du bouton. */
+    /** @brief Enables the button interrupt. */
     void enableInterupt();
 
-    /** @brief Désactive l'interruption du bouton. */
+    /** @brief Disables the button interrupt. */
     void disableInterupt();
 
 private:

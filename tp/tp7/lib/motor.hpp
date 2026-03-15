@@ -1,40 +1,41 @@
 #pragma once
 #define F_CPU 8000000UL
 #include <avr/io.h>
-#include "Wheel.hpp"
+#include "wheel.hpp"
 
 /**
  * @file motor.hpp
- * @brief Contrôle des deux moteurs via PWM.
+ * @brief Control of both motors via PWM.
  */
 
 /**
- * @brief Représente un contrôleur de moteurs pour les roues gauche et droite.
+ * @brief Represents a motor controller for the left and right wheels.
  */
 class Motor {
 public:
-    /** @brief Construit un contrôleur de moteurs. */
+    /** @brief Constructs a motor controller. */
     Motor();
+    /** @brief Stops both motors and releases resources. */
+    ~Motor();
 
     /**
-     * @brief Fait avancer le robot en contrôlant chaque roue.
+     * @brief Drives the robot forward by controlling each wheel.
      *
-     * @param speedValue1 PWM appliqué à la roue gauche (0‑255).
-     * @param speedValue2 PWM appliqué à la roue droite (0‑255).
+     * @param speedValue1 PWM applied to the left wheel (0-255).
+     * @param speedValue2 PWM applied to the right wheel (0-255).
      */
     void goForward(uint8_t speedValue1, uint8_t speedValue2);
 
     /**
-     * @brief Fait reculer le robot en contrôlant chaque roue.
+     * @brief Drives the robot backward by controlling each wheel.
      *
-     * @param speedValue1 PWM appliqué à la roue gauche (0‑255).
-     * @param speedValue2 PWM appliqué à la roue droite (0‑255).
+     * @param speedValue1 PWM applied to the left wheel (0-255).
+     * @param speedValue2 PWM applied to the right wheel (0-255).
      */
     void goBackward(uint8_t speedValue1, uint8_t speedValue2);
 
-    /** @brief Arrête les deux moteurs. */
+    /** @brief Stops both motors. */
     void stop();
-    //ajoute peut etre fct spin
 
 private:
     Timer timer_ = Timer::Id::TIMER2;

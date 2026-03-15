@@ -1,10 +1,16 @@
 #include "motor.hpp"
 #include "debug.hpp"
 
-Motor::Motor() : leftWheel_(timer_, PD4, Wheel::OCR::A), rightWheel_(timer_, PD5, Wheel::OCR::B) {
+Motor::Motor() : leftWheel_(timer_, PD5, Wheel::OCR::B), rightWheel_(timer_, PD4, Wheel::OCR::A) {
     DEBUG_PRINT("Initializing Motor");
     timer_.setModePWM(Timer::PWMMode::PHASE_CORRECT, Timer::Prescaler::PRESCALE_8);
     timer_.startTimer();
+}
+
+Motor::~Motor() {
+    DEBUG_PRINT("Motor destructor called");
+    stop();
+    timer_.stopTimer();
 }
 
 void Motor::goForward(uint8_t speedValue1, uint8_t speedValue2) {

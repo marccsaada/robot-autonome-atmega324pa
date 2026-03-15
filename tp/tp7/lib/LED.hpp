@@ -5,40 +5,41 @@
 
 /**
  * @file LED.hpp
- * @brief Interface de contrôle pour une LED bicolore (rouge/vert) sur la carte.
+ * @brief Control interface for a bicolor LED (red/green) on the board.
  */
 
 /**
- * @brief Pilote une LED bicolore en utilisant deux sorties GPIO.
+ * @brief Drives a bicolor LED using two GPIO outputs.
  */
 class LED {
 public:
     /**
-     * @brief Constructeur.
+     * @brief Constructor.
      *
-     * @param port Référence vers le registre PORTx utilisé pour la LED.
-     * @param pinIn Broche du port correspondant à la couleur rouge.
-     * @param pinOut Broche du port correspondant à la couleur verte.
+     * @param port Reference to the PORTx register used for the LED.
+     * @param pinIn Port pin corresponding to the red color.
+     * @param pinOut Port pin corresponding to the green color.
      */
     LED(volatile uint8_t &port, uint8_t pinIn, uint8_t pinOut);
+    /** @brief Turns off the LED and releases the GPIO pins. */
     ~LED();
-    /** @brief Éteint la LED. */
+    /** @brief Turns off the LED. */
     void off();
-    /** @brief Allume la LED en rouge. */
+    /** @brief Turns on the LED in red. */
     void red();
 
-    /** @brief Allume la LED en vert. */
+    /** @brief Turns on the LED in green. */
     void green();
 
     /**
-     * @brief Allume la LED en ambre (alternance rouge / vert).
+     * @brief Turns on the LED in amber (rapid alternation between red and green).
      *
-     * Où la couleur est obtenue en alternant rapidement entre rouge et vert.
+     * The color is obtained by rapidly alternating between red and green.
      */
     void amber();
 
 private:
-    /** @brief Configure les broches en sortie. */
+    /** @brief Configures the pins as outputs. */
     void setDDR();
         volatile uint8_t* port_;
         volatile uint8_t* ddr_;

@@ -72,9 +72,6 @@ REMOVE=rm -f
 # HEXFORMAT -- format pour les fichiers produient .hex
 HEXFORMAT=ihex
 
-# EXEC=libstatique.a #modif marc
-# SRC=$(wildcard *.cpp) #modif marc
-
 ####### Options de compilation #######
 
 # Flags pour le compilateur en C
@@ -91,17 +88,12 @@ endif
 # Flags pour le compilateur en C++
 CXXFLAGS=-fno-exceptions
 
-# Linker pour lier les librairies utilisees
-# LDFLAGS=-Wl,-Map,$(TRG).map -mmcu=$(MCU)
-
 
 
 ####### Cible (Target) #######
 
 #Nom des cibles par defaut
 TRG=$(PROJECTNAME).a
-# HEXROMTRG=$(PROJECTNAME).hex #modif marc --> il commente sa 
-# HEXTRG=$(HEXROMTRG) $(PROJECTNAME).ee.hex #modif marc --> il commente sa 
 
 
 
@@ -134,9 +126,9 @@ OBJDEPS=$(CFILES:.c=.o) \
 .PHONY: all clean
 # Make all permet simplement de compiler le projet
 #
-all: $(TRG) # modif marc --> elle a enlever $(HEXROMTRG)
+all: $(TRG) 
 # Implementation de la cible
-$(TRG): $(OBJDEPS) #modif marc: $(CC) $(LDFLAGS) -o $(TRG) $(OBJDEPS) \-lm $(LIBS)
+$(TRG): $(OBJDEPS)
 	$(AR) -crs $(TRG) $(OBJDEPS)
 
 # Production des fichiers object
@@ -153,10 +145,7 @@ $(TRG): $(OBJDEPS) #modif marc: $(CC) $(LDFLAGS) -o $(TRG) $(OBJDEPS) \-lm $(LIB
 # Pour plus d'information sur cette section, consulter:
 # http://bit.ly/2580FU8
 
-# Production des fichiers hex a partir des fichiers elf
-# %.hex: %.elf												# modif marc --> il enleve sa 
-# 	$(OBJCOPY) -j .text -j .data -O $(HEXFORMAT) $< $@  	
-# modif marc --> il enleve sa 															
+
 # Make install permet de compiler le projet puis
 # d'ecrire le programme en memoire flash dans votre
 # microcontroleur. Celui-ci doit etre branche par cable USB
@@ -166,11 +155,6 @@ $(TRG): $(OBJDEPS) #modif marc: $(CC) $(LDFLAGS) -o $(TRG) $(OBJDEPS) \-lm $(LIB
 # lors de la compilation
 clean:
 	$(REMOVE) $(TRG) $(OBJDEPS) *.d
-
-# debug: CXXFLAGS += -DDEBUG -g -fno-exceptions
-# debug: all
-
-# modif marc 
 
 # Pour plus d'information sur les phony target, consulter:
 # http://bit.ly/1WBQe61

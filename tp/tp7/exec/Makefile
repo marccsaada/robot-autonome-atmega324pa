@@ -32,10 +32,10 @@ PROJECTNAME=tp7
 PRJSRC= main.cpp
 
 # Inclusions additionnels (ex: -I/path/to/mydir)
-INC=-I ../lib/			#modif marc
+INC=-I ../lib/
 
 # Libraires a lier (ex: -lmylib)
-LIBS=-L ../lib/ -lstatique   #modif marc
+LIBS=-L ../lib/ -lstatique 
 
 # Niveau d'optimization
 # Utilisez s (size opt), 1, 2, 3 ou 0 (off)
@@ -134,11 +134,7 @@ OBJDEPS=$(CFILES:.c=.o) \
 .PHONY: all install debug lib clean
 
 # Make all permet simplement de compiler le projet
-#
-# all: $(EXEC)
 
-# debug: CXXFLAGS += -DDEBUG -g modif marc ( sa c la version de abdul)
-# debug: $(EXEC)
 
 all: lib
 all: $(TRG) $(HEXROMTRG)
@@ -175,7 +171,6 @@ install: $(HEXROMTRG)
 	$(AVRDUDE) -c $(AVRDUDE_PROGRAMMERID) \
 	-p $(MCU) -P usb -e -U flash:w:$(HEXROMTRG)	
 
-# debug: clean install
 debug: CXXFLAGS += -DDEBUG -g
 debug: CFLAGS += -DDEBUG -g
 debug: clean

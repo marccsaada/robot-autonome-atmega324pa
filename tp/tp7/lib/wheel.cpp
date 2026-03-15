@@ -1,4 +1,4 @@
-#include "Wheel.hpp"
+#include "wheel.hpp"
 #include "debug.hpp"
 
 Wheel::Wheel(Timer &timer, uint8_t pinDirection, OCR ocrType)
@@ -12,18 +12,28 @@ Wheel::Wheel(Timer &timer, uint8_t pinDirection, OCR ocrType)
     }
 }   
 
+Wheel::~Wheel() {
+    DEBUG_PRINT("Wheel destructor called");
+    stop();
+    if (pinDirection_ == PD4) {
+        DDRD &= ~((1 << PD4) | (1 << PD6));
+    } else if (pinDirection_ == PD5) {
+        DDRD &= ~((1 << PD5) | (1 << PD7));
+    }
+}
+
 void Wheel::goForward(uint8_t speedValue) {
     DEBUG_PRINT(ocrType_ == OCR::A ? "Left wheel goForward with speedValue : " 
                                     : "Right wheel goForward with speedValue : ", static_cast<uint16_t>(speedValue));
 
-    PORTD &= ~(1 << pinDirection_); // Set direction pin low for forward
+    PORTD &= ~(1 << pinDirection_);
     adjustSpeedValue(speedValue);
 }
 
 void Wheel::goBackward(uint8_t speedValue) {
     DEBUG_PRINT("Wheel goBackward with speedValue : ", static_cast<uint16_t>(speedValue));
 
-    PORTD |= (1 << pinDirection_); // Set direction pin high for backward
+    PORTD |= (1 << pinDirection_); 
     adjustSpeedValue(speedValue);
 }
 
