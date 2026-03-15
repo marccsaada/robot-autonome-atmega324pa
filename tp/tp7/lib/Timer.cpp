@@ -155,12 +155,12 @@ void Timer::setOCRB(uint16_t compareValue) {
 }
 
 void Timer::startTimer() {
-    DEBUG_PRINT("Starting TIMER" + std::to_string(static_cast<int>(id_)));
+    DEBUG_PRINT("Starting TIMER", static_cast<uint16_t>(id_));
     setPrescaler_(prescaler_);
 }
 
 // Arrêt du timer en mettant les bits de prescaler à 0
 void Timer::stopTimer() {
-    DEBUG_PRINT("Stopping TIMER" + std::to_string(static_cast<int>(id_)));
+    DEBUG_PRINT("Stopping TIMER", static_cast<uint16_t>(id_));
     *TCCRnB_ &= ~((1 << CS00) | (1 << CS01) | (1 << CS02)); 
 }

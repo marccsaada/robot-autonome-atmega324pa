@@ -40,7 +40,7 @@ public:
      * @param location Emplacement physique du bouton.
      */
     Button(Mode mode, Location location_ = MOTHERBOARD);
-
+    ~Button();
     /**
      * @brief Vérifie si le bouton est pressé (lecture de l'état logique).
      *

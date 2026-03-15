@@ -21,7 +21,7 @@ public:
      * @param pinOut Broche du port correspondant à la couleur verte.
      */
     LED(volatile uint8_t &port, uint8_t pinIn, uint8_t pinOut);
-    
+    ~LED();
     /** @brief Éteint la LED. */
     void off();
     /** @brief Allume la LED en rouge. */

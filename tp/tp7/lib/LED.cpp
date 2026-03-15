@@ -10,7 +10,10 @@ LED::LED(volatile uint8_t &port, uint8_t pinIn, uint8_t pinOut)
 
     setDDR();
 }
-
+LED::~LED() {
+    off();
+    *ddr_ &= ~((1 << pinIn_) | (1 << pinOut_));
+}
 void LED::off() {
     *port_ &= ~(1 << pinIn_);
     *port_ &= ~(1 << pinOut_);

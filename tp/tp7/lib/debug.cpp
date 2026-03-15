@@ -5,6 +5,8 @@ static UART uart;
 
 void debugPrint(const char* message) {
     uart.UART_Transmission(message);
+    uart.UART_Transmission("\n");
+
 }
 
 void debugPrint(const char* message, uint16_t value) {

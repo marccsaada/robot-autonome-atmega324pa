@@ -45,14 +45,16 @@ Description du programme : Ce programme lit la valeur d'un capteur analogique co
 Button::Button(Button::Mode mode, Button::Location location) : mode_(mode) , location_(location) {
     DEBUG_PRINT("Button constructor called");
 }
-
+Button::Button::~Button() {
+    disableInterupt();
+}
 bool Button::isPressed() {
     _delay_ms(30);
     switch (location_) {
         case Button::MOTHERBOARD: DEBUG_PRINT("MOTHERBOARD button is pressed"); return  (PIND & (1 << PD2));
         case Button::PD3_BUTTON:  DEBUG_PRINT("PD3 button is pressed");         return !(PIND & (1 << PD3));
         case Button::PB2_BUTTON:  DEBUG_PRINT("PB2 button is pressed");         return !(PINB & (1 << PB2));
-        default: DEBUG_PRINT("Unknown button location"); return false;
+        default: return false;
     }
 }
 
