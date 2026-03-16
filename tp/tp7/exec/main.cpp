@@ -1,16 +1,16 @@
 /*
 Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
-Travail : TP7
+Travail : TP7, fichier executable de tests pour la librairie
 Section # : 05
 Équipe # : 107111
 Correcteur : Abdul-wahab Chaarani
 
 Description du programme : Ce programme est un programme de tests pour toutes les classes de la librairie.
 Les tests sont organisés en deux phases parallèles :
-  Phase 1 — LED + Bouton + Timer1 CTC démarrent ensemble : la séquence de couleurs LED se déroule pendant
-            que Timer1 compte 3 s et que l'interruption INT2 est armée.
-  Phase 2 — Motor : chaque phase de mouvement est minutée par Timer1 (remplace _delay_ms), ce qui teste
-            simultanément les moteurs et le mécanisme CTC du timer.
+    Phase 1 : LED + Bouton + Timer1 CTC démarrent ensemble : la séquence de couleurs LED se déroule pendant
+              que Timer1 compte 3 s et que l'interruption INT2 est armée.
+    Phase 2 : Motor : chaque phase de mouvement est minutée par Timer1, ce qui teste
+              simultanément les moteurs et le mécanisme CTC du timer.
 
 
 * ========== I/O IDENTIFICATION (CONNEXIONS SUR LE ROBOT) =============
@@ -92,7 +92,7 @@ static void startTimerWait(uint8_t ticks) {
     gTimerCount  = 0;
     gTimerTarget = ticks;
     timer1.setModeCTC(Timer::Prescaler::PRESCALE_1024);
-    timer1.setOCRA(7812);   // 8 MHz / 1024 / 7812 ≈ 1 Hz
+    timer1.setOCRA(7812);   // 1 Hz
     timer1.startTimer();
 }
 
@@ -101,14 +101,14 @@ int main() {
     uart.UART_Transmission("\n=== DEBUT DES TESTS ===\n");
 
     // Phase 1
-    uart.UART_Transmission("\n[1+2+4] LED / Button / Timer1 — en parallele\n");
+    uart.UART_Transmission("\nLED, Button et Timer1 en parallele\n");
 
     // Armer le bouton (INT2) et demarrer Timer1 CTC 3 s
     gButtonEvent = false;
     button.init();
     startTimerWait(3);
 
-    // --- Test LED (Timer1 tourne en arriere-plan) ---
+    // Test LED avec Timer1 en arriere-plan
     uart.UART_Transmission("  led.red()\n");
     led.red();
     _delay_ms(800);
@@ -118,14 +118,14 @@ int main() {
     _delay_ms(800);
 
     uart.UART_Transmission("  led.amber()\n");
-    for (uint8_t i = 0; i < 50; i++)
+    for (uint8_t i = 0; i < 100; i++)
         led.amber();
 
     uart.UART_Transmission("  led.off()\n");
     led.off();
     _delay_ms(500);
 
-    uart.UART_Transmission("[2] Button — appuyer le bouton\n");
+    uart.UART_Transmission("Appuyer le bouton\n");
     for (uint8_t i = 0; i < 10 && !gButtonEvent && !gTimerDone; i++) {
         led.red();  _delay_ms(250);
         led.off();  _delay_ms(250);
@@ -139,44 +139,46 @@ int main() {
     led.green(); _delay_ms(500); led.off(); _delay_ms(200);
 
     uart.UART_Transmission("[1] LED OK\n");
-    uart.UART_Transmission(gButtonEvent
-        ? "[2] Button OK\n"
-        : "[2] Button TIMEOUT (aucun appui)\n");
+    uart.UART_Transmission(gButtonEvent ? "[2] Button OK\n"
+                                        : "[2] Button TIMEOUT (aucun appui)\n");
     uart.UART_Transmission("[4] Timer1 CTC OK\n");
 
     // Phase 2
     uart.UART_Transmission("\n[3] Motor (Timer1 comme minuterie)\n");
 
-    // goForward(150, 150) 2 s
-    uart.UART_Transmission("  motor.goForward(150, 150)\n");
-    startTimerWait(2);
+    // goForward(150, 150) 3 s
+    uart.UART_Transmission("  Avancer : motor.goForward(150, 150)\n");
+    startTimerWait(3);
     motor.goForward(150, 150);
     led.green();
     while (!gTimerDone) {}
-    motor.stop(); led.off(); _delay_ms(300);
+    motor.stop();
+    led.off();
+    _delay_ms(300);
 
-    // goBackward(150, 150) 2 s
-    uart.UART_Transmission("  motor.goBackward(150, 150)\n");
-    startTimerWait(2);
+    // goBackward(150, 150) 3 s
+    uart.UART_Transmission("  Reculer : motor.goBackward(150, 150)\n");
+    startTimerWait(3);
     motor.goBackward(150, 150);
     led.red();
     while (!gTimerDone) {}
     motor.stop(); led.off(); _delay_ms(300);
 
-    // Virage gauche goForward(64, 200) 1 s
-    uart.UART_Transmission("  motor.goForward(64, 200)\n");
-    startTimerWait(1);
-    motor.goForward(64, 200);
+    // Virage gauche goForward(100, 200) 3 s
+    uart.UART_Transmission("  Virage gauche : motor.goForward(100, 200)\n");
+    startTimerWait(3);
+    motor.goForward(100, 200);
     led.green();
     while (!gTimerDone) {}
 
-    // Virage droite goForward(200, 64) 1 s
-    uart.UART_Transmission("  motor.goForward(200, 64)\n");
-    startTimerWait(1);
-    motor.goForward(200, 64);
+    // Virage droite goForward(200, 100) 3 s
+    uart.UART_Transmission("  Virage droite : motor.goForward(200, 100)\n");
+    startTimerWait(3);
+    motor.goForward(200, 100);
     while (!gTimerDone) {}
 
-    motor.stop(); led.off(); _delay_ms(300);
+    motor.stop();
+    led.off();
     uart.UART_Transmission("[3] Motor OK\n");
 
     uart.UART_Transmission("\n=== TESTS TERMINES ===\n");
