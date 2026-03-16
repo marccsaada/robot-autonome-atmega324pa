@@ -1,4 +1,3 @@
-
 #define F_CPU 8000000UL
 #include "timer.hpp"
 #include "debug.hpp"
@@ -63,6 +62,7 @@ void Timer::setModePWM(PWMMode mode, Prescaler prescaler) {
 
     *TCCRnA_ |= (1 << COM2A1) | (1 << COM2B1);
     *TCCRnA_ &= ~((1 << COM2A0) | (1 << COM2B0));
+}
 
 void Timer::setModeCTC(Prescaler prescaler) {
     DEBUG_PRINT("Setting Timer mode to CTC");
@@ -153,13 +153,13 @@ void Timer::setOCRB(uint16_t compareValue) {
             OCR2B = compareValue;
             break;
     }
+}
 
 void Timer::startTimer() {
     DEBUG_PRINT("Starting TIMER", static_cast<uint16_t>(id_));
     setPrescaler_(prescaler_);
 }
 
-// Arrêt du timer en mettant les bits de prescaler à 0
 void Timer::stopTimer() {
     DEBUG_PRINT("Stopping TIMER", static_cast<uint16_t>(id_));
     *TCCRnB_ &= ~((1 << CS00) | (1 << CS01) | (1 << CS02)); 
