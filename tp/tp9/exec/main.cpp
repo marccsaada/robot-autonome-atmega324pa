@@ -112,9 +112,4 @@ static void startTimerWait(uint8_t ticks) {
 }
 
 int main() {
-    motor.spinLeft(90);
-    motor.spinRight(90);
-    while (true) {
-
-    }
 }

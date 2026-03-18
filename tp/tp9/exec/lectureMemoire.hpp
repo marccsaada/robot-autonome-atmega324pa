@@ -12,5 +12,8 @@ public:
 private:
     Memoire24CXXX memoire_;
     uint16_t adresseCourante_;
+    uint16_t getAdresse();
+    void setAdresse(uint16_t adresse);
+
 
 };

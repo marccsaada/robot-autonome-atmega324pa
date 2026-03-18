@@ -24,6 +24,9 @@ uint8_t Memoire::lireOperande() {
     memoire_.lecture(adresseCourante_ - 1, &octet);
     return octet;
 }
+uint16_t Memoire::getAdresse() { return adresseCourante_; }
+
+void Memoire::setAdresse(uint16_t adresse) { adresseCourante_ = adresse; }
 
 
 

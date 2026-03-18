@@ -6,7 +6,6 @@
 class Robot {
 public:
     Robot() : motor_(), led_(PORTA, PA0, PA1) {};
-
     void avancer(uint8_t vitesse);
     void reculer(uint8_t vitesse);
     void tournerDroite(uint16_t angle);
