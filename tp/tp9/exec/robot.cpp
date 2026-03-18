@@ -1,5 +1,4 @@
-#include <libstatique.hpp>
-#include <robot.hpp>
+#include "robot.hpp"
 
 void Robot::avancer(uint8_t vitesse) {
     motor_.goForward(vitesse, vitesse);
@@ -9,11 +8,11 @@ void Robot::reculer(uint8_t vitesse) {
     motor_.goBackward(vitesse, vitesse);
 }
 
-void Robot::tournerDroite(u_int16_t angle) {
+void Robot::tournerDroite(uint16_t angle) {
     motor_.spinRight(angle);
 }
 
-void Robot::tournerGauche(u_int16_t angle) {
+void Robot::tournerGauche(uint16_t angle) {
     motor_.spinLeft(angle);
 }
 

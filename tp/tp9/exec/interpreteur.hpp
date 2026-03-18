@@ -1,7 +1,6 @@
 #pragma once
-#include "Robot.hpp"
-#include "Memoire.hpp"
-
+#include "robot.hpp"
+#include "lectureMemoire.hpp"
 
 class Interpreteur { 
     public: 

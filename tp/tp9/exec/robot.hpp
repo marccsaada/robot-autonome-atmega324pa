@@ -1,5 +1,6 @@
 #pragma once
 #include "motor.hpp"
+#include "LED.hpp"
 #include <avr/io.h>
 #include <util/delay.h>
 

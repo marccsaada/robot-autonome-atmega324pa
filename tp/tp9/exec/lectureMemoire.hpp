@@ -1,9 +1,10 @@
 #pragma once
+// #include "libstatique.hpp"
 #include "memoire_24.h"
-class Memoire{
+class Memoire {
 public: 
-    Memoire();
-    void lectureDebutMemoire();
+    Memoire() : adresseCourante_(2) {}
+    uint16_t lectureDebutMemoire();
     uint8_t lireInstruction();
     uint8_t lireOperande(); 
 

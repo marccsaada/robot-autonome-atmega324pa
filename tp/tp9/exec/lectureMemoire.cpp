@@ -1,9 +1,4 @@
 #include "lectureMemoire.hpp"
-#include "instructions.hpp"
-
-Memoire::Memoire() {
-    adresseCourante_ = 2;
-}
 
 uint16_t Memoire::lectureDebutMemoire() {
     uint8_t haut = 0, bas = 0;
