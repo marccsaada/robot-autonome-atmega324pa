@@ -45,4 +45,6 @@ private:
     Timer timer_ = Timer::Id::TIMER2;
     Wheel leftWheel_;
     Wheel rightWheel_;
+
+    void delayFunction(uint8_t n);
 };

@@ -2,7 +2,7 @@
 #include "debug.hpp"
 #include <util/delay.h>
 
-void tempDelayFunc(uint8_t n) {
+void Motor::delayFunction(uint8_t n) {
     for (uint8_t i = 0; i < n; ++i) {
         _delay_ms(10); // Delay of 10 ms per unit of n
     }
@@ -36,15 +36,15 @@ void Motor::spinLeft(uint16_t angle) {
     DEBUG_PRINT("Motor::spinLeft()");
     leftWheel_.goBackward(145);
     rightWheel_.goForward(145);
-    tempDelayFunc(angle); // Adjust delay based on angle (example: 10ms per degree)
+    tempDelayFunc(angle); // Adjust delay based on angle
     stop();
 }
 
 void Motor::spinRight(uint16_t angle) {
     DEBUG_PRINT("Motor::spinRight()");
-    leftWheel_.goForward(145); // Half speed forward
-    rightWheel_.goBackward(145); // Half speed backward
-    tempDelayFunc(angle); // Adjust delay based on angle (example: 10ms per degree)
+    leftWheel_.goForward(145);
+    rightWheel_.goBackward(145);
+    tempDelayFunc(angle); // Adjust delay based on angle
     stop();
 }
 

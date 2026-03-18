@@ -9,8 +9,8 @@ public:
 
     void avancer(uint8_t vitesse);
     void reculer(uint8_t vitesse);
-    void tournerDroite();
-    void tournerGauche();
+    void tournerDroite(uint16_t angle);
+    void tournerGauche(uint16_t angle);
     void arreter();
 
     
