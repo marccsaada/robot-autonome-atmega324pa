@@ -36,7 +36,7 @@ void Motor::spinLeft(uint16_t angle) {
     DEBUG_PRINT("Motor::spinLeft()");
     leftWheel_.goBackward(145);
     rightWheel_.goForward(145);
-    tempDelayFunc(angle); // Adjust delay based on angle
+    delayFunction(angle); // Adjust delay based on angle
     stop();
 }
 
@@ -44,7 +44,7 @@ void Motor::spinRight(uint16_t angle) {
     DEBUG_PRINT("Motor::spinRight()");
     leftWheel_.goForward(145);
     rightWheel_.goBackward(145);
-    tempDelayFunc(angle); // Adjust delay based on angle
+    delayFunction(angle); // Adjust delay based on angle
     stop();
 }
 

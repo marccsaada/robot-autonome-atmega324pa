@@ -21,7 +21,7 @@ void UART::UART_Transmission(const char text[]) {
     }
 }
 
-uint8_t UART::UARTReception(void) {
+uint8_t UART::UART_Reception(void) {
     while ( !(UCSR0A & (1<<RXC0)) )
     ;
     return UDR0;

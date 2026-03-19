@@ -32,5 +32,5 @@ public:
      *
      * @return Received byte.
      */
-    uint8_t UARTReception(void);
+    uint8_t UART_Reception(void);
 };
