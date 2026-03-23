@@ -1,9 +1,12 @@
 #define F_CPU 8000000UL
+#include <util/delay.h>
 #include "son.hpp"
 #include "debug.hpp"
 
 Son::Son() : timer_(Timer::Id::TIMER0) {
-    DDRB |= (1 << PB3);  // OC0A est sur PB3
+    DDRB |= (1 << PB3);  
+    DDRB |= (1 << PB5);
+    PORTB &= ~(1<<PB5);
 }
 
 void Son::jouer(uint8_t note) {
@@ -29,6 +32,7 @@ void Son::jouer(uint8_t note) {
     timer_.setOCRA(ocr);
     TCCR0A |= (1 << COM0A0);      // Toggle OC0A (PB3) sur compare match
     timer_.startTimer();
+    _delay_ms(2000);
 }
 
 void Son::arreter() {
