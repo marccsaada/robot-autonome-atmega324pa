@@ -5,4 +5,4 @@
 #include <button.hpp>
 #include <timer.hpp>
 #include <debug.hpp>
-#include <lectureMemoire.cpp>
+#include <lectureMemoire.hpp>

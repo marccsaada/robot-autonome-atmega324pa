@@ -96,28 +96,53 @@ void Timer::setModeCTC(Prescaler prescaler) {
 }
 
 void Timer::setPrescaler_(Prescaler prescaler) {
-    switch(prescaler) {
-    case NO_PRESCALING:
-        *TCCRnB_ |= (1 << CS00);
-        *TCCRnB_ &= ~((1 << CS01) | (1 << CS02));
-        break;
-    case PRESCALE_8:
-        *TCCRnB_ |= (1 << CS01);
-        *TCCRnB_ &= ~((1 << CS00) | (1 << CS02));
-        break;
-    case PRESCALE_64:
-        *TCCRnB_ |= (1 << CS01) | (1 << CS00);
-        *TCCRnB_ &= ~(1 << CS02);
-        break;
-    case PRESCALE_256:
-        *TCCRnB_ |= (1 << CS02);
-        *TCCRnB_ &= ~((1 << CS00) | (1 << CS01));
-        break;
-    case PRESCALE_1024:
-        *TCCRnB_ |= (1 << CS02) | (1 << CS00);
-        *TCCRnB_ &= ~(1 << CS01);
-        break;
+    if (id_ == TIMER2) {
+        switch(prescaler) {
+            case NO_PRESCALING:
+                *TCCRnB_ |= (1 << CS00);
+                *TCCRnB_ &= ~((1 << CS01) | (1 << CS02));
+                break;
+            case PRESCALE_8:
+                *TCCRnB_ |= (1 << CS01);
+                *TCCRnB_ &= ~((1 << CS00) | (1 << CS02));
+                break;
+            case PRESCALE_64:
+                *TCCRnB_ |= (1 << CS02);
+                *TCCRnB_ &= ~((1 << CS00) | (1 << CS01));
+                break;
+            case PRESCALE_256:
+                *TCCRnB_ |= (1 << CS02) | (1 << CS01);
+                *TCCRnB_ &= ~(1 << CS00);
+                break;
+            case PRESCALE_1024:
+                *TCCRnB_ |= (1 << CS02) | (1 << CS01) | (1 << CS00);
+                break;
+            }
+            return;
     }
+
+    switch(prescaler) {
+        case NO_PRESCALING:
+            *TCCRnB_ |= (1 << CS00);
+            *TCCRnB_ &= ~((1 << CS01) | (1 << CS02));
+            break;
+        case PRESCALE_8:
+            *TCCRnB_ |= (1 << CS01);
+            *TCCRnB_ &= ~((1 << CS00) | (1 << CS02));
+            break;
+        case PRESCALE_64:
+            *TCCRnB_ |= (1 << CS01) | (1 << CS00);
+            *TCCRnB_ &= ~(1 << CS02);
+            break;
+        case PRESCALE_256:
+            *TCCRnB_ |= (1 << CS02);
+            *TCCRnB_ &= ~((1 << CS00) | (1 << CS01));
+            break;
+        case PRESCALE_1024:
+            *TCCRnB_ |= (1 << CS02) | (1 << CS00);
+            *TCCRnB_ &= ~(1 << CS01);
+            break;
+        }
 }
 
 void Timer::setOCRA(uint16_t compareValue) {

@@ -29,13 +29,13 @@ PROJECTNAME=tp7
 # Utilisez le suffixe .cpp pour les fichiers C++
 # Listez tous les fichiers a compiler, separes par
 # un espace. exemple: 'tp1.c tp2.cpp':
-PRJSRC= main.cpp robot.cpp lectureMemoire.hpp interpreteur.hpp
+PRJSRC= $(wildcard *.cpp)
 
 # Inclusions additionnels (ex: -I/path/to/mydir)
-INC=-I ../../lib/
+INC=-I ../lib/
 
 # Libraires a lier (ex: -lmylib)
-LIBS=-L ../../lib/ -lstatique 
+LIBS=-L ../lib/ -lstatique 
 
 # Niveau d'optimization
 # Utilisez s (size opt), 1, 2, 3 ou 0 (off)
@@ -168,24 +168,31 @@ $(TRG): lib $(OBJDEPS)
 
 install: lib
 install: $(HEXROMTRG)
+	# Étape 1 : compiler programme.txt → programme.bin
+	progmem -v -o ../ecriture/programme.bin ../ecriture/programme.txt
+	# Étape 2 : flasher le programme d'écriture dans le robot
+	$(MAKE) -C ../ecriture/ install
+	# Étape 3 : envoyer le bytecode dans l'EEPROM externe
+	serieViaUSB -e -f ../ecriture/programme.bin
+	# Étape 4 : flasher le programme d'exécution
 	$(AVRDUDE) -c $(AVRDUDE_PROGRAMMERID) \
-	-p $(MCU) -P usb -e -U flash:w:$(HEXROMTRG)	
+	-p $(MCU) -P usb -e -U flash:w:$(HEXROMTRG)
 
 debug: CXXFLAGS += -DDEBUG -g
 debug: CFLAGS += -DDEBUG -g
 debug: clean
-	$(MAKE) -C ../../lib/ CXXFLAGS="$(CXXFLAGS)" CFLAGS="$(CFLAGS)"
+	$(MAKE) -C ../lib/ CXXFLAGS="$(CXXFLAGS)" CFLAGS="$(CFLAGS)"
 	$(MAKE) install
 	serieViaUSB -l				
 
 lib:
-	(cd ../../lib/ && make)
-
+	(cd ../lib/ && make)
 # Make clean permet d'effacer tout les fichiers generes
 # lors de la compilation
 clean:
 	$(REMOVE) $(TRG) $(TRG).map $(OBJDEPS) $(HEXTRG) *.d
-	$(MAKE) -C ../../lib/ clean
+	$(MAKE) -C ../lib/ clean
+	$(MAKE) -C ../ecriture/ clean
 
 
 # Pour plus d'information sur les phony target, consulter:
