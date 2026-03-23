@@ -1,25 +1,5 @@
 DBT;
-//DBC 2;
-//SGO 45;
-//ATT 20;
-//SGO 81;
-//ATT 20;
-//FBC;
-//SAR;
-
-DBC 2;
-MAV 255;
-ATT 100;
-MRE 255;
-ATT 100;
-FBC;
-MAV 0;
-DAL 1;
-ATT 20;
-TRD;
-ATT 60;
-TRG;
-ATT 60;
-MAV 0;
-DET;
+SGO 69;   // joue 440 Hz
+ATT 25;
+SAR;      // arrête le son
 FIN;
