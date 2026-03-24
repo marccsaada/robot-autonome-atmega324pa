@@ -1,3 +1,13 @@
+/*
+Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
+Travail : TP9 - Communication UART
+Section # : 05
+Équipe # : 107111
+Correcteur : Abdul-wahab Chaarani
+
+Description : Interface de communication série UART (transmission et réception).
+*/
+
 #pragma once
 #define F_CPU 8000000UL
 #include <avr/io.h>

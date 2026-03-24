@@ -1,59 +1,39 @@
+/*
+Auteurs : Matthew Khouzam et Jerome Collin
+Description : Implémentation de la lecture séquentielle de la mémoire EEPROM externe.
+*/
+
 #include "lectureMemoire.hpp"
 
-Memoire::Memoire() {
-    adresseCourante_ = 2;
+Memory::Memory() {
+    currentAddress_ = 2;
 }
 
-uint16_t Memoire::lectureDebutMemoire() {
-    uint8_t haut = 0, bas = 0;
-    memoire_.lecture(0, &haut);
-    memoire_.lecture(1, &bas);
-    return ((uint16_t)haut << 8) | bas;
+uint16_t Memory::readMemoryStart() {
+    uint8_t high = 0, low  = 0;
+    memory_.lecture(0, &high);
+    memory_.lecture(1, &low);
+    return ((uint16_t)high << 8) | low;
 }
 
-uint16_t Memoire::getTaille() {
-    return lectureDebutMemoire();
+uint16_t Memory::getSize() {
+    return readMemoryStart();
 }
 
-uint8_t Memoire::lireInstruction() {
+uint8_t Memory::readInstruction() {
     uint8_t octet = 0;
-    memoire_.lecture(adresseCourante_, &octet);
-    adresseCourante_ += 2;
+    memory_.lecture(currentAddress_, &octet);
+    currentAddress_ += 2;
     return octet;
 }
 
-uint8_t Memoire::lireOperande() {
+uint8_t Memory::readOperand() {
     uint8_t octet = 0;
-    memoire_.lecture(adresseCourante_ - 1, &octet);
+    memory_.lecture(currentAddress_ - 1, &octet);
     return octet;
 }
 
-uint16_t Memoire::getAdresse() { return adresseCourante_; }
+uint16_t Memory::getAddress() { return currentAddress_; }
 
-void Memoire::setAdresse(uint16_t adresse) { adresseCourante_ = adresse; }
+void Memory::setAddress(uint16_t address) { currentAddress_ = address; }
 
-
-
-
-
-
-// void Memoire::lectureMemoire() {
-//     Instruction inst;
-
-//     uint16_t taille = getTaille();
-//     adresseCourante_ = 2;
-
-//     while (adresseCourante_ < taille) {
-
-//         uint8_t opcode = lireOctet(adresseCourante_);
-//         uint8_t operande = lireOctet(adresseCourante_ + 1);
-
-//         inst.executer(opcode, operande);
-
-//         if (opcode == 0xFF) { // fin
-//             break;
-//         }
-
-//         adresseCourante_ += 2;
-//     }
-// }

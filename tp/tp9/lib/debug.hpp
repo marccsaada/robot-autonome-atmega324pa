@@ -1,3 +1,13 @@
+/*
+Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
+Travail : TP9 - Utilitaires de débogage
+Section # : 05
+Équipe # : 107111
+Correcteur : Abdul-wahab Chaarani
+
+Description : Macros et fonctions de débogage via UART, compilées uniquement si DEBUG est défini.
+*/
+
 #pragma once
 #include "UART.hpp"
 #include <stdlib.h>

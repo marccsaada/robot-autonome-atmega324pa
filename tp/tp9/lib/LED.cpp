@@ -1,3 +1,12 @@
+/*
+Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
+Travail : TP9 - Contrôle de la LED bicolore
+Section # : 05
+Équipe # : 107111
+Correcteur : Abdul-wahab Chaarani
+
+Description : Implémentation du contrôle de la LED bicolore (rouge/verte) sur GPIO.
+*/
 
 #define F_CPU 8000000UL
 #include <LED.hpp>

@@ -1,3 +1,13 @@
+/*
+Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
+Travail : TP9 - Contrôle des moteurs
+Section # : 05
+Équipe # : 107111
+Correcteur : Abdul-wahab Chaarani
+
+Description : Contrôle les deux roues motrices via PWM pour le déplacement du robot.
+*/
+
 #pragma once
 #define F_CPU 8000000UL
 #include <avr/io.h>
@@ -34,8 +44,16 @@ public:
      */
     void goBackward(uint8_t speedValue1, uint8_t speedValue2);
 
+    /**
+     * @brief Spins the robot left in place by the given angle.
+     * @param angle Angle in degrees.
+     */
     void spinLeft(uint16_t angle);
 
+    /**
+     * @brief Spins the robot right in place by the given angle.
+     * @param angle Angle in degrees.
+     */
     void spinRight(uint16_t angle);
 
     /** @brief Stops both motors. */

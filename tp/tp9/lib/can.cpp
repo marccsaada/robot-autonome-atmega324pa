@@ -1,4 +1,10 @@
 /*
+Auteurs : Matthew Khouzam et Jerome Collin
+
+Description : Implémentation de la classe CAN pour l'ATmega324PA.
+*/
+
+/*
  * Ecole Polytechnique de Montreal
  * Departement de genie informatique
  * Cours inf1995

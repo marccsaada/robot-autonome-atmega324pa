@@ -1,3 +1,13 @@
+/*
+Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
+Travail : TP9 - Contrôle d'une roue
+Section # : 05
+Équipe # : 107111
+Correcteur : Abdul-wahab Chaarani
+
+Description : Contrôle individuel d'une roue via un signal PWM et un pin de direction.
+*/
+
 #pragma once
 #define F_CPU 8000000UL
 #include <avr/io.h>
