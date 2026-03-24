@@ -1,3 +1,9 @@
+/*
+Auteurs : Matthew Khouzam et Jerome Collin
+
+Description : Pilote I2C pour les mémoires EEPROM séries 24C128/256/512 via le bus TWI.
+*/
+
 /******************************************************************************/
 /*                                                                            */
 /* Isidore Lauzier - 9 juillet 2005                                           */

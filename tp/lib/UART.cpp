@@ -1,3 +1,13 @@
+/*
+Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
+Travail : TP9 - Communication UART
+Section # : 05
+Équipe # : 107111
+Correcteur : Abdul-wahab Chaarani
+
+Description : Implémentation de la communication série UART (transmission et réception).
+*/
+
 #include "UART.hpp"
 
 UART::UART(){

@@ -1,3 +1,13 @@
+/*
+Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
+Travail : TP9 - Gestion des timers AVR
+Section # : 05
+Équipe # : 107111
+Correcteur : Abdul-wahab Chaarani
+
+Description : Abstraction des timers AVR (Timer0/1/2) pour les modes PWM et CTC.
+*/
+
 #pragma once
 #define F_CPU 8000000UL
 #include <avr/io.h>

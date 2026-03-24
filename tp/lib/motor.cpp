@@ -1,3 +1,13 @@
+/*
+Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
+Travail : TP9 - Contrôle des moteurs
+Section # : 05
+Équipe # : 107111
+Correcteur : Abdul-wahab Chaarani
+
+Description : Implémentation du contrôleur de moteurs : avance, recul et rotations.
+*/
+
 #include "motor.hpp"
 #include "debug.hpp"
 #include <util/delay.h>
@@ -8,7 +18,7 @@ void Motor::delayFunction(uint8_t n) {
     }
 }
 
-Motor::Motor() : leftWheel_(timer_, PD5, Wheel::OCR::B), rightWheel_(timer_, PD4, Wheel::OCR::A) {
+Motor::Motor() : leftWheel_(timer_, PD5, Wheel::OCR::A), rightWheel_(timer_, PD4, Wheel::OCR::B) {
     DEBUG_PRINT("Initializing Motor");
     timer_.setModePWM(Timer::PWMMode::PHASE_CORRECT, Timer::Prescaler::PRESCALE_8);
     timer_.startTimer();
@@ -34,16 +44,16 @@ void Motor::goBackward(uint8_t speedValue1, uint8_t speedValue2) {
 
 void Motor::spinLeft(uint16_t angle) {
     DEBUG_PRINT("Motor::spinLeft()");
-    leftWheel_.goBackward(145);
-    rightWheel_.goForward(145);
+    leftWheel_.goBackward(130);
+    rightWheel_.goForward(130);
     delayFunction(angle); // Adjust delay based on angle
     stop();
 }
 
 void Motor::spinRight(uint16_t angle) {
     DEBUG_PRINT("Motor::spinRight()");
-    leftWheel_.goForward(145);
-    rightWheel_.goBackward(145);
+    leftWheel_.goForward(130);
+    rightWheel_.goBackward(130);
     delayFunction(angle); // Adjust delay based on angle
     stop();
 }

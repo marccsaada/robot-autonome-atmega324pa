@@ -1,4 +1,10 @@
 /*
+Auteurs : Matthew Khouzam et Jerome Collin
+
+Description : Classe d'accès au convertisseur analogique-numérique (CAN) de l'ATmega324PA.
+*/
+
+/*
  * Classe permettant l'acces au convertisseur analogique/numerique
  * du microcontroleur ATMega16 de Atmel.
  *
@@ -16,7 +22,8 @@
 #ifndef CAN_H
 #define CAN_H
 
-#include <avr/io.h> 
+#include <avr/io.h>
+#include <stdint.h>
 
 /*
  * Classe can:
@@ -26,8 +33,7 @@
  *
  */
 
-class can
-{
+class can {
 public:
 
    can();
@@ -37,7 +43,7 @@ public:
    // analogique sur le port A.  pos doit etre entre 0 et 7
    // inclusivement.  Seulement les 10 bits de poids faible
    // sont significatifs.
-   uint16_t lecture(uint8_t pos);
+uint16_t lecture(uint8_t pos);
 
 private:
    // Donnees membres - aucun

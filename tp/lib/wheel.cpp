@@ -1,3 +1,13 @@
+/*
+Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
+Travail : TP9 - Contrôle d'une roue
+Section # : 05
+Équipe # : 107111
+Correcteur : Abdul-wahab Chaarani
+
+Description : Implémentation du contrôle individuel d'une roue via PWM et direction.
+*/
+
 #include "wheel.hpp"
 #include "debug.hpp"
 

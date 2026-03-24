@@ -1,40 +1,58 @@
+/*
+Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
+Travail : TP9 - Abstraction du robot
+Section # : 05
+Équipe # : 107111
+Correcteur : Abdul-wahab Chaarani
+
+Description : Implémentation de l'interface unifiée du robot (moteurs, LED, son).
+*/
+
 #include <libstatique.hpp>
 #include <robot.hpp>
 
-void Robot::avancer(uint8_t vitesse) {
-    motor_.goForward(vitesse, vitesse);
+void Robot::goForward(uint8_t speed) {
+    motor_.goForward(speed, speed);
 }
 
-void Robot::reculer(uint8_t vitesse) {
-    motor_.goBackward(vitesse, vitesse);
+void Robot::goBackward(uint8_t speed) {
+    motor_.goBackward(speed, speed);
 }
 
-void Robot::tournerDroite(uint16_t angle) {
+void Robot::turnRight(uint16_t angle) {
     motor_.spinRight(angle);
 }
 
-void Robot::tournerGauche(uint16_t angle) {
+void Robot::turnLeft(uint16_t angle) {
     motor_.spinLeft(angle);
 }
 
-void Robot::arreter() {
+void Robot::stopMotor() {
     motor_.stop();
 }
 
-void Robot::allumerVert() {
+void Robot::turnOnGreen() {
     led_.green();
 }
 
-void Robot::allumerRouge() {
+void Robot::turnOnRed() {
     led_.red();
 }
 
-void Robot::eteindreDEL() {
+void Robot::turnOffLED() {
     led_.off();
 }
 
-void Robot::attendre(uint8_t multiplicateur) {
-    for (uint8_t i = 0; i < multiplicateur; ++i) {
-        _delay_ms(25); // Delay of 25 ms per unit of multiplicateur
+void Robot::playSound(uint8_t note) {
+    sound_.playSound(note);
+}
+
+void Robot::stopSound() {
+    sound_.stopSound();
+}
+
+void Robot::wait(uint16_t multiplicator) {
+    for (uint16_t i = 0; i < multiplicator; ++i) {
+        _delay_ms(25); 
     }
 }

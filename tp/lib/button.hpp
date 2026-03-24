@@ -1,3 +1,13 @@
+/*
+Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
+Travail : TP9 - Gestion du bouton
+Section # : 05
+Équipe # : 107111
+Correcteur : Abdul-wahab Chaarani
+
+Description : Gestion d'un bouton physique avec support des interruptions matérielles.
+*/
+
 #pragma once
 #define F_CPU 8000000UL
 #include <avr/io.h>

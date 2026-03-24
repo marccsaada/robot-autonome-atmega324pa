@@ -1,3 +1,9 @@
+/*
+Auteurs : Matthew Khouzam et Jerome Collin
+
+Description : Implémentation du pilote I2C pour les mémoires EEPROM 24C128/256/512.
+*/
+
 /******************************************************************************/
 /*                                                                            */
 /* Ce code a ete modifie par Matthew Khouzam et Jerome Collin                 */

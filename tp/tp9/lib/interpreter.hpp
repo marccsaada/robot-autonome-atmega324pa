@@ -11,7 +11,7 @@ Description : Lit le bytecode stocké en EEPROM externe et dispatch chaque instr
 
 #pragma once
 #include "robot.hpp"
-#include "lectureMemoire.hpp"
+#include "memoryReader.hpp"
 
 /**
  * @file interpreter.hpp
