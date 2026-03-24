@@ -1,6 +1,6 @@
 /*
 Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
-Travail : TP9 - En-tête d'inclusion groupée
+Travail : TP9
 Section # : 05
 Équipe # : 107111
 Correcteur : Abdul-wahab Chaarani
