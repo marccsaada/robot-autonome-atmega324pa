@@ -22,7 +22,7 @@ public:
     void arreterSon();
     void jouerSon(uint8_t note);
 
-    void attendre(uint8_t multiplicateur); // 25ms * multiplicateur
+    void attendre(uint16_t multiplicateur); // 25ms * multiplicateur
 
 private:
     Motor motor_;

@@ -1,5 +1,4 @@
 #define F_CPU 8000000UL
-#include <util/delay.h>
 #include "son.hpp"
 #include "debug.hpp"
 
@@ -7,6 +6,7 @@ Son::Son() : timer_(Timer::Id::TIMER0) {
     DDRB |= (1 << PB3);  
     DDRB |= (1 << PB5);
     PORTB &= ~(1<<PB5);
+    timer_.setModePWM(Timer::PWMMode::FAST, Timer::Prescaler::PRESCALE_256);
 }
 
 void Son::jouer(uint8_t note) {
@@ -27,16 +27,20 @@ void Son::jouer(uint8_t note) {
     DEBUG_PRINT("note: ", note);
     DEBUG_PRINT("OCR: ", ocr);
 
-    timer_.setModeCTC(Timer::Prescaler::PRESCALE_256);
-    TIMSK0 = 0;                    // Le toggle se fait par hardware, pas d'interruptions
+    // Fast PWM mode 7 (WGM02:WGM01:WGM00 = 1:1:1), TOP = OCR0A
+    // setModePWM(FAST) configure WGM00=1, WGM01=1 et COM0A1=1 (non-inverseur)
+    // On ajoute WGM02=1 pour le mode 7 et on corrige COM pour obtenir le toggle
+    // timer_.setModePWM(Timer::PWMMode::FAST, Timer::Prescaler::PRESCALE_256);
+    TCCR0B |= (1 << WGM02);                       // Mode 7 : TOP = OCR0A
+    TCCR0A &= ~((1 << COM0A1) | (1 << COM0B1));  // Deconnecter OC0B (PB4) mis par setModePWM
+    TCCR0A |=  (1 << COM0A0);                     // Toggle OC0A (PB3) -> onde carree 50%
+    TIMSK0 = 0;
     timer_.setOCRA(ocr);
-    TCCR0A |= (1 << COM0A0);      // Toggle OC0A (PB3) sur compare match
     timer_.startTimer();
-    _delay_ms(2000);
 }
 
 void Son::arreter() {
-    TCCR0A &= ~(1 << COM0A0);    // Déconnecter OC0A
+    TCCR0A &= ~(1 << COM0A0);    // Deconnecter OC0A
     timer_.stopTimer();
 }
 

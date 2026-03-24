@@ -176,7 +176,7 @@ debug: CFLAGS += -DDEBUG -g
 debug: clean
 	$(MAKE) -C ../lib/ CXXFLAGS="$(CXXFLAGS)" CFLAGS="$(CFLAGS)"
 	$(MAKE) install
-	serieViaUSB -l				
+	serieViaUSB -e -f programme.bin
 
 lib:
 	(cd ../lib/ && make)

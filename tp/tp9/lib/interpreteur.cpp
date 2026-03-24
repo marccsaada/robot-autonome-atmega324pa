@@ -1,4 +1,5 @@
 #include "interpreteur.hpp"
+#include "debug.hpp"
 #include <util/delay.h>
 
 // Codes binaires des instructions
@@ -53,7 +54,8 @@ void Interpreteur::executer() {
         if (!debutTrouve) {
             if (instruction == DBT)
                 debutTrouve = true;
-            continue;
+            else
+                continue;
         }
 
         // On arrête si on dépasse la taille
@@ -75,44 +77,54 @@ void Interpreteur::executerInstruction(uint8_t instruction, uint8_t operande) {
     switch (instruction) {
 
         case ATT:
+            DEBUG_PRINT("Attendre pendant ", operande * 25);
             robot_.attendre(operande);
             break;
 
         case DAL:
+            DEBUG_PRINT("Allumer DEL ", operande);
             if (operande == 1)      robot_.allumerVert();
             else if (operande == 2) robot_.allumerRouge();
             break;
 
         case DET:
+            DEBUG_PRINT("Eteindre DEL");
             robot_.eteindreDEL();
             break;
 
         case SGO:
+            DEBUG_PRINT("Jouer son ", operande);
             robot_.jouerSon(operande);
             break;
 
         case SAR:
+            DEBUG_PRINT("Arreter son");
             robot_.arreterSon();
             break;
 
         case MAR_0:
         case MAR_1:
+            DEBUG_PRINT("Arreter robot");
             robot_.arreter();
             break;
 
         case MAV:
+            DEBUG_PRINT("Avancer de ", operande);
             robot_.avancer(operande);
             break;
 
         case MRE:
+            DEBUG_PRINT("Reculer de ", operande);
             robot_.reculer(operande);
             break;
 
         case TRD:
+            DEBUG_PRINT("Tourner à droite de ", operande);
             robot_.tournerDroite(operande);
             break;
 
         case TRG:
+            DEBUG_PRINT("Tourner à gauche de ", operande);
             robot_.tournerGauche(operande);
             break;
 

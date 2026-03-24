@@ -41,8 +41,8 @@ void Robot::arreterSon() {
     son_.arreter();
 }
 
-void Robot::attendre(uint8_t multiplicateur) {
-    for (uint8_t i = 0; i < multiplicateur; ++i) {
+void Robot::attendre(uint16_t multiplicateur) {
+    for (uint16_t i = 0; i < multiplicateur; ++i) {
         _delay_ms(25); // Delay of 25 ms per unit of multiplicateur
     }
 }

@@ -174,6 +174,8 @@ install: $(HEXROMTRG)
 	$(MAKE) -C ../ecriture/ install
 	# Étape 3 : envoyer le bytecode dans l'EEPROM externe
 	serieViaUSB -e -f ../ecriture/programme.bin
+	# Attendre la fin de l'écriture EEPROM (5ms/octet * 256 octets max = ~1.5s)
+	sleep 5
 	# Étape 4 : flasher le programme d'exécution
 	$(AVRDUDE) -c $(AVRDUDE_PROGRAMMERID) \
 	-p $(MCU) -P usb -e -U flash:w:$(HEXROMTRG)

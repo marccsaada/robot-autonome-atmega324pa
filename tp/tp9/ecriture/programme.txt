@@ -1,5 +1,125 @@
 DBT;
-SGO 69;   // joue 440 Hz
-ATT 25;
-SAR;      // arrête le son
+// Twinkle Twinkle Little Star (4 phrases = 230 octets, dans la limite de 256)
+// Noire = ATT 8 (200ms), Blanche = ATT 16 (400ms), silence = ATT 2 (50ms)
+
+// C  C  G  G  A  A  G(blanche)  "Twinkle twinkle little star"
+SGO 60;
+ATT 8;
+SAR;
+ATT 2;
+SGO 60;
+ATT 8;
+SAR;
+ATT 2;
+SGO 67;
+ATT 8;
+SAR;
+ATT 2;
+SGO 67;
+ATT 8;
+SAR;
+ATT 2;
+SGO 69;
+ATT 8;
+SAR;
+ATT 2;
+SGO 69;
+ATT 8;
+SAR;
+ATT 2;
+SGO 67;
+ATT 16;
+SAR;
+ATT 4;
+
+// F  F  E  E  D  D  C(blanche)  "How I wonder what you are"
+SGO 65;
+ATT 8;
+SAR;
+ATT 2;
+SGO 65;
+ATT 8;
+SAR;
+ATT 2;
+SGO 64;
+ATT 8;
+SAR;
+ATT 2;
+SGO 64;
+ATT 8;
+SAR;
+ATT 2;
+SGO 62;
+ATT 8;
+SAR;
+ATT 2;
+SGO 62;
+ATT 8;
+SAR;
+ATT 2;
+SGO 60;
+ATT 16;
+SAR;
+ATT 4;
+
+// G  G  F  F  E  E  D(blanche)  "Up above the world so high"
+SGO 67;
+ATT 8;
+SAR;
+ATT 2;
+SGO 67;
+ATT 8;
+SAR;
+ATT 2;
+SGO 65;
+ATT 8;
+SAR;
+ATT 2;
+SGO 65;
+ATT 8;
+SAR;
+ATT 2;
+SGO 64;
+ATT 8;
+SAR;
+ATT 2;
+SGO 64;
+ATT 8;
+SAR;
+ATT 2;
+SGO 62;
+ATT 16;
+SAR;
+ATT 4;
+
+// G  G  F  F  E  E  D(blanche)  "Like a diamond in the sky"
+SGO 67;
+ATT 8;
+SAR;
+ATT 2;
+SGO 67;
+ATT 8;
+SAR;
+ATT 2;
+SGO 65;
+ATT 8;
+SAR;
+ATT 2;
+SGO 65;
+ATT 8;
+SAR;
+ATT 2;
+SGO 64;
+ATT 8;
+SAR;
+ATT 2;
+SGO 64;
+ATT 8;
+SAR;
+ATT 2;
+SGO 62;
+ATT 16;
+SAR;
+ATT 4;
+
 FIN;
