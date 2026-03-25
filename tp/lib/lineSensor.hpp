@@ -23,6 +23,11 @@ public:
     bool foundDamage();          // Robot found damage
 
     uint8_t offTrackAmount();   // Amount of sensors that are off track (0-5)
+
+    uint8_t getNDamage() const { return nDamage_; } // Getter for nDamage_
 private:
     uint8_t sensors_[5] = {sensor1, sensor2, sensor3, sensor4, sensor5};
+    uint8_t nDamage_ = 0; // Number of times the robot has found damage
+
+    bool previousDamageState_ = false; // Previous state of damage detection
 };
