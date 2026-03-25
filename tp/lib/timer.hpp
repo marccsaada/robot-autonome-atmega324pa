@@ -36,7 +36,8 @@ public:
      */
     enum PWMMode {
         PHASE_CORRECT,
-        FAST
+        FAST_MAX,
+        FAST_TOP
     };
 
     /**

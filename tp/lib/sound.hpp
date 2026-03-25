@@ -44,4 +44,6 @@ private:
      * @return Value to load into the OCRxA compare register.
      */
     uint16_t calculateOCR_(float frequency);
+    
+     static const float frequencies[];
 };

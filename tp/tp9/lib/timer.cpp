@@ -59,13 +59,25 @@ void Timer::setModePWM(PWMMode mode, Prescaler prescaler) {
                 *TCCRnB_ &= ~(1 << WGM12) & ~(1 << WGM13);
             }
             break;
-        case FAST:
-            DEBUG_PRINT("Setting PWM mode : Fast");
+        case FAST_MAX:
+            DEBUG_PRINT("Setting PWM mode : Fast Max");
             if (id_ == TIMER0 || id_ == TIMER2) {
                 *TCCRnA_ |= (1 << WGM00) | (1 << WGM01);
             } else if (id_ == TIMER1) {
                 *TCCRnA_ |= (1 << WGM10) | (1 << WGM11);
                 *TCCRnB_ &= ~(1 << WGM12) & ~(1 << WGM13);
+            }
+            break;
+        case FAST_TOP:
+            DEBUG_PRINT("Setting PWM mode : Fast Top");
+            if (id_ == TIMER0 || id_ == TIMER2) {
+                *TCCRnA_ |= (1 << WGM00) | (1 << WGM01);
+                *TCCRnB_ |= (1 << WGM02);
+            } else if (id_ == TIMER1) {
+                *TCCRnA_ |= (1 << WGM10);
+                *TCCRnB_ |= (1 << WGM12);
+                *TCCRnA_ &= ~(1 << WGM11);
+                *TCCRnB_ &= ~(1 << WGM13);
             }
             break;
     }

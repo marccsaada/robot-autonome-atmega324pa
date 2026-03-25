@@ -26,19 +26,13 @@ int main() {
     
     led.red();
 
-    
-    const uint16_t MAX_TAILLE = 256;
-    uint8_t buffer[MAX_TAILLE];
+    uint8_t msb = uart.UART_Reception();
+    uint8_t lsb = uart.UART_Reception();
+    uint16_t taille = ((uint16_t)msb << 8) | lsb;
 
-    buffer[0] = uart.UART_Reception();
-    buffer[1] = uart.UART_Reception();
-    uint16_t taille = ((uint16_t)buffer[0] << 8) | buffer[1];
-
-    for (uint16_t i = 2; i < taille && i < MAX_TAILLE; i++)
-        buffer[i] = uart.UART_Reception();
-
-    for (uint16_t i = 0; i < taille && i < MAX_TAILLE; i++) {
-        memoire.ecriture(i, buffer[i]);
+    for (uint16_t i = 2; i < taille && i < taille; i++) {
+        uint8_t data = uart.UART_Reception();
+        memoire.ecriture(i, data);
         _delay_ms(5);
     }
 

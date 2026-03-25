@@ -14,7 +14,7 @@ Description : Implémentation du contrôleur de moteurs : avance, recul et rotat
 
 void Motor::delayFunction(uint8_t n) {
     for (uint8_t i = 0; i < n; ++i) {
-        _delay_ms(10); // Delay of 10 ms per unit of n
+        _delay_ms(10);
     }
 }
 
@@ -46,7 +46,7 @@ void Motor::spinLeft(uint16_t angle) {
     DEBUG_PRINT("Motor::spinLeft()");
     leftWheel_.goBackward(130);
     rightWheel_.goForward(130);
-    delayFunction(angle); // Adjust delay based on angle
+    delayFunction(angle);
     stop();
 }
 
@@ -54,7 +54,7 @@ void Motor::spinRight(uint16_t angle) {
     DEBUG_PRINT("Motor::spinRight()");
     leftWheel_.goForward(130);
     rightWheel_.goBackward(130);
-    delayFunction(angle); // Adjust delay based on angle
+    delayFunction(angle);
     stop();
 }
 
