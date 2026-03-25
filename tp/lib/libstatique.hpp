@@ -19,3 +19,9 @@ Description : Regroupe les inclusions de toutes les bibliothèques statiques du 
 #include <sound.hpp>
 #include <timer.hpp>
 #include <wheel.hpp>
+#include <sound.hpp> 
+#include <memoryReader.hpp>  
+#include <interpreter.hpp> 
+#include <robot.hpp>
+#include <lineSensor.hpp>
+
