@@ -42,7 +42,9 @@ uint16_t DistanceSensor::readADC() {
     sortArray(readings, N_READINGS);
 
     uint16_t median = readings[N_READINGS / 2];
+
     DEBUG_PRINT("ADC median: ", median);
+    
     _delay_ms(500);
     return median;
 }
