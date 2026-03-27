@@ -54,7 +54,7 @@ void Motor::spinRight(uint16_t angle) {
     DEBUG_PRINT("Motor::spinRight()");
     leftWheel_.goForward(130);
     rightWheel_.goBackward(130);
-    delayFunction(angle);
+    delayFunction(angle+angle/7);
     stop();
 }
 
