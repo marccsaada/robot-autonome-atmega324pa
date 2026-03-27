@@ -175,8 +175,16 @@ debug: CXXFLAGS += -DDEBUG -g
 debug: CFLAGS += -DDEBUG -g
 debug: clean
 	$(MAKE) -C ../lib/ CXXFLAGS="$(CXXFLAGS)" CFLAGS="$(CFLAGS)"
-	$(MAKE) install
-	serieViaUSB -l				
+	$(CC) $(CFLAGS) $(CXXFLAGS) -c main.cpp
+	$(CC) $(LDFLAGS) -o $(TRG) $(OBJDEPS) -lm $(LIBS)
+	$(OBJCOPY) -j .text -j .data -O $(HEXFORMAT) $(TRG) $(HEXROMTRG)
+	$(AVRDUDE) -c $(AVRDUDE_PROGRAMMERID) -p $(MCU) -P usb -e -U flash:w:$(HEXROMTRG)
+	serieViaUSB -l
+			
+
+
+	
+
 
 lib:
 	(cd ../lib/ && make)
