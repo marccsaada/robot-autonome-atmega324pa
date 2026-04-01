@@ -1,13 +1,13 @@
-/*
-Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
-Travail : TP9
-Section # : 05
-Équipe # : 107111
-Correcteur : Abdul-wahab Chaarani
+// /*
+// Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
+// Travail : TP9
+// Section # : 05
+// Équipe # : 107111
+// Correcteur : Abdul-wahab Chaarani
 
-Description : Lit le bytecode stocké en EEPROM externe et dispatch chaque instruction
-              vers le contrôleur Robot.
-*/
+// Description : Lit le bytecode stocké en EEPROM externe et dispatch chaque instruction
+//               vers le contrôleur Robot.
+// */
 
 #pragma once
 #include "robot.hpp"

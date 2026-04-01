@@ -165,7 +165,7 @@ $(TRG): lib $(OBJDEPS)
 # Make install permet de compiler le projet puis
 # d'ecrire le programme en memoire flash dans votre
 # microcontroleur. Celui-ci doit etre branche par cable USB
-
+# $(MAKE) -C ../lib/ CXXFLAGS="$(CXXFLAGS)" CFLAGS="$(CFLAGS)" (utilise quand on veut debug lib aussi )
 install: lib
 install: $(HEXROMTRG)
 	$(AVRDUDE) -c $(AVRDUDE_PROGRAMMERID) \
@@ -174,16 +174,12 @@ install: $(HEXROMTRG)
 debug: CXXFLAGS += -DDEBUG -g
 debug: CFLAGS += -DDEBUG -g
 debug: clean
-	$(MAKE) -C ../lib/ CXXFLAGS="$(CXXFLAGS)" CFLAGS="$(CFLAGS)"
+	$(MAKE) -C ../lib/ 
 	$(CC) $(CFLAGS) $(CXXFLAGS) -c main.cpp
 	$(CC) $(LDFLAGS) -o $(TRG) $(OBJDEPS) -lm $(LIBS)
 	$(OBJCOPY) -j .text -j .data -O $(HEXFORMAT) $(TRG) $(HEXROMTRG)
 	$(AVRDUDE) -c $(AVRDUDE_PROGRAMMERID) -p $(MCU) -P usb -e -U flash:w:$(HEXROMTRG)
 	serieViaUSB -l
-			
-
-
-	
 
 
 lib:

@@ -19,6 +19,11 @@ static const uint16_t INIT_WAIT_MS      = 2000;
 static const uint16_t TICK_MS           = 10;
 static const uint16_t OCR1A_10MS        = 1249;
 
+volatile uint16_t modeInstructionTicks = 0;
+volatile uint8_t  blinkCount = 0;
+volatile bool     ledState = false;
+volatile bool     modeInstructionDone = false;
+
 Robot robot;
 Timer timer(Timer::TIMER1);
 
@@ -55,6 +60,26 @@ ISR(TIMER1_COMPA_vect) {
         default:
             break;
     }
+
+// en dessous pour mode interruption:
+    if (selectedMode == INSTRUCTION && !modeInstructionDone) {
+        modeInstructionTicks++;
+    //chaque 125 ms (125 / 10 = 12.5 ≈ 13 ticks)
+        if (modeInstructionTicks % 13 == 0) {
+            ledState = !ledState;
+
+            if (ledState)
+                robot.led.green();
+            else {
+                robot.led.off();
+                blinkCount++; 
+            }
+        }
+        if (blinkCount >= 8) {
+            robot.led.off();
+            modeInstructionDone = true;
+        }
+    }
 }
 
 ISR(TIMER1_COMPB_vect) {}   // requis par setModeCTC
@@ -62,10 +87,35 @@ ISR(TIMER1_COMPB_vect) {}   // requis par setModeCTC
 ISR(INT0_vect) {
     if (state == GREEN) {
         selectedMode = INSTRUCTION; state = DONE; robot.led.off();
-    } else if (state == RED) {
+    } 
+    else if (state == RED) {
         selectedMode = RAPPORT; state = DONE; robot.led.off();
     }
+    else if (state == OFF1) {
+        selectedMode = EXECUTION; state = DONE; 
+    }
 }
+
+void modeInstruction() {
+    //DEBUG_PRINT("Instruction oui");
+    // for (uint8_t i = 0; i < 8; i++) {  // 8 cycles, ns on veut 4hz, 4 cycles par seconde, 1 cycle est 250 ms. quand cèst pour 2 seconde, 8 cycle
+    //     robot.led.green();
+    //     _delay_ms(125); 
+
+    //     robot.led.off();
+    //     _delay_ms(125);  
+    // }
+    DEBUG_PRINT("Instruction oui");
+
+    modeInstructionTicks = 0;
+    blinkCount = 0;
+    ledState = false;
+    modeInstructionDone = false;
+
+    while (!modeInstructionDone) {
+        sleep_mode(); 
+    }
+ }
 
 int main() {
     timer.setModeCTC(Timer::PRESCALE_64);
@@ -80,7 +130,7 @@ int main() {
         sleep_mode();
 
     switch (selectedMode) {
-        case INSTRUCTION: DEBUG_PRINT("Instruction oui"); break;
+        case INSTRUCTION: modeInstruction(); break;
         case EXECUTION:   DEBUG_PRINT("Execution oui");   break;
         case RAPPORT:     DEBUG_PRINT("Rapport oui");     break;
     }
@@ -89,138 +139,3 @@ int main() {
 }
 
 
-/*
-
-    Description du programme: Ce programme implémente une séquence lumineuse sur une DEL bicolore à l'aide d'un bouton poussoir.
-    Lorsqu'un bouton est enfoncé, un compteur s'incrémente à un rythme spécifique et contrôle la couleur
-    et le clignotement de la DEL. La séquence varie en fonction de la durée de l'appui sur le bouton.
-
-
-    Identification matérielle :
-    Broche d'entrée (PD2)
-    Broches de sortie (PB0, PB1)
-    La DEL libre est connecté aux broches de sortie (soit PB0, PB1) par l'entremise d'un fil femelle-femelle.
-    Un fil mâle-femelle est connecté aux GND et VCC du PORTA (entrée du circuit du «breadboard»)
-    Un fil mâle-femelle est connecté à PD2 pour INT0 (sortie du circuit du «breadboard»)
-
-
-
-
-#define F_CPU 8000000UL
-#include <avr/io.h>
-#include <util/delay.h>
-#include <avr/interrupt.h>
-
-volatile uint8_t gMinuterieExpiree;
-volatile uint8_t gBoutonPoussoir = 0;
-volatile uint8_t compteur = 0;
-volatile uint16_t dureeCompteur = 783;
-
-const uint8_t DUREE_MAXIMALE_COMPTEUR = 120;
-const uint16_t DELAI_VERT_INITIALE = 500;
-const uint16_t DELAI_ETEINT_INITIALE = 2000;
-const uint8_t DELAI_CLIGNOTE = 250;
-const uint16_t DELAI_VERT_FINAL = 1000;
-const uint8_t INCREMENT_PAR_2 = 2;
-
-
-void partirMinuterie()
-{
-    TCNT1 = 0;
-
-    OCR1A = dureeCompteur;
-
-    TCCR1A |= (1 << COM1A0);
-
-    TCCR1B |= (1 << CS10) | (1 << CS12) | (1 << WGM12);
-
-    TCCR1C = 0;
-
-    TIMSK1 |= (1 << OCIE1A);
-}
-
-ISR(TIMER1_COMPA_vect)
-{
-
-    compteur++;
-}
-
-ISR(TIMER1_COMPB_vect) {}
-
-ISR(INT0_vect)
-{
-    _delay_ms(30);
-    if (!(PIND & (1 << PD2)))
-    {
-        gBoutonPoussoir = 1;
-        partirMinuterie();
-    }
-    else
-    {
-        gBoutonPoussoir = 0;
-    }
-}
-
-void initialisation(void)
-{
-
-    cli();
-
-    DDRD &= ~(1 << PD2);
-    DDRB |= (1 << PB1) | (1 << PB0);
-
-    EIMSK |= (1 << INT0);
-
-    EICRA |= (1 << ISC00);
-
-    sei();
-}
-void arreterMinuterie()
-{
-    TCCR1B = 0;
-    TIMSK1 = 0;
-    compteur = 0;
-}
-
-
-int main()
-{
-
-    initialisation();
-
-    while (true)
-    {
-        if (gBoutonPoussoir)
-        {
-            do
-            {
-
-            } while ((gBoutonPoussoir != 0) & (compteur != DUREE_MAXIMALE_COMPTEUR));
-
-            ouvrirVert();
-
-            _delay_ms(DELAI_VERT_INITIALE);
-
-            eteint();
-
-            _delay_ms(DELAI_ETEINT_INITIALE);
-
-            for (int i = 0; i <= compteur; i += INCREMENT_PAR_2)
-            {
-                ouvrirRouge();
-                _delay_ms(DELAI_CLIGNOTE);
-                eteint();
-                _delay_ms(DELAI_CLIGNOTE);
-            }
-            ouvrirVert();
-            _delay_ms(DELAI_VERT_FINAL);
-            eteint();
-            arreterMinuterie();
-        }
-    }
-}
-« Précédent12Suivant »(2-2/2)
-Powered by Redmine © 2006-2024 Jean-Philippe Lang
-
-
-*/

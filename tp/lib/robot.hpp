@@ -34,6 +34,7 @@ public:
     Sound sound;
     Button button;
 
+    void wait(uint16_t multiplicator);
 
 
 

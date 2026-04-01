@@ -1,12 +1,12 @@
-/*
-Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
-Travail : TP9
-Section # : 05
-Équipe # : 107111
-Correcteur : Abdul-wahab Chaarani
+// /*
+// Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
+// Travail : TP9
+// Section # : 05
+// Équipe # : 107111
+// Correcteur : Abdul-wahab Chaarani
 
-Description : Implémentation de l'interpréteur : séquence de démarrage et boucle d'exécution.
-*/
+// Description : Implémentation de l'interpréteur : séquence de démarrage et boucle d'exécution.
+// */
 
 #include "interpreter.hpp"
 #include "debug.hpp"
@@ -38,15 +38,15 @@ Interpreter::Interpreter()
 void Interpreter::startSequence() {
 
     for (uint8_t i = 0; i < 2; i++) {
-        robot_.turnOnRed();
+        robot_.led.red();
         _delay_ms(300);
-        robot_.turnOffLED();
+        robot_.led.off();
         _delay_ms(300);
     }
     for (uint8_t i = 0; i < 2; i++) {
-        robot_.turnOnGreen();
+        robot_.led.green();
         _delay_ms(300);
-        robot_.turnOffLED();
+        robot_.led.off();
         _delay_ms(300);
     }
 }
@@ -80,7 +80,7 @@ void Interpreter::execute() {
             finished = true;
     }
 
-    robot_.stopMotor();
+    robot_.motor.stop();
 }
 
 void Interpreter::executeInstruction(uint8_t instruction, uint8_t operand) {
@@ -93,49 +93,49 @@ void Interpreter::executeInstruction(uint8_t instruction, uint8_t operand) {
 
         case DAL:
             DEBUG_PRINT("Set LED to ", operand);
-            if (operand == 1)      robot_.turnOnGreen();
-            else if (operand == 2) robot_.turnOnRed();
+            if (operand == 1)      robot_.led.green();
+            else if (operand == 2) robot_.led.red();
             break;
 
         case DET:
             DEBUG_PRINT("Turn LED off");
-            robot_.turnOffLED();
+            robot_.led.off();
             break;
 
         case SGO:
             DEBUG_PRINT("Play sound ", operand);
-            robot_.playSound(operand);
+            robot_.sound.playSound(operand);
             break;
 
         case SAR:
             DEBUG_PRINT("Stop sound");
-            robot_.stopSound();
+            robot_.sound.stopSound();
             break;
 
         case MAR:
         case MAR_1:
             DEBUG_PRINT("Stop robot");
-            robot_.stopMotor();
+            robot_.motor.stop();
             break;
 
         case MAV:
             DEBUG_PRINT("Move forward by ", operand);
-            robot_.goForward(operand);
+            robot_.motor.goForward(operand, operand);
             break;
 
         case MRE:
             DEBUG_PRINT("Move backward by ", operand);
-            robot_.goBackward(operand);
+            robot_.motor.goBackward(operand, operand);
             break;
 
         case TRD:
             DEBUG_PRINT("Turn right 90");
-            robot_.turnRight(90);
+            robot_.motor.spinRight(90);
             break;
 
         case TRG:
             DEBUG_PRINT("Turn left 90");
-            robot_.turnLeft(90);
+            robot_.motor.spinLeft(90);
             break;
 
         case DBC:
@@ -154,7 +154,7 @@ void Interpreter::executeInstruction(uint8_t instruction, uint8_t operand) {
             break;
 
         case FIN:
-            robot_.stopMotor();
+            robot_.motor.stop();
             break;
 
         default:
