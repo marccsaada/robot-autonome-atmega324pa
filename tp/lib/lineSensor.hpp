@@ -14,8 +14,8 @@ public:
     ~LineSensor();
     
     bool robotMiddle();         // Robot perfectly in the middle
-    bool robotOffTrackLeft();   // Robot offset track to the left
-    bool robotOffTrackRight();  // Robot offset track to the right
+    bool offTrackLeft();   // Robot offset track to the left
+    bool offTrackRight();  // Robot offset track to the right
     bool robotBumpLine();       // Robot bumping into the line
     bool isLeftWall();          // Robot is against the left wall
     bool isRightWall();         // Robot is against the right wall
