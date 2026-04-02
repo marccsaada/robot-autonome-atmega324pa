@@ -18,14 +18,14 @@ bool LineSensor::robotMiddle() {
     return false;
 }
 
-bool LineSensor::robotOffTrackLeft() {
+bool LineSensor::offTrackLeft() {
     if ((PINA & (1 << sensor1)) && !(PINA & (1 << sensor5))) {
         return true;
     }
     return false;
 }
 
-bool LineSensor::robotOffTrackRight() {
+bool LineSensor::offTrackRight() {
     if (!(PINA & (1 << sensor1)) && (PINA & (1 << sensor5))) {
         return true;
     }
@@ -53,8 +53,25 @@ bool LineSensor::isRightWall() {
     return false;
 }
 
+// bool LineSensor::foundDamage() {
+//     if ((offTrackAmount() < 3) && (PINA & (1 << sensor3)) && (previousDamageState_ == false)) {
+//         nDamage_++;
+//         previousDamageState_ = true;
+//         return true;
+//     }
+//     previousDamageState_ = false;
+//     return false;
+// }
+
+// LEFT OFFSET : (PINA & (1 << sensor1) && ( (PINA & (1 << sensor4)) || (PINA & (1 << sensor5)) )
+// RIGHT OFFSET : (PINA & (1 << sensor5)) && ( (PINA & (1 << sensor1)) || (PINA & (1 << sensor2)) )
+// NO   OFFSET : (offTrackAmount() < 3) && ( (PINA & (1 << sensor2) || PINA & (1 << sensor3) || PINA & (1 << sensor4) )
+
 bool LineSensor::foundDamage() {
-    if ((offTrackAmount() < 3) && (PINA & (1 << sensor3)) && (previousDamageState_ == false)) {
+    if ((PINA & (1 << sensor1) && ( (PINA & (1 << sensor4)) || (PINA & (1 << sensor5)) ) // LEFT OFFSET
+     || (PINA & (1 << sensor5)) && ( (PINA & (1 << sensor1)) || (PINA & (1 << sensor2)) ) // RIGHT OFFSET
+     || (offTrackAmount() < 3) && ( (PINA & (1 << sensor2)) || (PINA & (1 << sensor3)) || (PINA & (1 << sensor4)) ) // NO OFFSET
+     && (previousDamageState_ == false))) {
         nDamage_++;
         previousDamageState_ = true;
         return true;
@@ -70,6 +87,7 @@ uint8_t LineSensor::offTrackAmount() {
             amount++;
         }
     }
+    if (amount == 5)
+        amount = 4;
     return amount;
 }
-
