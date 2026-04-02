@@ -19,7 +19,7 @@ Description : Ce programme reçoit le bytecode compilé par progmem via RS-232
 
 int main() {
     
-    LED led(PORTA, PA0, PA1);
+    LED led(PORTC, PC2, PC3);
     UART uart;
     Memoire24CXXX memoire;
 
@@ -29,6 +29,11 @@ int main() {
     uint8_t msb = uart.UART_Reception();
     uint8_t lsb = uart.UART_Reception();
     uint16_t taille = ((uint16_t)msb << 8) | lsb;
+
+    memoire.ecriture(0, msb);
+    _delay_ms(5);
+    memoire.ecriture(1, lsb);
+    _delay_ms(5);
 
     for (uint16_t i = 2; i < taille && i < taille; i++) {
         uint8_t data = uart.UART_Reception();
