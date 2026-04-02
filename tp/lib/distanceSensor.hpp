@@ -35,6 +35,7 @@ private:
 
     static const uint16_t DETECTION_THESHOLD = 471;    
     
+    bool objectPresent_ = false; // ajout pour detection dun mm objet
 };
 
 #endif /* CAPTEUR_DISTANCE_H */

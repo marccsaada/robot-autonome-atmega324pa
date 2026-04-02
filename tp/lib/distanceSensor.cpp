@@ -33,9 +33,7 @@ uint16_t DistanceSensor::readADC() {
     for (uint8_t i = 0; i < N_READINGS; i++) {
         readings[i] = can_.lecture(PORT_POSITION);
         DEBUG_PRINT("  reading[", i);
-        _delay_ms(500);
         DEBUG_PRINT("]: ", readings[i]);
-        _delay_ms(500);
 
     }
 
@@ -50,21 +48,49 @@ uint16_t DistanceSensor::readADC() {
 }
 
 
-bool DistanceSensor::isObjectDetected(uint16_t threshold)
+// bool DistanceSensor::isObjectDetected(uint16_t threshold) // defaut
+// {
+//     uint16_t adc = readADC();
+//     DEBUG_PRINT("threshold: ", threshold);
+
+//     if (adc >= threshold){
+//         objectCounter_ +=1;
+//         DEBUG_PRINT("DETECTED count: ", objectCounter_);
+//         return true;
+//     }
+//     else {
+//         DEBUG_PRINT("not detected");
+//         return false;
+//     }
+// }
+
+bool DistanceSensor::isObjectDetected(uint16_t threshold) // update 
 {
     uint16_t adc = readADC();
-    DEBUG_PRINT("threshold: ", threshold);
 
-    if (adc >= threshold){
+    // Cas 1 : objet détecté pour la première fois
+    if (adc >= threshold && !objectPresent_) {
+        objectPresent_ = true;
         objectCounter_ +=1;
+        DEBUG_PRINT("OBJECT DETECTED (NEW)");
         DEBUG_PRINT("DETECTED count: ", objectCounter_);
-       _delay_ms(500);
 
         return true;
     }
-    else {
-        DEBUG_PRINT("not detected");
-        _delay_ms(500);
+
+    // Cas 2 : objet encore là → ne rien faire
+    if (adc >= threshold && objectPresent_) {
+        DEBUG_PRINT("OBJECT STILL PRESENT");
+        DEBUG_PRINT("DETECTED count: ", objectCounter_);
         return false;
     }
+
+    // Cas 3 : objet disparu → reset
+    if (adc < threshold && objectPresent_) {
+        objectPresent_ = false;
+        DEBUG_PRINT("OBJECT REMOVED");
+        DEBUG_PRINT("DETECTED count: ", objectCounter_);
+    }
+
+    return false;
 }

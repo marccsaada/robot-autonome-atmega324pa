@@ -24,4 +24,4 @@ Description : Regroupe les inclusions de toutes les bibliothèques statiques du 
 #include <interpreter.hpp> 
 #include <robot.hpp>
 #include <lineSensor.hpp>
-
+#include <distanceSensor.hpp>

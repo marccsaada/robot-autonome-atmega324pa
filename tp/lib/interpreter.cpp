@@ -9,25 +9,9 @@
 // */
 
 #include "interpreter.hpp"
-#include "debug.hpp"
 #include <util/delay.h>
 
 
-const uint8_t DBT = 0x01;
-const uint8_t ATT = 0x02;
-const uint8_t DAL = 0x44;
-const uint8_t DET = 0x45;
-const uint8_t SGO = 0x48;
-const uint8_t SAR = 0x09;
-const uint8_t MAR = 0x60;
-const uint8_t MAR_1 = 0x61;
-const uint8_t MAV = 0x62;
-const uint8_t MRE = 0x63;
-const uint8_t TRD = 0x64;
-const uint8_t TRG = 0x65;
-const uint8_t DBC = 0xC0;
-const uint8_t FBC = 0xC1;
-const uint8_t FIN = 0xFF;
 
 Interpreter::Interpreter()
     : loopAddress_(0),
@@ -83,67 +67,96 @@ void Interpreter::execute() {
     robot_.motor.stop();
 }
 
+void Interpreter::confirm() {
+    uint8_t  noteCount = 0;
+    uint8_t  trInstr   = 0;
+    uint8_t  attOp     = 0;
+    uint16_t size      = memory_.getSize();
+
+    robot_.led.off();
+
+    while (memory_.getAddress() < size) {
+        uint8_t instr = memory_.readInstruction();
+        uint8_t op    = memory_.readOperand();
+
+        switch (instr) {
+            case SGO:
+                if (noteCount < 3) {
+                    if (noteCount > 0) _delay_ms(125);
+                    executeInstruction(SGO, op);
+                    noteCount++;
+                }
+                break;
+            case TRD:
+            case TRG:
+                if (trInstr == 0) trInstr = instr;
+                break;
+            case ATT:
+                if (attOp == 0) attOp = op;
+                break;
+            default:
+                break;
+        }
+    }
+
+    _delay_ms(2000);
+
+    if (trInstr != 0) executeInstruction(trInstr, 0);
+
+    _delay_ms(2000);
+
+    for (uint8_t i = 0; i < attOp; i++) {
+        for (uint8_t j = 0; j < 83; j++)
+            robot_.led.amber();  
+        robot_.led.off();
+        _delay_ms(500);          
+    }
+}
+
 void Interpreter::executeInstruction(uint8_t instruction, uint8_t operand) {
     switch (instruction) {
-
         case ATT:
-            DEBUG_PRINT("Wait for ", operand * 25);
             robot_.wait(operand);
             break;
-
         case DAL:
-            DEBUG_PRINT("Set LED to ", operand);
             if (operand == 1)      robot_.led.green();
             else if (operand == 2) robot_.led.red();
             break;
-
         case DET:
-            DEBUG_PRINT("Turn LED off");
             robot_.led.off();
             break;
-
         case SGO:
-            DEBUG_PRINT("Play sound ", operand);
             robot_.sound.playSound(operand);
-            break;
-
-        case SAR:
-            DEBUG_PRINT("Stop sound");
+            _delay_ms(250);
             robot_.sound.stopSound();
             break;
-
+        case SAR:
+            robot_.sound.stopSound();
+            break;
         case MAR:
-        case MAR_1:
-            DEBUG_PRINT("Stop robot");
             robot_.motor.stop();
             break;
-
         case MAV:
-            DEBUG_PRINT("Move forward by ", operand);
             robot_.motor.goForward(operand, operand);
             break;
-
         case MRE:
-            DEBUG_PRINT("Move backward by ", operand);
             robot_.motor.goBackward(operand, operand);
             break;
-
         case TRD:
-            DEBUG_PRINT("Turn right 90");
-            robot_.motor.spinRight(90);
+            robot_.led.green();
+            _delay_ms(2000);
+            robot_.led.off();
             break;
-
         case TRG:
-            DEBUG_PRINT("Turn left 90");
-            robot_.motor.spinLeft(90);
+            robot_.led.red();
+            _delay_ms(2000);
+            robot_.led.off();
             break;
-
         case DBC:
             loopAddress_ = memory_.getAddress();
             loopCounter_ = operand;
             inLoop_      = true;
             break;
-
         case FBC:
             if (inLoop_ && loopCounter_ > 0) {
                 memory_.setAddress(loopAddress_);
@@ -152,11 +165,9 @@ void Interpreter::executeInstruction(uint8_t instruction, uint8_t operand) {
                 inLoop_ = false;
             }
             break;
-
         case FIN:
             robot_.motor.stop();
             break;
-
         default:
             break;
     }
