@@ -118,13 +118,13 @@ void movementLogic(Action& currentAction) {
             _delay_ms(25);
             if (stepCount == 0) {
                 robot.motor.goBackward(LEFT_DEFAULT_SPEED, 0);
-                _delay_ms(2300);
+                _delay_ms(2450);
                 robot.motor.stop();
                 stepCount++;
             }
             if (stepCount == 1) {
                 robot.motor.goForward(0, RIGHT_DEFAULT_SPEED);
-                _delay_ms(1500);
+                _delay_ms(1380);
                 while (lineSensor.offTrackAmount() < 4) {}
                 robot.motor.stop();
                 stepCount++;
