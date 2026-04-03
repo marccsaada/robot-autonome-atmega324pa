@@ -40,11 +40,13 @@ bool LineSensor::robotBumpLine() {
 }
 
 bool LineSensor::isLeftWall() {
-    if ((PINA & (1 << sensor1)) && (PINA & (1 << sensor2))) {
+    if ((PINA & (1 << sensor1))) {
         return true;
     }
     return false;
 }
+
+
 
 bool LineSensor::isRightWall() {
     if ((PINA & (1 << sensor4)) && (PINA & (1 << sensor5))) {

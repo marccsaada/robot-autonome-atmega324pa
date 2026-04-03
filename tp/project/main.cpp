@@ -13,9 +13,11 @@ uint8_t stepCount = 0;
 
 enum class Action {
     PARKING,
+    LEAVE_PARKING,
     AFTER_PARKING,
     FIRST_TURN,
     FIRST_CORRIDOR,
+    SECOND_CORRIDOR,
     ENTER_FIRST_ROOM,
     FIRST_ROOM,
     END,
@@ -76,6 +78,23 @@ void followPath() {
     robot.motor.goForward(leftWheelSpeed, rightWheelSpeed);
 }
 
+void followLeftWall(){
+    uint8_t leftWheelSpeed = LEFT_DEFAULT_SPEED;
+    uint8_t rightWheelSpeed = RIGHT_DEFAULT_SPEED;
+    
+    if (!lineSensor.isLeftWall()) { 
+        leftWheelSpeed -= lineSensor.offTrackAmount() * 30;
+        rightWheelSpeed += lineSensor.offTrackAmount() * 5;
+    }
+    else if (lineSensor.isLeftWall()) { 
+        rightWheelSpeed = RIGHT_DEFAULT_SPEED;
+        leftWheelSpeed = LEFT_DEFAULT_SPEED;
+    }
+    robot.motor.goForward(leftWheelSpeed, rightWheelSpeed);
+
+
+}
+
 // SALLES B ET C
 void move3Inches() { 
     robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
@@ -105,12 +124,18 @@ void movementLogic(Action& currentAction) {
             }
             if (stepCount == 1) {
                 robot.motor.goForward(0, RIGHT_DEFAULT_SPEED);
+                _delay_ms(1500);
                 while (lineSensor.offTrackAmount() < 4) {}
                 robot.motor.stop();
                 stepCount++;
             }
             
 
+            break;
+        
+        case Action::LEAVE_PARKING:
+            turnLeft();
+            _delay_ms(25);
             break;
             
         case Action::AFTER_PARKING:
@@ -119,13 +144,19 @@ void movementLogic(Action& currentAction) {
             break;
 
         case Action::FIRST_TURN:
-            //turnLeft();
-            turnRight();
+            turnLeft();
+            //turnRight();
             _delay_ms(25);
             break;
 
         case Action::FIRST_CORRIDOR:
             followPath();
+            _delay_ms(25);
+            break;
+
+        case Action::SECOND_CORRIDOR:
+            followPath();
+            
             _delay_ms(25);
             break;
 
@@ -150,8 +181,16 @@ void switchLogic(Action& currentAction) {
         case Action::PARKING:
             if (lineSensor.robotBumpLine()) {
                 _delay_ms(500);
-                currentAction = Action::FIRST_TURN;
+                currentAction = Action::LEAVE_PARKING;
             }
+            break;
+        
+        case Action::LEAVE_PARKING:
+            if (lineSensor.robotMiddle()) {
+                _delay_ms(500);
+                currentAction = Action::AFTER_PARKING;
+            }
+                
             break;
         case Action::AFTER_PARKING:
             if (lineSensor.robotBumpLine()) {
@@ -178,6 +217,12 @@ void switchLogic(Action& currentAction) {
             break;
 
         case Action::FIRST_CORRIDOR:  
+            if (lineSensor.robotBumpLine()) {
+                currentAction = Action::END; // Transition to the second turn
+            }
+            break;
+        
+        case Action::SECOND_CORRIDOR:  
             if (lineSensor.robotBumpLine()) {
                 currentAction = Action::END; // Transition to the second turn
             }
