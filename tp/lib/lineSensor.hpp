@@ -18,13 +18,21 @@ public:
     bool offTrackRight();  // Robot offset track to the right
     bool robotBumpLine();       // Robot bumping into the line
     bool isLeftWall();          // Robot is against the left wall
+    bool isOnLeftLine();    
     bool isRightWall();         // Robot is against the right wall
-
+    bool isOnRightLine();    
     bool foundDamage();          // Robot found damage
 
     uint8_t offTrackAmount();   // Amount of sensors that are off track (0-5)
 
     uint8_t getNDamage() const { return nDamage_; } // Getter for nDamage_
+    void incrementDamage() { nDamage_++; }
+    void resetDamage() { nDamage_= 0; }
+
+    bool getPreviousDamageState() const { return previousDamageState_; }
+    void setPreviousDamageState(bool state) { previousDamageState_ = state; }
+    
+    
 private:
     uint8_t sensors_[5] = {sensor1, sensor2, sensor3, sensor4, sensor5};
     uint8_t nDamage_ = 0; // Number of times the robot has found damage

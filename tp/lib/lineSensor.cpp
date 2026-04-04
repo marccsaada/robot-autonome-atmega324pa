@@ -46,14 +46,29 @@ bool LineSensor::isLeftWall() {
     return false;
 }
 
+bool LineSensor::isOnLeftLine() {
+    if ((PINA & (1 << sensor1)) && (PINA & (1 << sensor2))) {
+        return true;
+    }
+    return false;
+}
+
 
 
 bool LineSensor::isRightWall() {
+    if ((PINA & (1 << sensor5))) {
+        return true;
+    }
+    return false;
+}
+bool LineSensor::isOnRightLine() {
     if ((PINA & (1 << sensor4)) && (PINA & (1 << sensor5))) {
         return true;
     }
     return false;
 }
+
+
 
 // bool LineSensor::foundDamage() {
 //     if ((offTrackAmount() < 3) && (PINA & (1 << sensor3)) && (previousDamageState_ == false)) {
@@ -70,15 +85,24 @@ bool LineSensor::isRightWall() {
 // NO   OFFSET : (offTrackAmount() < 3) && ( (PINA & (1 << sensor2) || PINA & (1 << sensor3) || PINA & (1 << sensor4) )
 
 bool LineSensor::foundDamage() {
-    if ((PINA & (1 << sensor1) && ( (PINA & (1 << sensor4)) || (PINA & (1 << sensor5)) ) // LEFT OFFSET
-     || (PINA & (1 << sensor5)) && ( (PINA & (1 << sensor1)) || (PINA & (1 << sensor2)) ) // RIGHT OFFSET
-     || (offTrackAmount() < 3) && ( (PINA & (1 << sensor2)) || (PINA & (1 << sensor3)) || (PINA & (1 << sensor4)) ) // NO OFFSET
-     && (previousDamageState_ == false))) {
-        nDamage_++;
-        previousDamageState_ = true;
-        return true;
+    bool damagePresent = !robotBumpLine() && (
+        ((PINA & (1 << sensor1)) && ( (PINA & (1 << sensor4)) || (PINA & (1 << sensor5)) )) // LEFT OFFSET
+     || ((PINA & (1 << sensor5)) && ( (PINA & (1 << sensor1)) || (PINA & (1 << sensor2)) )) // RIGHT OFFSET
+     || ((offTrackAmount() < 3) && ( (PINA & (1 << sensor2)) || (PINA & (1 << sensor3)) || (PINA & (1 << sensor4)) )) // NO OFFSET
+    );
+
+    if (damagePresent) {
+        previousDamageState_ = true; // on est sur un dommage potentiel
+        return false;
     }
-    previousDamageState_ = false;
+    if (previousDamageState_) {
+        _delay_ms(200);
+        previousDamageState_ = false;
+        if (!robotBumpLine()) {
+            nDamage_++; // confirme le dommage seulement en quittant la zone (pas la ligne de fin)
+            return true;
+        }
+    }
     return false;
 }
 

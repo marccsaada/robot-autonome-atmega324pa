@@ -65,8 +65,8 @@ void turnRight() {
 }
 
 void followPath() { 
-    uint8_t leftWheelSpeed = LEFT_DEFAULT_SPEED;
-    uint8_t rightWheelSpeed = RIGHT_DEFAULT_SPEED;
+    uint8_t leftWheelSpeed = LEFT_DEFAULT_SPEED-10;
+    uint8_t rightWheelSpeed = RIGHT_DEFAULT_SPEED-10;
     
     if (lineSensor.offTrackLeft()) { 
         leftWheelSpeed += lineSensor.offTrackAmount() * 30;
@@ -273,7 +273,7 @@ void switchLogic(Action& currentAction) {
 
 int main() {
     _delay_ms(500);
-    Action currentAction = Action::FIRST_CORRIDOR;
+    Action currentAction = Action::PARKING;
 
     while (true) {
         movementLogic(currentAction);
