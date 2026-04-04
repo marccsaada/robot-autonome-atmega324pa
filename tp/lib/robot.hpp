@@ -14,6 +14,7 @@ Description : Regroupe les sous-systèmes moteurs, LED et son en une interface u
 #include "LED.hpp"
 #include "sound.hpp"
 #include "button.hpp"
+#include "lineSensor.hpp"
 #include <avr/io.h>
 #include <util/delay.h>
 
@@ -33,10 +34,7 @@ public:
     LED led;
     Sound sound;
     Button button;
+    LineSensor lineSensor;
 
     void wait(uint16_t multiplicator);
-
-
-
-
 };

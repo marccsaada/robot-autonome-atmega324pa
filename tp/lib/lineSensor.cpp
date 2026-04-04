@@ -19,14 +19,14 @@ bool LineSensor::robotMiddle() {
 }
 
 bool LineSensor::offTrackLeft() {
-    if ((PINA & (1 << sensor1)) && !(PINA & (1 << sensor5))) {
+    if (((PINA & (1 << sensor1)) /*|| (PINA & (1 << sensor2))*/) && !(PINA & (1 << sensor5))) {
         return true;
     }
     return false;
 }
 
 bool LineSensor::offTrackRight() {
-    if (!(PINA & (1 << sensor1)) && (PINA & (1 << sensor5))) {
+    if (!(PINA & (1 << sensor1)) && (/*(PINA & (1 << sensor4)) || */(PINA & (1 << sensor5)))) {
         return true;
     }
     return false;
@@ -68,18 +68,6 @@ bool LineSensor::isOnRightLine() {
     return false;
 }
 
-
-
-// bool LineSensor::foundDamage() {
-//     if ((offTrackAmount() < 3) && (PINA & (1 << sensor3)) && (previousDamageState_ == false)) {
-//         nDamage_++;
-//         previousDamageState_ = true;
-//         return true;
-//     }
-//     previousDamageState_ = false;
-//     return false;
-// }
-
 // LEFT OFFSET : (PINA & (1 << sensor1) && ( (PINA & (1 << sensor4)) || (PINA & (1 << sensor5)) )
 // RIGHT OFFSET : (PINA & (1 << sensor5)) && ( (PINA & (1 << sensor1)) || (PINA & (1 << sensor2)) )
 // NO   OFFSET : (offTrackAmount() < 3) && ( (PINA & (1 << sensor2) || PINA & (1 << sensor3) || PINA & (1 << sensor4) )
@@ -93,9 +81,9 @@ bool LineSensor::foundDamage() {
 
     if (damagePresent) {
         previousDamageState_ = true; // on est sur un dommage potentiel
-        return false;
+        return true;
     }
-    if (previousDamageState_) {
+    if (previousDamageState_ == true) {
         _delay_ms(200);
         previousDamageState_ = false;
         if (!robotBumpLine()) {
@@ -104,6 +92,17 @@ bool LineSensor::foundDamage() {
         }
     }
     return false;
+
+    // if (damagePresent && !previousDamageState_) {
+    //     previousDamageState_ = true; // entering damage zone
+    // } else if (!damagePresent && previousDamageState_) {
+    //     previousDamageState_ = false; // exiting damage zone
+    //     if (!robotBumpLine()) {
+    //         nDamage_++; // confirm damage only on exit, not if we hit the end line
+    //         return true;
+    //     }
+    // }
+    // return damagePresent;
 }
 
 uint8_t LineSensor::offTrackAmount() {
