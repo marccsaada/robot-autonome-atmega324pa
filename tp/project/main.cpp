@@ -5,8 +5,8 @@ LineSensor lineSensor;
 Robot robot;
 Timer timer(Timer::TIMER1);
 
-const uint8_t LEFT_DEFAULT_SPEED = 130;
-const uint8_t RIGHT_DEFAULT_SPEED = 125;
+const uint8_t LEFT_DEFAULT_SPEED = 138;
+const uint8_t RIGHT_DEFAULT_SPEED = 133;
 uint8_t stepCount = 0;
 
 // #define motor robot.motor
@@ -17,6 +17,7 @@ enum class Action {
     AFTER_PARKING,
     FIRST_TURN,
     FIRST_CORRIDOR,
+    SECOND_TURN,
     SECOND_CORRIDOR,
     ENTER_FIRST_ROOM,
     FIRST_ROOM,
@@ -37,9 +38,9 @@ void turnLeft() {
 
     if      (count == 5) leftSpeed = 0;    // pivot sur place (mur droit devant)
     else if (count == 4) leftSpeed = 0;
-    else if (count == 3) leftSpeed = 80;
-    else if (count == 2) leftSpeed = 80;
-    else if (count == 1) leftSpeed = 85;
+    else if (count == 3) leftSpeed = 0;
+    else if (count == 2) leftSpeed = 95;
+    else if (count == 1) leftSpeed = 110;
     else                 leftSpeed = LEFT_DEFAULT_SPEED;  // aucun capteur → tout droit
 
     robot.motor.goForward(leftSpeed, rightSpeed);
@@ -118,7 +119,7 @@ void movementLogic(Action& currentAction) {
             _delay_ms(25);
             if (stepCount == 0) {
                 robot.motor.goBackward(LEFT_DEFAULT_SPEED, 0);
-                _delay_ms(2450);
+                _delay_ms(1980);
                 robot.motor.stop();
                 stepCount++;
             }
@@ -129,8 +130,6 @@ void movementLogic(Action& currentAction) {
                 robot.motor.stop();
                 stepCount++;
             }
-            
-
             break;
         
         case Action::LEAVE_PARKING:
@@ -150,6 +149,24 @@ void movementLogic(Action& currentAction) {
             break;
 
         case Action::FIRST_CORRIDOR:
+
+            if (lineSensor.isLeftWall() && lineSensor.isOnRightLine()){
+
+                robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED/1.5);
+
+
+            }
+
+            if (lineSensor.isRightWall() && lineSensor.isOnLeftLine()){
+
+                robot.motor.goForward(LEFT_DEFAULT_SPEED/1.5, RIGHT_DEFAULT_SPEED);
+
+
+            }
+
+            lineSensor.foundDamage();
+
+
             followPath();
             _delay_ms(25);
             break;
@@ -171,7 +188,15 @@ void movementLogic(Action& currentAction) {
         //     break;
             
         case Action::END:
-        _delay_ms(25);
+            robot.motor.stop();
+            for (uint8_t i = 0; i < lineSensor.getNDamage(); i++){
+                robot.led.green();
+                _delay_ms(1000);
+                robot.led.off();
+                _delay_ms(1000);
+            }
+            _delay_ms(25);
+            while(true) {};
             break;
     }
 }
@@ -221,6 +246,13 @@ void switchLogic(Action& currentAction) {
                 currentAction = Action::END; // Transition to the second turn
             }
             break;
+
+        case Action::SECOND_TURN:
+            if (lineSensor.robotMiddle()) {
+                _delay_ms(500);
+                currentAction = Action::FIRST_CORRIDOR;
+            }
+            break;
         
         case Action::SECOND_CORRIDOR:  
             if (lineSensor.robotBumpLine()) {
@@ -240,7 +272,8 @@ void switchLogic(Action& currentAction) {
 
 
 int main() {
-    Action currentAction = Action::PARKING;
+    _delay_ms(500);
+    Action currentAction = Action::FIRST_CORRIDOR;
 
     while (true) {
         movementLogic(currentAction);
