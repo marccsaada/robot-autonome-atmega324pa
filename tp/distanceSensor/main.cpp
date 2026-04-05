@@ -14,14 +14,14 @@ static const uint8_t  N_CONFIRM_NOTES   = 3;
 static const uint16_t NOTE_DURATION_MS  = 250;
 static const uint16_t NOTE_GAP_MS       = 125;
 
+
 // Seuil ADC capteur de distance pour détecter un poteau (~20 cm, calibré)
 static const uint16_t POTEAU_THRESHOLD  = 100;
 
 // Angle de balayage (demi-arc gauche/droite) pour scanner le local
-static const uint16_t SPIN_SPEED   = 100;
+static const uint16_t SPIN_SPEED   = 110;
 
-// Vitesses de déplacement
-static const uint8_t  FORWARD_SPEED     = 110;
+
 
 // ---------------------------------------------------------------------------
 // Enum état machine
@@ -63,7 +63,7 @@ void evacuatePoteau() {
     do {
         playConfirmSequence();
         _delay_ms(2000);
-    } while (distanceSensor.isObjectDetected(POTEAU_THRESHOLD));
+    } while (distanceSensor.readADC() >= POTEAU_THRESHOLD);
 
     blinkGreenClear();
     }
@@ -79,11 +79,15 @@ static const uint8_t  SCAN_STEP_MS     = 20;
 
 // Pivote à gauche sur 360°, évacue chaque poteau détecté au passage.
 // Le temps d'évacuation n'est pas compté dans la rotation.
+
+
 void scanRoom() {
     uint16_t elapsed = 0;
 
     while (elapsed < FULL_ROTATION_MS) {
         if (distanceSensor.isObjectDetected(POTEAU_THRESHOLD)) {
+            robot.motor.spinRightSpeed(SPIN_SPEED); 
+            _delay_ms(30);
             robot.motor.stop();
             evacuatePoteau();
         } else {
@@ -98,9 +102,8 @@ void scanRoom() {
 
 
 int main() {
-
-    scanRoom();  
     while(true){
+        scanRoom(); 
+     }
 
-    }
 }
