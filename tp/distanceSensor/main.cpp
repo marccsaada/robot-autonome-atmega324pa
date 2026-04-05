@@ -18,7 +18,7 @@ static const uint16_t NOTE_GAP_MS       = 125;
 static const uint16_t POTEAU_THRESHOLD  = 100;
 
 // Angle de balayage (demi-arc gauche/droite) pour scanner le local
-static const uint16_t SCAN_HALF_ANGLE   = 45;
+static const uint16_t SPIN_SPEED   = 100;
 
 // Vitesses de déplacement
 static const uint8_t  FORWARD_SPEED     = 110;
@@ -31,9 +31,6 @@ enum class Action {
     END,
 };
 
-// ===========================================================================
-// Fonctions utilitaires – son / LED
-// ===========================================================================
 
 // Joue la séquence d'alerte (même séquence que "Confirmation des instructions")
 void playConfirmSequence() {
@@ -57,40 +54,6 @@ void blinkGreenClear() {
 }
 
 // ===========================================================================
-// Fonctions utilitaires – déplacement
-// ===========================================================================
-
-// Virage proportionnel vers la gauche selon les capteurs de ligne
-void turnLeft() {
-    uint8_t count = lineSensor.offTrackAmount();
-
-    uint8_t leftSpeed;
-    const uint8_t rightSpeed = FORWARD_SPEED;
-
-    if      (count == 5) leftSpeed = 0;
-    else if (count == 4) leftSpeed = 0;
-    else if (count == 3) leftSpeed = 80;
-    else if (count == 2) leftSpeed = 80;
-    else if (count == 1) leftSpeed = 85;
-    else                 leftSpeed = FORWARD_SPEED;
-
-    robot.motor.goForward(leftSpeed, rightSpeed);
-}
-
-// Suit la ligne en ajustant les vitesses proportionnellement
-void followPath() {
-    uint8_t leftSpeed  = FORWARD_SPEED;
-    uint8_t rightSpeed = FORWARD_SPEED;
-
-    if (lineSensor.robotOffTrackLeft())
-        rightSpeed += lineSensor.offTrackAmount() * 15;
-    else if (lineSensor.robotOffTrackRight())
-        leftSpeed  += lineSensor.offTrackAmount() * 15;
-
-    robot.motor.goForward(leftSpeed, rightSpeed);
-}
-
-// ===========================================================================
 // Logique d'évacuation d'un poteau
 // ===========================================================================
 
@@ -106,97 +69,38 @@ void evacuatePoteau() {
     }
 
 
-// Vérifie si un poteau est détecté dans la direction actuelle et l'évacue.
-void checkAndEvacuateIfNeeded() {
-    if (distanceSensor.isObjectDetected(POTEAU_THRESHOLD)) {
-        robot.motor.stop();
-        evacuatePoteau();
-    }
-}
-
 // ===========================================================================
 // Scan du local de travail
 // ===========================================================================
 
-// Balaye le local : commence côté SUD-EST, puis pivote vers SUD, puis OUEST,
-// puis revient au centre. Évacue chaque poteau trouvé.
+// Temps pour un tour complet à SPIN_SPEED (à calibrer selon le robot)
+static const uint16_t FULL_ROTATION_MS = 4000;
+static const uint8_t  SCAN_STEP_MS     = 20;
+
+// Pivote à gauche sur 360°, évacue chaque poteau détecté au passage.
+// Le temps d'évacuation n'est pas compté dans la rotation.
 void scanRoom() {
-    // Positionnement initial côté SUD-EST
-    robot.motor.spinRight(SCAN_HALF_ANGLE);
-    checkAndEvacuateIfNeeded();
+    uint16_t elapsed = 0;
 
-    // Balayage côté SUD (centre)
-    robot.motor.spinLeft(SCAN_HALF_ANGLE);
-    checkAndEvacuateIfNeeded();
-
-    // Balayage côté OUEST
-    robot.motor.spinLeft(SCAN_HALF_ANGLE);
-    checkAndEvacuateIfNeeded();
-
-    // Retour au centre
-    robot.motor.spinRight(SCAN_HALF_ANGLE);
-}
-
-// ===========================================================================
-// Machine à états – mouvement
-// ===========================================================================
-
-void movementLogic(Action& currentAction) {
-    switch (currentAction) {
-
-        // case Action::ENTER_FIRST_ROOM:
-        //     // Avance jusqu'à l'entrée du local (ligne rouge / bump line)
-        //     robot.motor.goForward(FORWARD_SPEED, FORWARD_SPEED);
-        //     break;
-
-        case Action::SCAN_FIRST_ROOM:
+    while (elapsed < FULL_ROTATION_MS) {
+        if (distanceSensor.isObjectDetected(POTEAU_THRESHOLD)) {
             robot.motor.stop();
-            scanRoom();
-            break;
-
-        case Action::END:
-            robot.motor.stop();
-            robot.led.off();
-            break;
+            evacuatePoteau();
+        } else {
+            robot.motor.spinLeftSpeed(SPIN_SPEED);
+            _delay_ms(SCAN_STEP_MS);
+            elapsed += SCAN_STEP_MS;
+        }
     }
+    robot.motor.stop();
 }
 
-// ===========================================================================
-// Machine à états – transitions
-// ===========================================================================
-
-void switchLogic(Action& currentAction) {
-    switch (currentAction) {
-
-        // case Action::ENTER_FIRST_ROOM:
-        //     // Avance brièvement pour se positionner à l'entrée, puis scanne
-        //     _delay_ms(300);
-        //     currentAction = Action::SCAN_FIRST_ROOM;
-        //     break;
-
-        case Action::SCAN_FIRST_ROOM:
-            currentAction = Action::END;
-            break;
-
-        case Action::END:
-            break;
-    }
-}
 
 
 int main() {
-    // Action currentAction = Action::SCAN_FIRST_ROOM;
 
-    // while (true) {
-    //     movementLogic(currentAction);
-    //     switchLogic(currentAction);
-    // }
-
+    scanRoom();  
     while(true){
-        scanRoom();  
+
     }
-    // while(true){
-    //     DistanceSensor interpreter;
-    //     // interpreter.isObjectDetected(100);
-    //     }
 }
