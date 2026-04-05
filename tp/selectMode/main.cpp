@@ -30,7 +30,7 @@ volatile State    state        = INIT;
 volatile uint16_t ticks        = 0;
 volatile Mode     selectedMode = EXECUTION;
 
-ISR(TIMER1_COMPA_vect) {
+void handleModeSelection() {
     ticks++;
     switch (state) {
         case INIT:
@@ -56,7 +56,10 @@ ISR(TIMER1_COMPA_vect) {
         default:
             break;
     }
+}
 
+ISR(TIMER1_COMPA_vect) {
+    ticks++;
 }
 
 ISR(TIMER1_COMPB_vect) {}   // requis par setModeCTC
@@ -71,6 +74,26 @@ ISR(INT0_vect) {
     else if (state == OFF1) {
         selectedMode = EXECUTION; state = DONE; 
     }
+}
+
+void modeRapport(){
+   for (uint8_t i = 0; i < 8; i++) {
+        robot.led.red();   
+        _delay_ms(125);
+
+        robot.led.off();
+        _delay_ms(125);
+    }
+
+    // personCounter_ salle A et D
+    // objectCounter_ salle B et C
+
+    UART uart;
+    _delay_ms(3000); // laisse le temps de lancer serieViaUSB -l
+    uart.UART_Transmission("Rapport de conformite\r\n\r\n");
+    uart.UART_Transmission("Emplacement       conformite   detail\r\n");
+    uart.UART_Transmission("--------------------------------------------------\r\n");
+
 }
 
 void modeInstruction() {
@@ -118,13 +141,15 @@ int main() {
     sei();
 
     set_sleep_mode(SLEEP_MODE_IDLE);
-    while (state != DONE)
+    while (state != DONE) {
         sleep_mode();
+        handleModeSelection();
+    }
 
     switch (selectedMode) {
         case INSTRUCTION: modeInstruction(); break;
         case EXECUTION: { Interpreter interpreter; interpreter.execute(); break; }
-        case RAPPORT:     DEBUG_PRINT("Rapport oui");     break;
+        case RAPPORT: modeRapport();     break;
     }
 
     while (true) {}
