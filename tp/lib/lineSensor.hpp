@@ -21,7 +21,8 @@ public:
     bool isOnLeftLine();    
     bool isRightWall();         // Robot is against the right wall
     bool isOnRightLine();    
-    bool foundDamage();          // Robot found damage
+    bool findDamage();          // Robot found damage
+    void findObject();
 
     uint8_t offTrackAmount();   // Amount of sensors that are off track (0-5)
 
@@ -36,6 +37,8 @@ public:
 private:
     uint8_t sensors_[5] = {sensor1, sensor2, sensor3, sensor4, sensor5};
     uint8_t nDamage_ = 0; // Number of times the robot has found damage
+    uint8_t nObjects_ = 0; // Number of times the robot has found an object
 
     bool previousDamageState_ = false; // Previous state of damage detection
+    bool previousObjectState_ = false;
 };

@@ -72,37 +72,44 @@ bool LineSensor::isOnRightLine() {
 // RIGHT OFFSET : (PINA & (1 << sensor5)) && ( (PINA & (1 << sensor1)) || (PINA & (1 << sensor2)) )
 // NO   OFFSET : (offTrackAmount() < 3) && ( (PINA & (1 << sensor2) || PINA & (1 << sensor3) || PINA & (1 << sensor4) )
 
-bool LineSensor::foundDamage() {
+bool LineSensor::findDamage() {
     bool damagePresent = !robotBumpLine() && (
         ((PINA & (1 << sensor1)) && ( (PINA & (1 << sensor4)) || (PINA & (1 << sensor5)) )) // LEFT OFFSET
      || ((PINA & (1 << sensor5)) && ( (PINA & (1 << sensor1)) || (PINA & (1 << sensor2)) )) // RIGHT OFFSET
      || ((offTrackAmount() < 3) && ( (PINA & (1 << sensor2)) || (PINA & (1 << sensor3)) || (PINA & (1 << sensor4)) )) // NO OFFSET
     );
 
-    if (damagePresent) {
-        previousDamageState_ = true; // on est sur un dommage potentiel
+    if (damagePresent) { 
+        previousDamageState_ = true;
         return true;
     }
-    if (previousDamageState_ == true) {
-        _delay_ms(200);
+    else if (!damagePresent && previousDamageState_) { 
         previousDamageState_ = false;
-        if (!robotBumpLine()) {
-            nDamage_++; // confirme le dommage seulement en quittant la zone (pas la ligne de fin)
+        _delay_ms(200);
+        if (!robotBumpLine()) { 
+            nDamage_++;
             return true;
         }
     }
     return false;
+}
 
-    // if (damagePresent && !previousDamageState_) {
-    //     previousDamageState_ = true; // entering damage zone
-    // } else if (!damagePresent && previousDamageState_) {
-    //     previousDamageState_ = false; // exiting damage zone
-    //     if (!robotBumpLine()) {
-    //         nDamage_++; // confirm damage only on exit, not if we hit the end line
-    //         return true;
-    //     }
-    // }
-    // return damagePresent;
+void LineSensor::findObject() {
+    bool objectPresent = robotBumpLine();
+
+    if (objectPresent) { 
+        previousObjectState_ = true;
+        return;
+    }
+    else if (!objectPresent && previousObjectState_) { 
+        previousObjectState_ = false;
+        _delay_ms(200);
+        if (!robotBumpLine()) { 
+            nObjects_++;
+            return;
+        }
+    }
+    return;
 }
 
 uint8_t LineSensor::offTrackAmount() {

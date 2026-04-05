@@ -20,7 +20,7 @@ void Motor::delayFunction(uint8_t n) {
 
 Motor::Motor() : leftWheel_(timer_, PD5, Wheel::OCR::A), rightWheel_(timer_, PD4, Wheel::OCR::B) {
     DEBUG_PRINT("Initializing Motor");
-    timer_.setModePWM(Timer::PWMMode::PHASE_CORRECT, Timer::Prescaler::PRESCALE_8);
+    timer_.setModePWM(Timer::PWMMode::PHASE_CORRECT, Timer::Prescaler::PRESCALE_64);
     timer_.startTimer();
 }
 
