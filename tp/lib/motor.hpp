@@ -56,6 +56,9 @@ public:
      */
     void spinRight(uint16_t angle);
 
+    void spinRightSpeed(uint8_t speed);
+    void spinLeftSpeed(uint8_t speed);
+
     /** @brief Stops both motors. */
     void stop();
 

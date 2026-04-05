@@ -15,6 +15,7 @@ Description : Regroupe les sous-systèmes moteurs, LED et son en une interface u
 #include "sound.hpp"
 #include "button.hpp"
 #include "lineSensor.hpp"
+#include "memoryReader.hpp"
 #include <avr/io.h>
 #include <util/delay.h>
 
@@ -28,13 +29,23 @@ Description : Regroupe les sous-systèmes moteurs, LED et son en une interface u
  */
 class Robot {
 public:
-    Robot() : led(PORTC, PC0, PC1), button(Button::FALLING, Button::MOTHERBOARD) {};
+    Robot() : led(PORTC, PC4, PC5), button(Button::FALLING, Button::MOTHERBOARD) {};
 
     Motor motor;
     LED led;
     Sound sound;
     Button button;
     LineSensor lineSensor;
+    
+    uint8_t direction;
+    uint8_t note[3];
+    uint8_t parkingOperand; 
+    uint8_t noteCount = 0; 
+
+
 
     void wait(uint16_t multiplicator);
+
 };
+
+

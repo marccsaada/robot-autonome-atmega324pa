@@ -36,4 +36,3 @@ uint8_t Memory::readOperand() {
 uint16_t Memory::getAddress() { return currentAddress_; }
 
 void Memory::setAddress(uint16_t address) { currentAddress_ = address; }
-

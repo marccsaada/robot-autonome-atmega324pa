@@ -21,6 +21,7 @@ static const uint16_t OCR1A_10MS        = 1249;
 
 
 Robot robot;
+DistanceSensor distanceSensor;
 Timer timer(Timer::TIMER1);
 
 enum Mode  { INSTRUCTION, EXECUTION, RAPPORT };
@@ -31,7 +32,6 @@ volatile uint16_t ticks        = 0;
 volatile Mode     selectedMode = EXECUTION;
 
 void handleModeSelection() {
-    ticks++;
     switch (state) {
         case INIT:
             if (ticks >= INIT_WAIT_MS / TICK_MS) {
@@ -76,6 +76,21 @@ ISR(INT0_vect) {
     }
 }
 
+void printLine(UART& uart, const char* name, const int count, const char* type) {
+
+    uart.UART_Transmission(name);
+
+    if (count == 0) {
+        uart.UART_Transmission("         oui\r\n");
+    } else {
+        uart.UART_Transmission("         non      ");
+        uart.UART_Transmission(count + '0'); //count + '0' peut utiliser une fonction pour convert 
+        uart.UART_Transmission(" ");
+        uart.UART_Transmission(type);
+        uart.UART_Transmission("\r\n");
+    }
+}
+
 void modeRapport(){
    for (uint8_t i = 0; i < 8; i++) {
         robot.led.red();   
@@ -85,15 +100,18 @@ void modeRapport(){
         _delay_ms(125);
     }
 
-    // personCounter_ salle A et D
-    // objectCounter_ salle B et C
-
     UART uart;
     _delay_ms(3000); // laisse le temps de lancer serieViaUSB -l
     uart.UART_Transmission("Rapport de conformite\r\n\r\n");
-    uart.UART_Transmission("Emplacement       conformite   detail\r\n");
+    uart.UART_Transmission("Emplacement     conformite     detail\r\n");
     uart.UART_Transmission("--------------------------------------------------\r\n");
 
+    printLine(uart, "Local A      ", distanceSensor.getObjectCounter(), "personne(s)"); // ask charger 
+    printLine(uart, "Local B      ", distanceSensor.getObjectCounter(), "objet(s)");
+    printLine(uart, "Local C      ", distanceSensor.getObjectCounter(), "objet(s)");
+    printLine(uart, "Local D      ", distanceSensor.getObjectCounter(), "personne(s)");
+    printLine(uart, "Couloir OUEST", distanceSensor.getObjectCounter(), "zones endommagée(s)");
+    printLine(uart, "Couloir EST  ", distanceSensor.getObjectCounter(), "zones endommagée(s)");
 }
 
 void modeInstruction() {

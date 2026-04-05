@@ -58,6 +58,18 @@ void Motor::spinRight(uint16_t angle) {
     stop();
 }
 
+void Motor::spinRightSpeed(uint8_t speed) {
+    DEBUG_PRINT("Motor::spinRightSpeed()");
+    leftWheel_.goForward(speed);
+    rightWheel_.goBackward(speed);
+}
+
+void Motor::spinLeftSpeed(uint8_t speed) {
+    DEBUG_PRINT("Motor::spinLeftSpeed()");
+    leftWheel_.goBackward(speed);
+    rightWheel_.goForward(speed);
+}
+
 void Motor::stop() {
     DEBUG_PRINT("Motor::stop()");
     leftWheel_.stop();

@@ -4,7 +4,14 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include "can.h"
+#include "robot.hpp"
 
+static const uint16_t POTEAU_THRESHOLD = 100;
+static const uint16_t SPIN_SPEED       = 110;
+static const uint16_t FULL_ROTATION_MS = 000;
+static const uint8_t  SCAN_STEP_MS     = 20;
+static const uint16_t NOTE_GAP_MS      = 125;
+static const uint16_t NOTE_DURATION_MS = 250;
 
 class DistanceSensor
 {
@@ -20,12 +27,17 @@ public:
 
     void sortArray(uint16_t array[], uint8_t size);
 
-    uint8_t getObjectCounter() {return objectCounter_;}
+    uint8_t getObjectCounter() {return personCounter_;}
+
+    void scanRoom(Robot& robot);
+    void evacuatePoteau(Robot& robot);
+    void playConfirmSequence(Robot& robot);
+    void blinkGreenClear(Robot& robot);
 
 private:
     can can_;
 
-    uint8_t objectCounter_ = 0; 
+    uint8_t personCounter_ = 0;
 
     static const uint8_t N_READINGS = 7;
 
@@ -33,9 +45,7 @@ private:
 
     static const uint8_t PORT_POSITION = 5;
 
-    static const uint16_t DETECTION_THESHOLD = 471;    
-    
-    bool objectPresent_ = false; // ajout pour detection dun mm objet
+    bool objectPresent_ = false;
 };
 
 #endif /* CAPTEUR_DISTANCE_H */

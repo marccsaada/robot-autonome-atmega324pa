@@ -42,38 +42,64 @@ uint16_t DistanceSensor::readADC() {
     uint16_t median = readings[N_READINGS / 2];
 
     DEBUG_PRINT("ADC median: ", median);
-    
-    _delay_ms(500);
     return median;
 }
 
 
-// bool DistanceSensor::isObjectDetected(uint16_t threshold) // defaut
-// {
-//     uint16_t adc = readADC();
-//     DEBUG_PRINT("threshold: ", threshold);
 
-//     if (adc >= threshold){
-//         objectCounter_ +=1;
-//         DEBUG_PRINT("DETECTED count: ", objectCounter_);
-//         return true;
-//     }
-//     else {
-//         DEBUG_PRINT("not detected");
-//         return false;
-//     }
-// }
+void DistanceSensor::playConfirmSequence(Robot& robot) {
+    for (uint8_t i = 0; i < robot.noteCount; i++) {
+        _delay_ms(NOTE_GAP_MS);
+        robot.sound.playSound(robot.note[i]);
+        _delay_ms(NOTE_DURATION_MS);
+        robot.sound.stopSound();
+    }
+}
 
-bool DistanceSensor::isObjectDetected(uint16_t threshold) // update 
+void DistanceSensor::blinkGreenClear(Robot& robot) {
+    for (uint8_t i = 0; i < 8; i++) {
+        robot.led.green();
+        _delay_ms(125);
+        robot.led.off();
+        _delay_ms(125);
+    }
+}
+
+void DistanceSensor::evacuatePoteau(Robot& robot) {
+    do {
+        playConfirmSequence(robot);
+        _delay_ms(2000);
+    } while (readADC() >= POTEAU_THRESHOLD);
+
+    blinkGreenClear(robot);
+}
+
+void DistanceSensor::scanRoom(Robot& robot) {
+    uint16_t elapsed = 0;
+
+    while (elapsed < FULL_ROTATION_MS) {
+        if (isObjectDetected(POTEAU_THRESHOLD)) {
+            robot.motor.stop();
+            evacuatePoteau(robot);
+        } else {
+            robot.motor.spinLeftSpeed(SPIN_SPEED);
+            _delay_ms(SCAN_STEP_MS);
+            elapsed += SCAN_STEP_MS;
+        }
+    }
+    robot.motor.stop();
+}
+
+bool DistanceSensor::isObjectDetected(uint16_t threshold) // update
 {
     uint16_t adc = readADC();
 
     // Cas 1 : objet détecté pour la première fois
     if (adc >= threshold && !objectPresent_) {
         objectPresent_ = true;
-        objectCounter_ +=1;
+        personCounter_ +=1;
         DEBUG_PRINT("OBJECT DETECTED (NEW)");
-        DEBUG_PRINT("DETECTED count: ", objectCounter_);
+        DEBUG_PRINT("DETECTED count: ", personCounter_);
 
         return true;
     }
@@ -81,7 +107,7 @@ bool DistanceSensor::isObjectDetected(uint16_t threshold) // update
     // Cas 2 : objet encore là → ne rien faire
     if (adc >= threshold && objectPresent_) {
         DEBUG_PRINT("OBJECT STILL PRESENT");
-        DEBUG_PRINT("DETECTED count: ", objectCounter_);
+        DEBUG_PRINT("DETECTED count: ", personCounter_);
         return false;
     }
 
@@ -89,7 +115,7 @@ bool DistanceSensor::isObjectDetected(uint16_t threshold) // update
     if (adc < threshold && objectPresent_) {
         objectPresent_ = false;
         DEBUG_PRINT("OBJECT REMOVED");
-        DEBUG_PRINT("DETECTED count: ", objectCounter_);
+        DEBUG_PRINT("DETECTED count: ", personCounter_);
     }
 
     return false;
