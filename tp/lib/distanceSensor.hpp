@@ -7,11 +7,11 @@
 #include "robot.hpp"
 
 static const uint16_t POTEAU_THRESHOLD = 100;
-static const uint16_t SPIN_SPEED       = 110;
-static const uint16_t FULL_ROTATION_MS = 000;
+static const uint16_t SPIN_SPEED       = 95;
+static const uint16_t FULL_ROTATION_MS = 2800;
 static const uint8_t  SCAN_STEP_MS     = 20;
 static const uint16_t NOTE_GAP_MS      = 125;
-static const uint16_t NOTE_DURATION_MS = 250;
+static const uint16_t NOTE_DURATION_MS = 25;
 
 class DistanceSensor
 {
@@ -33,6 +33,9 @@ public:
     void evacuatePoteau(Robot& robot);
     void playConfirmSequence(Robot& robot);
     void blinkGreenClear(Robot& robot);
+    // Sortie complète de la salle vers le couloir principal.
+    // roomD = false → salle A (gauche), roomD = true → salle D (droite, miroir).
+    void Jeremie(Robot& robot, bool roomD);
 
 private:
     can can_;

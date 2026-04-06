@@ -7,7 +7,6 @@
 
 
 
-
 // // Seuil ADC capteur de distance pour détecter un poteau (~20 cm, calibré)
 // static const uint16_t POTEAU_THRESHOLD  = 100;
 
@@ -93,8 +92,8 @@
 
 
 int main() {
-    DistanceSensor distanceSensor;
+    DistanceSensor sensor; 
     Robot robot;
-
-    distanceSensor.scanRoom(robot); 
-    }
+    sensor.scanRoom(robot);
+     
+}

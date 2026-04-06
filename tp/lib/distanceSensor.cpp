@@ -48,9 +48,9 @@ uint16_t DistanceSensor::readADC() {
 
 
 void DistanceSensor::playConfirmSequence(Robot& robot) {
-    for (uint8_t i = 0; i < robot.noteCount; i++) {
+    for (uint8_t i = 0; i < 3 ; i++) {
         _delay_ms(NOTE_GAP_MS);
-        robot.sound.playSound(robot.note[i]);
+        robot.sound.playSound(70);
         _delay_ms(NOTE_DURATION_MS);
         robot.sound.stopSound();
     }
@@ -78,7 +78,10 @@ void DistanceSensor::scanRoom(Robot& robot) {
     uint16_t elapsed = 0;
 
     while (elapsed < FULL_ROTATION_MS) {
-        if (isObjectDetected(POTEAU_THRESHOLD)) {
+            if (readADC() >= POTEAU_THRESHOLD) {
+            robot.motor.stop();
+            robot.motor.spinRightSpeed(SPIN_SPEED);
+            _delay_ms(30);
             robot.motor.stop();
             evacuatePoteau(robot);
         } else {
