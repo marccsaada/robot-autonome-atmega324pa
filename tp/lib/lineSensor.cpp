@@ -113,13 +113,14 @@ void LineSensor::findObject() {
 }
 
 uint8_t LineSensor::offTrackAmount() {
-    uint8_t amount = 0;
-    for (uint8_t i = 0; i < 5; i++) {
-        if (PINA & (1 << sensors_[i])) {
-            amount++;
-        }
-    }
-    if (amount == 5)
-        amount = 4;
-    return amount;
+    // uint8_t amount = 0;
+    // for (uint8_t i = 0; i < 5; i++) {
+    //     if (PINA & (1 << sensors_[i])) {
+    //         amount++;
+    //     }
+    // }
+
+    // if (amount == 5)
+    //     amount = 4;
+    return 1;
 }

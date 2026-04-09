@@ -142,7 +142,7 @@ void move3Inches() {
 void movementLogic(Action& currentAction) {
     switch (currentAction) {
         case Action::PARKING:
-            _delay_ms(25);
+            // // _delay_ms(5);
             if (stepCount == 0) {
                 robot.motor.goBackward(LEFT_DEFAULT_SPEED, 0);
                 _delay_ms(2380);
@@ -165,7 +165,7 @@ void movementLogic(Action& currentAction) {
                 _delay_ms(800);
             }
             turnLeft();
-            _delay_ms(25);
+            // _delay_ms(5);
             break;
             
         case Action::AFTER_PARKING:
@@ -173,12 +173,12 @@ void movementLogic(Action& currentAction) {
                 followRightWall();
                 afterParkingCount++;
             } else followPath();
-            _delay_ms(25);
+            // _delay_ms(5);
             break;
 
         case Action::FIRST_TURN:
             turnLeft();
-            _delay_ms(25);
+            // _delay_ms(5);
             break;
 
         case Action::FIRST_CORRIDOR:
@@ -192,16 +192,16 @@ void movementLogic(Action& currentAction) {
             robot.lineSensor.findDamage();
 
             followPath();
-            _delay_ms(25);
+            // _delay_ms(5);
 
             // followPath();
             // robot.lineSensor.foundDamage();
-            // _delay_ms(25);
+            // // _delay_ms(5);
             break;
 
         case Action::SECOND_TURN: // Second turn and prepare for the first room
             turnLeft();
-            _delay_ms(25);
+            // _delay_ms(5);
 
             if (robot.lineSensor.robotMiddle()) {
                 timer.startTimer();
@@ -281,7 +281,7 @@ void movementLogic(Action& currentAction) {
         
         case Action::THIRD_TURN: //completed
             turnLeft();
-            _delay_ms(25);
+            // _delay_ms(5);
             break;
 
         case Action::THIRD_CORRIDOR: //completed
@@ -295,27 +295,27 @@ void movementLogic(Action& currentAction) {
             robot.lineSensor.findDamage();
 
             // followPath();
-            // _delay_ms(25);
+            // // _delay_ms(5);
 
             followPath();
             robot.lineSensor.findDamage();
-            _delay_ms(25);
+            // _delay_ms(5);
             break;
 
         case Action::FOURTH_TURN: //completed
              turnLeft();
-            _delay_ms(25);
+            // _delay_ms(5);
             break;
 
         case Action::ENTER_PARKING:
             followPath();
-            _delay_ms(25);
+            // _delay_ms(5);
             break;
 
         case Action::COMPLETE_PARKING:
             
             robot.motor.goForward(LEFT_DEFAULT_SPEED/3, RIGHT_DEFAULT_SPEED);
-            _delay_ms(25);
+            // _delay_ms(5);
             break;
 
         case Action::END:
@@ -326,7 +326,7 @@ void movementLogic(Action& currentAction) {
                 robot.led.off();
                 _delay_ms(1000);
             }
-            _delay_ms(25);
+            // _delay_ms(5);
             while (true) {};
             break;
     }
@@ -355,7 +355,7 @@ void switchLogic(Action& currentAction) {
                 _delay_ms(2000);
                 while (!robot.lineSensor.robotBumpLine()) {
                     robot.motor.goBackward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
-                    _delay_ms(25);
+                    // _delay_ms(5);
                     if (robot.lineSensor.robotBumpLine()) {
                         break;
                     }
@@ -451,14 +451,14 @@ void switchLogic(Action& currentAction) {
                 timer.stopTimer();
                 ticks = 0;
             }
-            _delay_ms(25);
+            // _delay_ms(5);
             break;
         case Action::COMPLETE_PARKING: //completed
             if (robot.lineSensor.robotBumpLine()) {
                 _delay_ms(500);
                 currentAction = Action::END;
             }
-            _delay_ms(25);
+            // _delay_ms(5);
             break;
                 
             break;
@@ -478,8 +478,10 @@ int main() {
     Action currentAction = Action::ENTER_PARKING;
 
     while (true) {
-        movementLogic(currentAction);
-        switchLogic(currentAction);
+        // movementLogic(currentAction);
+        // switchLogic(currentAction);
+        followPath();
+        // _delay_ms(25);
     }
 
 

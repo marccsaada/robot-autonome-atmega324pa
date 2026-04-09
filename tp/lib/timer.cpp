@@ -179,7 +179,7 @@ void Timer::setOCRA(uint16_t compareValue) {
             OCR1A = compareValue;
             break;
         case TIMER2:
-            TCNT2 = 0;
+            // TCNT2 = 0;
             OCR2A = compareValue;
             break;
     }
@@ -196,7 +196,7 @@ void Timer::setOCRB(uint16_t compareValue) {
             OCR1B = compareValue;
             break;
         case TIMER2:
-            TCNT2 = 0;
+            // TCNT2 = 0;
             OCR2B = compareValue;
             break;
     }
