@@ -29,13 +29,13 @@ Description : Regroupe les sous-systèmes moteurs, LED et son en une interface u
  */
 class Robot {
 public:
-    Robot() : led(PORTD, PD0, PD1), button(Button::FALLING, Button::MOTHERBOARD) {};
+    Robot() : led(PORTA, PA4, PA5), button(Button::FALLING, Button::MOTHERBOARD) {};
 
     Motor motor;
     LED led;
     Sound sound;
     Button button;
-    LineSensor lineSensor;
+    //LineSensor lineSensor;
     
     uint8_t direction;
     uint8_t note[3];

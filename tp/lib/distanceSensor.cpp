@@ -4,9 +4,9 @@
 #include "debug.hpp"
 
 DistanceSensor::DistanceSensor() : can_() {
-    DDRA &= ~(1 << PA5);
-    PORTA &= ~(1 << PA5);
-    _delay_ms(40);    //pas sur, a voir dans le datasheet.
+    DDRA &= ~(1 << PA0);
+    PORTA &= ~(1 << PA0);
+   _delay_ms(40);    //pas sur, a voir dans le datasheet.
 }
 
 DistanceSensor::~DistanceSensor() {};
@@ -31,7 +31,7 @@ void DistanceSensor::sortArray(uint16_t array[], uint8_t size)
 
 uint16_t DistanceSensor::readADC() {
     for (uint8_t i = 0; i < N_READINGS; i++) {
-        readings[i] = can_.lecture(PORT_POSITION);
+        readings[i] = can_.lecture(7);
         DEBUG_PRINT("  reading[", i);
         DEBUG_PRINT("]: ", readings[i]);
 
@@ -43,6 +43,7 @@ uint16_t DistanceSensor::readADC() {
 
     DEBUG_PRINT("ADC median: ", median);
     return median;
+    return can_.lecture(7);
 }
 
 
@@ -75,13 +76,11 @@ void DistanceSensor::evacuatePoteau(Robot& robot) {
 }
 
 void DistanceSensor::scanRoom(Robot& robot) {
+    
     uint16_t elapsed = 0;
 
     while (elapsed < FULL_ROTATION_MS) {
-            if (readADC() >= POTEAU_THRESHOLD) {
-            robot.motor.stop();
-            robot.motor.spinRightSpeed(SPIN_SPEED);
-            _delay_ms(30);
+        if (readADC() >= POTEAU_THRESHOLD) {
             robot.motor.stop();
             evacuatePoteau(robot);
         } else {
@@ -93,7 +92,15 @@ void DistanceSensor::scanRoom(Robot& robot) {
     robot.motor.stop();
 }
 
-bool DistanceSensor::isObjectDetected(uint16_t threshold) // update
+
+
+
+
+
+
+
+
+bool DistanceSensor::isObjectDetected(uint16_t threshold) 
 {
     uint16_t adc = readADC();
 

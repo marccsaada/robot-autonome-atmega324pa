@@ -1,42 +1,61 @@
-#include "libstatique.hpp"
-#include "lineSensor.hpp"
+#include <avr/io.h>
+#include <can.h>
+#include "distanceSensor.hpp"
+#include "LED.hpp"
+#include "motor.hpp"
 
-// LineSensor    lineSensor;
-// Robot         robot;
-// DistanceSensor distanceSensor;
+// LED led(PORTA, PA4, PA5);
 
+// can can_; 
+// uint8_t personCounter_ = 0;
 
+// static const uint8_t N_READINGS = 7;
 
-// // Seuil ADC capteur de distance pour détecter un poteau (~20 cm, calibré)
-// static const uint16_t POTEAU_THRESHOLD  = 100;
-
-// // Angle de balayage (demi-arc gauche/droite) pour scanner le local
-// static const uint16_t SPIN_SPEED   = 110;
-
-
-
-// // ---------------------------------------------------------------------------
-// // Enum état machine
-// // ---------------------------------------------------------------------------
-// enum class Action {
-//     SCAN_FIRST_ROOM,
-//     END,
-// };
+// uint16_t readings[N_READINGS];
 
 
-// // Joue la séquence d'alerte (même séquence que "Confirmation des instructions")
-// void playConfirmSequence() {
-//     for (uint8_t i = 0; i < N_CONFIRM_NOTES; i++) {
-//         if (i > 0)
-//             _delay_ms(NOTE_GAP_MS);
-//         robot.sound.playSound(CONFIRM_NOTES[i]);
+// Robot robot; 
+
+// void sortArray(uint16_t array[], uint8_t size)
+// {
+//     for (uint8_t i = 1; i < size; i++)
+//     {
+//         uint16_t key = array[i];  
+//         int8_t j = i - 1;
+
+//         while (j >= 0 && array[j] > key)
+//         {
+//             array[j + 1] = array[j];
+//             j--;
+//         }
+
+//         array[j + 1] = key;
+//     }
+// }
+
+// uint16_t readADC() {
+//     for (uint8_t i = 0; i < N_READINGS; i++) {
+//         readings[i] = can_.lecture(7);
+
+//     }
+
+//     sortArray(readings, N_READINGS);
+
+//     uint16_t median = readings[N_READINGS / 2];
+//     return median;
+//     return can_.lecture(7);
+// }
+
+// void playConfirmSequence(Robot& robot) {
+//     for (uint8_t i = 0; i < 3 ; i++) {
+//         _delay_ms(NOTE_GAP_MS);
+//         robot.sound.playSound(70);
 //         _delay_ms(NOTE_DURATION_MS);
 //         robot.sound.stopSound();
 //     }
 // }
 
-// // Fait clignoter la DEL en VERT à 4 Hz pendant 2 secondes (8 cycles)
-// void blinkGreenClear() {
+// void blinkGreenClear(Robot& robot) {
 //     for (uint8_t i = 0; i < 8; i++) {
 //         robot.led.green();
 //         _delay_ms(125);
@@ -45,42 +64,27 @@
 //     }
 // }
 
-// // ===========================================================================
-// // Logique d'évacuation d'un poteau
-// // ===========================================================================
 
-// // Boucle d'alerte : joue la séquence, attend 2 s, re-vérifie; recommence
-// // jusqu'à ce que le poteau soit retiré. Clignote en vert quand retiré.
-// void evacuatePoteau() {
+
+// void evacuatePoteau(Robot& robot) {
 //     do {
-//         playConfirmSequence();
+//         playConfirmSequence(robot);
 //         _delay_ms(2000);
-//     } while (distanceSensor.readADC() >= POTEAU_THRESHOLD);
+//     } while (readADC() >= POTEAU_THRESHOLD);
 
-//     blinkGreenClear();
-//     }
+//     blinkGreenClear(robot);
+// }
 
-
-// // ===========================================================================
-// // Scan du local de travail
-// // ===========================================================================
-
-// // Temps pour un tour complet à SPIN_SPEED (à calibrer selon le robot)
-// static const uint16_t FULL_ROTATION_MS = 4000;
-// static const uint8_t  SCAN_STEP_MS     = 20;
-
-// // Pivote à gauche sur 360°, évacue chaque poteau détecté au passage.
-// // Le temps d'évacuation n'est pas compté dans la rotation.
-
-
-// void scanRoom() {
+// void scanRoom(Robot& robot) { 
 //     uint16_t elapsed = 0;
 
 //     while (elapsed < FULL_ROTATION_MS) {
-//         if (distanceSensor.isObjectDetected(POTEAU_THRESHOLD)) {
+//         if (readADC() >= POTEAU_THRESHOLD) {
+//             robot.led.red();
 //             robot.motor.stop();
-//             evacuatePoteau();
+//             evacuatePoteau(robot);
 //         } else {
+//             robot.led.green();
 //             robot.motor.spinLeftSpeed(SPIN_SPEED);
 //             _delay_ms(SCAN_STEP_MS);
 //             elapsed += SCAN_STEP_MS;
@@ -90,10 +94,11 @@
 // }
 
 
-
 int main() {
     DistanceSensor sensor; 
     Robot robot;
-    sensor.scanRoom(robot);
-     
+
+    while(true){
+        sensor.scanRoom(robot); 
+    }
 }

@@ -64,7 +64,7 @@ void Interpreter::execute() {
             finished = true;
     }
 
-    robot.motor.stop();
+    //robot.motor.stop();
 }
 
 
