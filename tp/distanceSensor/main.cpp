@@ -101,12 +101,6 @@ int main() {
     DistanceSensor sensor; 
     Robot robot;
     UART uart;
-    // Memoire24CXXX eeprom;
-    // uint8_t count = 0;
-    // eeprom.lecture(0x0000, &count);
-
-      sensor.scanRoom(robot); 
-
-    // uart.UART_Transmission(count);
-    // _delay_ms(2000);
+    Memoire24CXXX eeprom;
+    sensor.scanRoom(robot, LEFT); 
 }

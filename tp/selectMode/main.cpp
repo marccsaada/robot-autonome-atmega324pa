@@ -22,6 +22,7 @@ static const uint16_t OCR1A_10MS        = 1249;
 
 Robot robot;
 DistanceSensor distanceSensor;
+
 Timer timer(Timer::TIMER1);
 
 enum Mode  { INSTRUCTION, EXECUTION, RAPPORT };
@@ -101,17 +102,33 @@ void modeRapport(){
     }
 
     UART uart;
+    Memoire24CXXX eeprom;
+  
+    uint8_t localA = 0;
+    uint8_t localB = 0;
+    uint8_t localC = 0;
+    uint8_t localD = 0;
+    uint8_t ouest  = 0;
+    uint8_t est    = 0;
+
+    eeprom.lecture(EEPROM_ADDR_LOCAL_A, &localA);
+    eeprom.lecture(EEPROM_ADDR_LOCAL_B, &localB);
+    eeprom.lecture(EEPROM_ADDR_LOCAL_C, &localC);
+    eeprom.lecture(EEPROM_ADDR_LOCAL_D, &localD);
+    eeprom.lecture(EEPROM_ADDR_OUEST,   &ouest);
+    eeprom.lecture(EEPROM_ADDR_EST,     &est);
+
     _delay_ms(3000); // laisse le temps de lancer serieViaUSB -l
     uart.UART_Transmission("Rapport de conformite\r\n\r\n");
     uart.UART_Transmission("Emplacement     conformite     detail\r\n");
     uart.UART_Transmission("--------------------------------------------------\r\n");
 
-    printLine(uart, "Local A      ", distanceSensor.getObjectCounter(), "personne(s)"); // ask charger 
-    printLine(uart, "Local B      ", distanceSensor.getObjectCounter(), "objet(s)");
-    printLine(uart, "Local C      ", distanceSensor.getObjectCounter(), "objet(s)");
-    printLine(uart, "Local D      ", distanceSensor.getObjectCounter(), "personne(s)");
-    printLine(uart, "Couloir OUEST", distanceSensor.getObjectCounter(), "zones endommagée(s)");
-    printLine(uart, "Couloir EST  ", distanceSensor.getObjectCounter(), "zones endommagée(s)");
+    printLine(uart, "Local A      ", localA, "personne(s)"); // ask charger 
+    printLine(uart, "Local B      ", localB, "objet(s)");
+    printLine(uart, "Local C      ", localC, "objet(s)");
+    printLine(uart, "Local D      ", localD, "personne(s)");
+    printLine(uart, "Couloir OUEST", ouest, "zones endommagée(s)");
+    printLine(uart, "Couloir EST  ", est, "zones endommagée(s)");
 }
 
 void modeInstruction() {

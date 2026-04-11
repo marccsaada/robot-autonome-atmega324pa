@@ -15,6 +15,8 @@ static const uint16_t NOTE_GAP_MS      = 125;
 static const uint16_t NOTE_DURATION_MS = 25;
 static const uint8_t  PORT_POSITION    = 5;
 
+enum Direction { LEFT, RIGHT };
+
 class DistanceSensor
 {
 public:
@@ -31,7 +33,7 @@ public:
 
     uint8_t getObjectCounter() {return personCounter_;}
 
-    void scanRoom(Robot& robot);
+    void scanRoom(Robot& robot, Direction dir = LEFT);
 
     void evacuatePoteau(Robot& robot);
 

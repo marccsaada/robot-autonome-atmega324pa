@@ -75,7 +75,7 @@ void DistanceSensor::evacuatePoteau(Robot& robot) {
     blinkGreenClear(robot);
 }
 
-void DistanceSensor::scanRoom(Robot& robot) {
+void DistanceSensor::scanRoom(Robot& robot, Direction dir) {
 
     uint16_t elapsed = 0;
 
@@ -90,7 +90,10 @@ void DistanceSensor::scanRoom(Robot& robot) {
             evacuatePoteau(robot);
             objectPresent_ = false;
         } else {
-            robot.motor.spinLeftSpeed(SPIN_SPEED);
+            if (dir == LEFT)
+                robot.motor.spinLeftSpeed(SPIN_SPEED);
+            else
+                robot.motor.spinRightSpeed(SPIN_SPEED);
             _delay_ms(SCAN_STEP_MS);
             elapsed += SCAN_STEP_MS;
         }
