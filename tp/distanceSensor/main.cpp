@@ -3,6 +3,9 @@
 #include "distanceSensor.hpp"
 #include "LED.hpp"
 #include "motor.hpp"
+#include "UART.hpp"
+#include "memoire_24.h"
+
 
 // LED led(PORTA, PA4, PA5);
 
@@ -97,8 +100,13 @@
 int main() {
     DistanceSensor sensor; 
     Robot robot;
+    UART uart;
+    // Memoire24CXXX eeprom;
+    // uint8_t count = 0;
+    // eeprom.lecture(0x0000, &count);
 
-    while(true){
-        sensor.scanRoom(robot); 
-    }
+      sensor.scanRoom(robot); 
+
+    // uart.UART_Transmission(count);
+    // _delay_ms(2000);
 }

@@ -76,13 +76,19 @@ void DistanceSensor::evacuatePoteau(Robot& robot) {
 }
 
 void DistanceSensor::scanRoom(Robot& robot) {
-    
+
     uint16_t elapsed = 0;
 
     while (elapsed < FULL_ROTATION_MS) {
         if (readADC() >= POTEAU_THRESHOLD) {
             robot.motor.stop();
+            if (!objectPresent_) {
+                objectPresent_ = true;
+                personCounter_++;
+                eeprom_.ecriture(EEPROM_ADDR_COUNT, personCounter_);
+            }
             evacuatePoteau(robot);
+            objectPresent_ = false;
         } else {
             robot.motor.spinLeftSpeed(SPIN_SPEED);
             _delay_ms(SCAN_STEP_MS);
@@ -97,36 +103,3 @@ void DistanceSensor::scanRoom(Robot& robot) {
 
 
 
-
-
-
-bool DistanceSensor::isObjectDetected(uint16_t threshold) 
-{
-    uint16_t adc = readADC();
-
-    // Cas 1 : objet détecté pour la première fois
-    if (adc >= threshold && !objectPresent_) {
-        objectPresent_ = true;
-        personCounter_ +=1;
-        DEBUG_PRINT("OBJECT DETECTED (NEW)");
-        DEBUG_PRINT("DETECTED count: ", personCounter_);
-
-        return true;
-    }
-
-    // Cas 2 : objet encore là → ne rien faire
-    if (adc >= threshold && objectPresent_) {
-        DEBUG_PRINT("OBJECT STILL PRESENT");
-        DEBUG_PRINT("DETECTED count: ", personCounter_);
-        return false;
-    }
-
-    // Cas 3 : objet disparu → reset
-    if (adc < threshold && objectPresent_) {
-        objectPresent_ = false;
-        DEBUG_PRINT("OBJECT REMOVED");
-        DEBUG_PRINT("DETECTED count: ", personCounter_);
-    }
-
-    return false;
-}

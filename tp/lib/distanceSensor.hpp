@@ -8,9 +8,9 @@
 #include "memoire_24.h"
 
 static const uint16_t POTEAU_THRESHOLD = 100;
-static const uint16_t SPIN_SPEED       = 95;
+static const uint16_t SPIN_SPEED       = 100;
 static const uint16_t FULL_ROTATION_MS = 2800;
-static const uint8_t  SCAN_STEP_MS     = 10;
+static const uint8_t  SCAN_STEP_MS     = 20;
 static const uint16_t NOTE_GAP_MS      = 125;
 static const uint16_t NOTE_DURATION_MS = 25;
 static const uint8_t  PORT_POSITION    = 5;
