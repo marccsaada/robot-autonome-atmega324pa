@@ -1,7 +1,7 @@
 #define F_CPU 8000000UL
 #include "libstatique.hpp"
 
-Robot robot;
+LED led1(PORTB, PB0, PB2);
 
 // Ici je prends en compte quon utilise le mode qui detecte les zones sombres et non les zones claires.
 
@@ -81,6 +81,7 @@ bool LineSensor::findDamage() {
 
     if (damagePresent) { 
         previousDamageState_ = true;
+        led1.red();
         return true;
     }
     else if (!damagePresent && previousDamageState_) { 
@@ -88,6 +89,7 @@ bool LineSensor::findDamage() {
         _delay_ms(200);
         if (!robotBumpLine()) { 
             nDamage_++;
+            led1.off();
             return true;
         }
     }
@@ -99,7 +101,7 @@ void LineSensor::findObject() {
 
     if (objectPresent) { 
         previousObjectState_ = true;
-        robot.led.red();
+        led1.red();
         return;
     }
     else if (!objectPresent && previousObjectState_) { 
@@ -107,10 +109,9 @@ void LineSensor::findObject() {
         _delay_ms(200);
         if (!robotBumpLine()) { 
             nObjects_++;
-            return;
         }
     }
-    robot.led.off();
+    led1.off();
     return;
 }
 
