@@ -85,7 +85,7 @@ void printLine(UART& uart, const char* name, const int count, const char* type) 
         uart.UART_Transmission("         oui\r\n");
     } else {
         uart.UART_Transmission("         non      ");
-        uart.UART_Transmission(count + '0'); //count + '0' peut utiliser une fonction pour convert 
+        uart.UART_Transmission (count + '0'); //count + '0' peut utiliser une fonction pour convert 
         uart.UART_Transmission(" ");
         uart.UART_Transmission(type);
         uart.UART_Transmission("\r\n");
@@ -103,32 +103,41 @@ void modeRapport(){
 
     UART uart;
     Memoire24CXXX eeprom;
-  
-    uint8_t localA = 0;
-    uint8_t localB = 0;
-    uint8_t localC = 0;
-    uint8_t localD = 0;
-    uint8_t ouest  = 0;
-    uint8_t est    = 0;
+    static const uint8_t NB_ZONES = 6;
+    static const uint16_t EEPROM_ADDR_BASE = 10;
 
-    eeprom.lecture(EEPROM_ADDR_LOCAL_A, &localA);
-    eeprom.lecture(EEPROM_ADDR_LOCAL_B, &localB);
-    eeprom.lecture(EEPROM_ADDR_LOCAL_C, &localC);
-    eeprom.lecture(EEPROM_ADDR_LOCAL_D, &localD);
-    eeprom.lecture(EEPROM_ADDR_OUEST,   &ouest);
-    eeprom.lecture(EEPROM_ADDR_EST,     &est);
+    const char* noms[NB_ZONES] = {
+    "Local A      ",  
+    "Local B      ",  
+    "Local C      ",  
+    "Local D      ",   
+    "Couloir OUEST",   
+    "Couloir EST  ",  
+    };
+
+    const char* types[NB_ZONES] = {
+        "personne(s)",
+        "objet(s)",
+        "objet(s)",
+        "personne(s)",
+        "zone(s) endommagee(s)",
+        "zone(s) endommagee(s)"
+    };
+    uint8_t valeurs[NB_ZONES] = {0};
+
+    for (uint8_t i = 0; i < NB_ZONES; i++) {
+    eeprom.lecture(EEPROM_ADDR_BASE + i, &valeurs[i]);
+    }
 
     _delay_ms(3000); // laisse le temps de lancer serieViaUSB -l
     uart.UART_Transmission("Rapport de conformite\r\n\r\n");
     uart.UART_Transmission("Emplacement     conformite     detail\r\n");
     uart.UART_Transmission("--------------------------------------------------\r\n");
 
-    printLine(uart, "Local A      ", localA, "personne(s)"); // ask charger 
-    printLine(uart, "Local B      ", localB, "objet(s)");
-    printLine(uart, "Local C      ", localC, "objet(s)");
-    printLine(uart, "Local D      ", localD, "personne(s)");
-    printLine(uart, "Couloir OUEST", ouest, "zones endommagée(s)");
-    printLine(uart, "Couloir EST  ", est, "zones endommagée(s)");
+ 
+    for (uint8_t i = 0; i < NB_ZONES; i++) {
+    printLine(uart, noms[i], valeurs[i], types[i]);
+    }
 }
 
 void modeInstruction() {

@@ -31,9 +31,8 @@ public:
 
     void sortArray(uint16_t array[], uint8_t size);
 
-    uint8_t getObjectCounter() {return personCounter_;}
 
-    void scanRoom(Robot& robot, Direction dir = LEFT);
+    void scanRoom(Robot& robot, Direction dir = LEFT, uint16_t EEPROM_ADDR_LOCAL = EEPROM_ADDR_LOCAL_A);
 
     void evacuatePoteau(Robot& robot);
 
@@ -44,13 +43,13 @@ public:
 private:
     can can_;
 
-    uint8_t personCounter_ = 0;
+    // uint8_t personCounter_ = 0;
 
     static const uint8_t N_READINGS = 7;
 
     uint16_t readings[N_READINGS];
 
-    static const uint16_t EEPROM_ADDR_COUNT = 0x0000;
+    static const uint16_t EEPROM_ADDR_LOCAL_A = 0x0000;
 
     Memoire24CXXX eeprom_;
     bool objectPresent_ = false;

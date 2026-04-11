@@ -97,10 +97,29 @@
 // }
 
 
+
 int main() {
-    DistanceSensor sensor; 
-    Robot robot;
-    UART uart;
-    Memoire24CXXX eeprom;
-    sensor.scanRoom(robot, LEFT); 
+//     DistanceSensor sensor; 
+//     Robot robot;
+//     UART uart;
+//     Memoire24CXXX eeprom;
+//     uint16_t EEPROM_ADDR_BASE = 10;
+//     static const uint8_t NB_ZONES = 6;
+
+//     for (uint8_t i = 0; i < NB_ZONES; i++) {
+//     uint8_t zero = 0;
+//     eeprom.ecriture(EEPROM_ADDR_BASE + i, zero);
+//     _delay_ms(5);
+// }
+
+//     sensor.scanRoom(robot, LEFT,10);
+//     _delay_ms(2000);
+//      sensor.scanRoom(robot, RIGHT,11);
+//     _delay_ms(2000);
+//      sensor.scanRoom(robot, LEFT,12);    
+//     _delay_ms(2000);
+//      sensor.scanRoom(robot, RIGHT,13);
+//     _delay_ms(2000);
+//      sensor.scanRoom(robot, LEFT,14);
+//     _delay_ms(2000);
 }

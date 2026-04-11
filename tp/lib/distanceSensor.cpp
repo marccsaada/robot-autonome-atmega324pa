@@ -75,17 +75,18 @@ void DistanceSensor::evacuatePoteau(Robot& robot) {
     blinkGreenClear(robot);
 }
 
-void DistanceSensor::scanRoom(Robot& robot, Direction dir) {
+void DistanceSensor::scanRoom(Robot& robot, Direction dir, uint16_t EEPROM_ADDR_LOCAL) {
 
     uint16_t elapsed = 0;
+    uint8_t localCount = 0;
 
     while (elapsed < FULL_ROTATION_MS) {
         if (readADC() >= POTEAU_THRESHOLD) {
             robot.motor.stop();
             if (!objectPresent_) {
                 objectPresent_ = true;
-                personCounter_++;
-                eeprom_.ecriture(EEPROM_ADDR_COUNT, personCounter_);
+                localCount++;
+                eeprom_.ecriture(EEPROM_ADDR_LOCAL, localCount);
             }
             evacuatePoteau(robot);
             objectPresent_ = false;
