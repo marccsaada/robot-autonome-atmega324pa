@@ -8,6 +8,7 @@ Timer timer(Timer::TIMER1);
 const uint8_t LEFT_DEFAULT_SPEED = 105;
 const uint8_t RIGHT_DEFAULT_SPEED = 100;
 uint8_t stepCount = 0;
+bool completeTurn = false;
 bool firstTime = true; // VARIABLE POUR LE VIRAGE DU PARKING
 uint16_t afterParkingCount = 0;
 uint8_t roomCount = 0;
@@ -15,8 +16,6 @@ uint8_t parkingCount = 0;
 
 const uint16_t OCR1A_10MS = 1250;
 volatile uint16_t ticks = 0;
-
-// #define motor robot.motor
 
 enum class Action {
     PARKING,
@@ -81,6 +80,7 @@ void turnRight() {
 }
 
 void followPath() { 
+    robot.led.red();
     uint8_t leftWheelSpeed = LEFT_DEFAULT_SPEED /*-10*/;
     uint8_t rightWheelSpeed = RIGHT_DEFAULT_SPEED/*-10*/;
     
@@ -139,7 +139,7 @@ void move3Inches() {
 //     }
 // }
 
-void movementLogic(Action& currentAction) {
+void movementLogic(Action& currentAction, Action& previousAction) {
     switch (currentAction) {
         case Action::PARKING:
             // // _delay_ms(5);
@@ -165,7 +165,6 @@ void movementLogic(Action& currentAction) {
                 _delay_ms(800);
             }
             turnLeft();
-            // _delay_ms(5);
             break;
             
         case Action::AFTER_PARKING:
@@ -173,12 +172,10 @@ void movementLogic(Action& currentAction) {
                 followRightWall();
                 afterParkingCount++;
             } else followPath();
-            // _delay_ms(5);
             break;
 
         case Action::FIRST_TURN:
             turnLeft();
-            // _delay_ms(5);
             break;
 
         case Action::FIRST_CORRIDOR:
@@ -219,27 +216,28 @@ void movementLogic(Action& currentAction) {
         case Action::SECOND_CORRIDOR:
             if (roomCount == 0) { // ROOM A OR D
                 timer.startTimer();
-                while (ticks < 300) { followPath(); }
+                while (ticks < 600) { followPath(); }
                 timer.stopTimer();
                 ticks = 0;
             }
             else if (roomCount == 1) { // ROOM B OR C
                 timer.startTimer();
-                while (ticks < 300) { followPath(); }
+                while (ticks < 600) { followPath(); }
                 timer.stopTimer();
                 ticks = 0;
             }
             else if (roomCount == 2) { // ROOM B OR C
                 timer.startTimer();
-                while (ticks < 300) { followPath(); }
+                while (ticks < 600) { followPath(); }
                 timer.stopTimer();
                 ticks = 0;
             }
             else if (roomCount == 3) { // ROOM A OR D
-                timer.startTimer();
-                while (ticks < 300) { followPath(); }
-                timer.stopTimer();
-                ticks = 0;
+                // timer.startTimer();
+                // while (ticks < 300) { followPath(); }
+                // timer.stopTimer();
+                // ticks = 0;
+                followPath();
             }
             else if (roomCount == 4) {
                 currentAction = Action::THIRD_TURN; // Transition to the second turn
@@ -248,35 +246,44 @@ void movementLogic(Action& currentAction) {
 
 
 
-        case Action::PEOPLE_ROOM:  
-            if (robot.lineSensor.robotBumpLine()) {
-                currentAction = Action::SECOND_CORRIDOR; // Transition to the second turn
+        case Action::PEOPLE_ROOM:
+            if (previousAction != Action::PEOPLE_ROOM) { // Enter the room, scan the room
+                robot.motor.spinLeft(45);
+                // scan room
+                previousAction = Action::PEOPLE_ROOM;
             }
+            
+            while (!robot.lineSensor.offTrackRight()) // Exit the room
+                robot.motor.spinRightSpeed(100);
             break;
 
         case Action::OBJECT_ROOM:
-            robot.motor.spinLeft(90);
-            timer.startTimer();
-            while (ticks < 600) { // 6 seconds
+            if (previousAction != Action::OBJECT_ROOM) { // Turn towards the room
+                robot.motor.spinLeft(90);
+                robot.motor.stop();
+                _delay_ms(50);
+
+                timer.startTimer();     // Go forward for the timers time to detect the objects
                 robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
-                robot.lineSensor.findObject();
-            }
-            if (robot.lineSensor.robotBumpLine()) {
+                while (ticks < 600) {   // detect object for n seconds
+                    robot.lineSensor.findObject();
+                }
+                robot.motor.stop();
                 timer.stopTimer();
                 ticks = 0;
-                
-                robot.motor.spinLeft(90);
-                timer.startTimer();
-                
-                robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED); 
-                while (ticks < 500) { }
-                
-                robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
-                while (!robot.lineSensor.robotBumpLine()) {}
 
-                robot.motor.stop();
-                currentAction = Action::SECOND_CORRIDOR; // Transition to the second turn
+                previousAction = Action::OBJECT_ROOM;
             }
+            
+            _delay_ms(50);
+
+            robot.motor.spinLeft(180);
+            while (!robot.lineSensor.robotBumpLine()) { // Once the timer is over, 180 and go forward till wall is found
+                robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
+            }
+            turnLeft();
+
+
             break;
         
         case Action::THIRD_TURN: //completed
@@ -313,9 +320,26 @@ void movementLogic(Action& currentAction) {
             break;
 
         case Action::COMPLETE_PARKING:
-            
-            robot.motor.goForward(LEFT_DEFAULT_SPEED/3, RIGHT_DEFAULT_SPEED);
-            // _delay_ms(5);
+            robot.led.green();
+            while (!robot.lineSensor.isOnRightLine()) {
+                robot.led.red();
+                followPath();
+            }
+            robot.led.green();
+            timer.startTimer();
+            while (ticks < 200) { 
+                // if (robot.lineSensor.robotBumpLine()) { 
+                    // robot.motor.stop();
+                    // _delay_ms(50);
+                    // break;
+                // }
+                    
+                robot.motor.goForward(95, 160);
+            }
+
+            while (!robot.lineSensor.robotBumpLine()) { 
+                robot.motor.goForward(LEFT_DEFAULT_SPEED - 15, RIGHT_DEFAULT_SPEED - 15);
+            }
             break;
 
         case Action::END:
@@ -326,19 +350,16 @@ void movementLogic(Action& currentAction) {
                 robot.led.off();
                 _delay_ms(1000);
             }
-            // _delay_ms(5);
-            while (true) {};
             break;
     }
 }
 
-void switchLogic(Action& currentAction) {
+void switchLogic(Action& currentAction, Action& previousAction) {
     switch (currentAction) {
         case Action::PARKING:
             if (robot.lineSensor.robotBumpLine()) {
                 _delay_ms(500);
                 currentAction = Action::LEAVE_PARKING;
-            }
             break;
         
         case Action::LEAVE_PARKING:
@@ -346,9 +367,9 @@ void switchLogic(Action& currentAction) {
                 _delay_ms(500);
                 currentAction = Action::AFTER_PARKING;
             }
-                
             break;
-        case Action::AFTER_PARKING:
+        
+            case Action::AFTER_PARKING:
             if (robot.lineSensor.robotBumpLine()) {
         
                 robot.motor.stop();
@@ -405,15 +426,17 @@ void switchLogic(Action& currentAction) {
             break;
 
         case Action::PEOPLE_ROOM:  
-            if (robot.lineSensor.robotBumpLine()) {
+            if (robot.lineSensor.offTrackRight()) {
+                roomCount++;
                 currentAction = Action::SECOND_CORRIDOR; // Transition to the second turn
             }
             break;
 
         case Action::OBJECT_ROOM:  
-            // if (robot.lineSensor.robotBumpLine()) {
-            //     currentAction = Action::SECOND_CORRIDOR; // Transition to the second turn
-            // }
+            if (robot.lineSensor.robotMiddle()) {
+                roomCount++;
+                currentAction = Action::SECOND_CORRIDOR; // Transition to the second turn
+            }
             break;
         
         case Action::THIRD_TURN: //completed
@@ -437,53 +460,55 @@ void switchLogic(Action& currentAction) {
             break;
             
         case Action::ENTER_PARKING: //completed
-            if (robot.lineSensor.isRightWall()) {
+            if (robot.lineSensor.isOnRightLine()) {
                 timer.startTimer();
-                while (ticks < 100) {
-                    followPath();
+                while (ticks < 18) {
+                    robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
                 }
-                if (robot.lineSensor.isRightWall()) {
+                
+                if (robot.lineSensor.isOnRightLine()) {
                     parkingCount++;
                     if (parkingCount == 1) {
                         currentAction = Action::COMPLETE_PARKING;
                     }
                 }
+                
+                // if (robot.lineSensor.isRightWall()) {
+                //     parkingCount++;
+                //     if (parkingCount == 1) {
+                //         currentAction = Action::COMPLETE_PARKING;
+                //     }
+                // }
                 timer.stopTimer();
                 ticks = 0;
             }
-            // _delay_ms(5);
             break;
+
         case Action::COMPLETE_PARKING: //completed
-            if (robot.lineSensor.robotBumpLine()) {
-                _delay_ms(500);
+            if (robot.lineSensor.robotBumpLine())
                 currentAction = Action::END;
-            }
-            // _delay_ms(5);
             break;
-                
-            break;
+
         case Action::END:
-            robot.motor.stop();
             break;
     }
 }
+}
 
+ int main(){
 
-int main() {
     timer.setModeCTC(Timer::PRESCALE_64);
     timer.setOCRA(OCR1A_10MS);
     sei();
 
     _delay_ms(500);
-    Action currentAction = Action::ENTER_PARKING;
+    Action currentAction = Action::OBJECT_ROOM;
+    Action previousAction = static_cast<Action>(-1);
 
     while (true) {
-        // movementLogic(currentAction);
-        // switchLogic(currentAction);
-        followPath();
+        movementLogic(currentAction, previousAction);
+        switchLogic(currentAction, previousAction);
+        // followPath();
         // _delay_ms(25);
     }
-
-
-
 }
