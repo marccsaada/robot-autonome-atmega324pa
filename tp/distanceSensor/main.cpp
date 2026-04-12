@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <can.h>
+#include "robot.hpp"
 #include "distanceSensor.hpp"
 #include "LED.hpp"
 #include "motor.hpp"
@@ -122,4 +123,10 @@ int main() {
 //     _delay_ms(2000);
 //      sensor.scanRoom(robot, LEFT,14);
 //     _delay_ms(2000);
+
+Robot robot; 
+while(true){
+robot.motor.goBackward(255,255);
+}
+
 }

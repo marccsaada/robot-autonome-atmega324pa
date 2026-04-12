@@ -8,9 +8,12 @@
 #include "memoire_24.h"
 #include "eepromAdresses.hpp"
 static const uint16_t POTEAU_THRESHOLD = 100;
-static const uint16_t SPIN_SPEED       = 100;
-static const uint16_t FULL_ROTATION_MS = 2800;
-static const uint8_t  SCAN_STEP_MS     = 20;
+static const uint16_t SPIN_SPEED       = 85;
+static const uint16_t FULL_ROTATION_MS     = 2500;
+static const uint16_t STOP_COMPENSATION_MS = 350;
+static const uint8_t  IMPULSE_SPEED        = 255;
+static const uint8_t  IMPULSE_MS           = 40;
+static const uint8_t  SCAN_STEP_MS     = 50;
 static const uint16_t NOTE_GAP_MS      = 125;
 static const uint16_t NOTE_DURATION_MS = 25;
 static const uint8_t  PORT_POSITION    = 5;

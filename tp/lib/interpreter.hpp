@@ -47,9 +47,9 @@ public:
     void execute();
     /** @brief Confirms reception: plays notes, signals tr direction, blinks amber attOp times. */
     void confirm();
-    Robot   robot;
 
 
+    Robot robot;
 
 
     private: 

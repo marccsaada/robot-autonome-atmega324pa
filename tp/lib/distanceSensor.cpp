@@ -5,8 +5,8 @@
 #include "debug.hpp"
 
 DistanceSensor::DistanceSensor() : can_() {
-    DDRA &= ~(1 << PA0);
-    PORTA &= ~(1 << PA0);
+    DDRA &= ~(1 << PA5);
+    PORTA &= ~(1 << PA5);
    _delay_ms(40);    //pas sur, a voir dans le datasheet.
 }
 
@@ -32,7 +32,7 @@ void DistanceSensor::sortArray(uint16_t array[], uint8_t size)
 
 uint16_t DistanceSensor::readADC() {
     for (uint8_t i = 0; i < N_READINGS; i++) {
-        readings[i] = can_.lecture(7);
+        readings[i] = can_.lecture(5);
         DEBUG_PRINT("  reading[", i);
         DEBUG_PRINT("]: ", readings[i]);
 
@@ -44,7 +44,6 @@ uint16_t DistanceSensor::readADC() {
 
     DEBUG_PRINT("ADC median: ", median);
     return median;
-    return can_.lecture(7);
 }
 
 
@@ -80,22 +79,27 @@ void DistanceSensor::scanRoom(Robot& robot, EEPROMAddress addr , Direction dir) 
 
     uint16_t elapsed = 0;
     uint8_t localCount = 0;
+    uint16_t totalRotationMs = FULL_ROTATION_MS;
+    bool justStopped = false;
 
-    while (elapsed < FULL_ROTATION_MS) {
+    while (elapsed < totalRotationMs) {
         if (readADC() >= POTEAU_THRESHOLD) {
+            robot.led.green();
             robot.motor.stop();
             if (!objectPresent_) {
                 objectPresent_ = true;
-                localCount++;
                 eeprom_.ecriture(addr, localCount);
             }
             evacuatePoteau(robot);
             objectPresent_ = false;
+            // justStopped = true;
         } else {
-            if (dir == LEFT)
-                robot.motor.spinLeftSpeed(SPIN_SPEED);
-            else
-                robot.motor.spinRightSpeed(SPIN_SPEED);
+            // if (justStopped) {
+            //     robot.motor.spinRightSpeed(IMPULSE_SPEED);
+            //     _delay_ms(IMPULSE_MS);
+            //     justStopped = false;
+            // }
+            robot.motor.spinRightSpeed(SPIN_SPEED);
             _delay_ms(SCAN_STEP_MS);
             elapsed += SCAN_STEP_MS;
         }

@@ -2,7 +2,7 @@
 #define F_CPU 8000000UL
 #include <avr/io.h>
 #include "memoire_24.h"
-#include "libstatique.hpp"
+#include "eepromAdresses.hpp"
 
 #define sensor1 PA0
 #define sensor2 PA1
@@ -22,10 +22,10 @@ public:
     bool isLeftWall();          // Robot is against the left wall
     bool isOnLeftLine();    
     bool isRightWall();         // Robot is against the right wall
-    bool isOnRightLine();    
-    bool findDamage();          // Robot found damage
+    bool isOnRightLine();            
     bool sensors345(); // senseurs 3 4 et 5 actives (pour parking)
-    void findObject(uint16_t EEPROM_ADDR_LOCAL);
+    bool findDamage(EEPROMAddress addr);          // Robot found damage
+    void findObject(EEPROMAddress addr);
 
     uint8_t offTrackAmount();   // Amount of sensors that are off track (0-5)
 
@@ -35,6 +35,13 @@ public:
 
     bool getPreviousDamageState() const { return previousDamageState_; }
     void setPreviousDamageState(bool state) { previousDamageState_ = state; }
+
+    uint8_t getSensor(int index) const {
+        if (index >= 0 && index < 5) {
+            return (PINA & (1 << sensors_[index]));
+        }
+        return 0; // Return 0 for invalid index
+    }
     
     
 private:
