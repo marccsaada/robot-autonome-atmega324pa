@@ -147,7 +147,7 @@ void followWall() {
 
 void movementLogic(Action& currentAction, Action& previousAction) {
     switch (currentAction) {
-        case Action::PARKING:
+        case Action::PARKING:   //parking a swit
             if (stepCount == 0) {
                 if (turnDirection == 0)
                     robot.motor.goBackward(LEFT_DEFAULT_SPEED, 0);
@@ -170,13 +170,24 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             break;
         
         case Action::LEAVE_PARKING:
-            if (firstTime) {
+            while (firstTime) {
                 if (turnDirection == 0) // Sort vers la droite, puis tourne à gauche
                     robot.motor.goForward(0, RIGHT_DEFAULT_SPEED - 10);
+                
                 else // Sort vers la gauche, puis tourne à droite
                     robot.motor.goForward(LEFT_DEFAULT_SPEED - 10, 0);
-                firstTime = false;
-                _delay_ms(800);
+                if (robot.lineSensor.sensors345()) {
+                    _delay_ms(50);
+                    while (!robot.lineSensor.sensors345()){
+                        if (turnDirection == 0) // Sort vers la droite, puis tourne à gauche
+                            robot.motor.goForward(0, RIGHT_DEFAULT_SPEED - 10);
+                
+                        else // Sort vers la gauche, puis tourne à droite
+                            robot.motor.goForward(LEFT_DEFAULT_SPEED - 10, 0);
+    
+                        firstTime = false;
+                    }
+                }
             }
             turn();
             break;
@@ -267,10 +278,6 @@ void movementLogic(Action& currentAction, Action& previousAction) {
         case Action::OBJECT_ROOM:
         if (previousAction != Action::OBJECT_ROOM)
         { // Turn towards the room
-            timer.setModeCTC(Timer::PRESCALE_64);
-            timer.setOCRA(OCR1A_10MS);
-            sei();
-
             if (turnDirection == 0) robot.motor.spinLeft(90);
             else                    robot.motor.spinRight(90);
 
@@ -381,6 +388,7 @@ void switchLogic(Action& currentAction, Action& previousAction) {
     switch (currentAction) {
         case Action::PARKING:
             if (robot.lineSensor.robotBumpLine()) {
+
                 _delay_ms(500);
                 currentAction = Action::LEAVE_PARKING;
             }

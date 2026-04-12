@@ -53,6 +53,14 @@ bool LineSensor::isOnLeftLine() {
     return false;
 }
 
+bool LineSensor::sensors345() {
+    if ((PINA & (1 << sensor3)) && (PINA & (1 << sensor4)) && (PINA & (1 << sensor5))) {
+        return true;
+    }
+    return false;
+}
+
+
 
 
 bool LineSensor::isRightWall() {
@@ -117,14 +125,14 @@ void LineSensor::findObject(uint16_t EEPROM_ADDR_LOCAL) {
 }
 
 uint8_t LineSensor::offTrackAmount() {
-    // uint8_t amount = 0;
-    // for (uint8_t i = 0; i < 5; i++) {
-    //     if (PINA & (1 << sensors_[i])) {
-    //         amount++;
-    //     }
-    // }
+    uint8_t amount = 0;
+    for (uint8_t i = 0; i < 5; i++) {
+        if (PINA & (1 << sensors_[i])) {
+            amount++;
+        }
+    }
 
-    // if (amount == 5)
-    //     amount = 4;
-    return 1;
+    if (amount == 5)
+        amount = 4;
+    return amount;
 }

@@ -23,6 +23,7 @@ public:
     bool isRightWall();         // Robot is against the right wall
     bool isOnRightLine();    
     bool findDamage();          // Robot found damage
+    bool sensors345(); // senseurs 3 4 et 5 actives (pour parking)
     void findObject(uint16_t EEPROM_ADDR_LOCAL);
 
     uint8_t offTrackAmount();   // Amount of sensors that are off track (0-5)
