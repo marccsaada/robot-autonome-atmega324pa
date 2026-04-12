@@ -19,14 +19,14 @@ bool LineSensor::robotMiddle() {
 }
 
 bool LineSensor::offTrackLeft() {
-    if (((PINA & (1 << sensor1)) /*|| (PINA & (1 << sensor2))*/) && !(PINA & (1 << sensor5))) {
+    if ((PINA & (1 << sensor1))/*((PINA & (1 << sensor1)) || (PINA & (1 << sensor2))) && !(PINA & (1 << sensor5))*/) {
         return true;
     }
     return false;
 }
 
 bool LineSensor::offTrackRight() {
-    if (!(PINA & (1 << sensor1)) && (/*(PINA & (1 << sensor4)) || */(PINA & (1 << sensor5)))) {
+    if (/*!(PINA & (1 << sensor1)) && (/*(PINA & (1 << sensor4)) || */(PINA & (1 << sensor5))) {
         return true;
     }
     return false;
@@ -94,7 +94,7 @@ bool LineSensor::findDamage(EEPROMAddress addr) { //marc (adresse 14(OUEST)-15(E
     }
     else if (!damagePresent && previousDamageState_) { 
         previousDamageState_ = false;
-        _delay_ms(200);
+        _delay_ms(30);
         if (!robotBumpLine()) { 
             nDamage_++;
             led1.off();
@@ -102,6 +102,7 @@ bool LineSensor::findDamage(EEPROMAddress addr) { //marc (adresse 14(OUEST)-15(E
             return true;
         }
     }
+    led1.off();
     return false;
 }
 

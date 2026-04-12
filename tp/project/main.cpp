@@ -6,8 +6,8 @@ Robot robot;
 Timer timer(Timer::TIMER1);
 DistanceSensor distanceSensor;
 
-const uint8_t LEFT_DEFAULT_SPEED = 105;
-const uint8_t RIGHT_DEFAULT_SPEED = 100;
+const uint8_t LEFT_DEFAULT_SPEED = 110;
+const uint8_t RIGHT_DEFAULT_SPEED = 105;
 uint8_t stepCount = 0;
 bool completeTurn = false;
 bool firstTime = true; // VARIABLE POUR LE VIRAGE DU PARKING
@@ -57,9 +57,9 @@ void turnLeft() {
     if      (count == 5 || robot.lineSensor.offTrackLeft()) leftSpeed = 0;    // pivot sur place (mur droit devant)
     else if (count == 4) leftSpeed = 0;
     else if (count == 3) leftSpeed = 0;
-    else if (count == 2) leftSpeed = 90;
-    else if (count == 1) leftSpeed = 94;
-    else                 leftSpeed = LEFT_DEFAULT_SPEED-10;  // aucun capteur → tout droit
+    else if (count == 2) leftSpeed = 95/*90*/;
+    else if (count == 1) leftSpeed = 100/*94*/;
+    else                 leftSpeed = LEFT_DEFAULT_SPEED/*-10*/;  // aucun capteur → tout droit
 
     robot.motor.goForward(leftSpeed, rightSpeed);
 }
@@ -83,17 +83,16 @@ void turnRight() {
 }
 
 void followPath() { 
-    robot.led.red();
     uint8_t leftWheelSpeed = LEFT_DEFAULT_SPEED /*-10*/;
     uint8_t rightWheelSpeed = RIGHT_DEFAULT_SPEED/*-10*/;
     
     if (robot.lineSensor.offTrackLeft()) { 
-        leftWheelSpeed += robot.lineSensor.offTrackAmount() * 30;//30;
-        rightWheelSpeed -= robot.lineSensor.offTrackAmount() * 5;//* 5;
+        leftWheelSpeed += /*robot.lineSensor.offTrackAmount() * */ 30;//30;
+        rightWheelSpeed -= /*robot.lineSensor.offTrackAmount() * */5;//* 5;
     }
     else if (robot.lineSensor.offTrackRight()) { 
-        rightWheelSpeed += robot.lineSensor.offTrackAmount() * 30;//30;
-        leftWheelSpeed -= robot.lineSensor.offTrackAmount()  * 5;//30;
+        rightWheelSpeed += /*robot.lineSensor.offTrackAmount() * */ 30;//30;
+        leftWheelSpeed -= /*robot.lineSensor.offTrackAmount() * */ 5;//30;
     }
     robot.motor.goForward(leftWheelSpeed, rightWheelSpeed);
 }
@@ -405,14 +404,19 @@ void switchLogic(Action& currentAction, Action& previousAction) {
             if (robot.lineSensor.robotBumpLine()) {
         
                 robot.motor.stop();
-                _delay_ms(2000);
+                _delay_ms(1000);
+
                 while (!robot.lineSensor.robotBumpLine()) {
                     robot.motor.goBackward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
                     if (robot.lineSensor.robotBumpLine()) {
                         break;
                     }
-                    robot.motor.stop();
+                    // robot.motor.stop();
                 }
+                while (!(robot.lineSensor.offTrackAmount() >= 3 && robot.lineSensor.offTrackRight())) {
+                    robot.motor.goForward(0, RIGHT_DEFAULT_SPEED);
+                }
+
                 currentAction = Action::FIRST_TURN;
             }
             break;
@@ -527,7 +531,7 @@ void switchLogic(Action& currentAction, Action& previousAction) {
     sei();
 
     _delay_ms(500);
-    Action currentAction = Action::PARKING;
+    Action currentAction = Action::AFTER_PARKING;
     Action previousAction = static_cast<Action>(-1);
 
     while (true) {
