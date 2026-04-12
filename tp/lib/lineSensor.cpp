@@ -96,7 +96,7 @@ bool LineSensor::findDamage() {
     return false;
 }
 
-void LineSensor::findObject() {
+void LineSensor::findObject(uint16_t EEPROM_ADDR_LOCAL) {
     bool objectPresent = robotBumpLine();
 
     if (objectPresent) { 
@@ -109,6 +109,7 @@ void LineSensor::findObject() {
         _delay_ms(200);
         if (!robotBumpLine()) { 
             nObjects_++;
+            eeprom_.ecriture(EEPROM_ADDR_LOCAL, nObjects_);
         }
     }
     led1.off();
