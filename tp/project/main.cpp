@@ -4,6 +4,7 @@
 
 Robot robot;
 Timer timer(Timer::TIMER1);
+DistanceSensor distanceSensor;
 
 const uint8_t LEFT_DEFAULT_SPEED = 105;
 const uint8_t RIGHT_DEFAULT_SPEED = 100;
@@ -86,7 +87,7 @@ void followPath() {
     uint8_t leftWheelSpeed = LEFT_DEFAULT_SPEED /*-10*/;
     uint8_t rightWheelSpeed = RIGHT_DEFAULT_SPEED/*-10*/;
     
-    if (robot.lineSens  or.offTrackLeft()) { 
+    if (robot.lineSensor.offTrackLeft()) { 
         leftWheelSpeed += robot.lineSensor.offTrackAmount() * 30;//30;
         rightWheelSpeed -= robot.lineSensor.offTrackAmount() * 5;//* 5;
     }
@@ -256,7 +257,7 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             if (previousAction != Action::PEOPLE_ROOM) { // Enter the room, scan the room
                 if (turnDirection == 0) robot.motor.spinLeft(45);
                 else robot.motor.spinRight(45);
-                // scan room
+                distanceSensor.scanRoom(robot, turnDirection == 0 ? LEFT : RIGHT);
                 previousAction = Action::PEOPLE_ROOM;
             }
 
@@ -267,33 +268,39 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             break;
 
         case Action::OBJECT_ROOM:
-            if (previousAction != Action::OBJECT_ROOM) { // Turn towards the room
-                if (turnDirection == 0) robot.motor.spinLeft(90);
-                else robot.motor.spinRight(90);
-                robot.motor.stop();
-                _delay_ms(50);
+        if (previousAction != Action::OBJECT_ROOM)
+        { // Turn towards the room
+            timer.setModeCTC(Timer::PRESCALE_64);
+            timer.setOCRA(OCR1A_10MS);
+            sei();
 
-                timer.startTimer();     // Go forward for the timers time to detect the objects
-                robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
-                while (ticks < 600) {   // detect object for n seconds
-                    robot.lineSensor.findObject();
-                }
-                robot.motor.stop();
-                timer.stopTimer();
-                ticks = 0;
+            if (turnDirection == 0) robot.motor.spinLeft(90);
+            else                    robot.motor.spinRight(90);
 
-                previousAction = Action::OBJECT_ROOM;
+            robot.motor.stop();
+
+            _delay_ms(1000);
+
+            timer.startTimer();
+            robot.motor.goForward(109, 115);
+
+            while (ticks < 300) { // detect object for n seconds
+                robot.lineSensor.findObject(13);
             }
+
+            while (!robot.lineSensor.robotBumpLine()) { // Once the timer is over, 180 and go forward till wall is found
+                robot.motor.goForward(105, 100);
+            }
+            robot.motor.stop();
+            _delay_ms(2000);
+            if (turnDirection == 0) robot.motor.spinLeft(157);
+            else                    robot.motor.spinRight(157);
+
+            timer.stopTimer();
+            ticks = 0;
 
             _delay_ms(50);
-
-            if (turnDirection == 0) robot.motor.spinLeft(180);
-            else robot.motor.spinRight(180);
-            while (!robot.lineSensor.robotBumpLine()) { // Once the timer is over, 180 and go forward till wall is found
-                robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
-            }
-            turn();
-
+        }
 
             break;
         
