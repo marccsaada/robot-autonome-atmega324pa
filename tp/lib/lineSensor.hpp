@@ -1,6 +1,7 @@
 #pragma once
 #define F_CPU 8000000UL
 #include <avr/io.h>
+#include "memoire_24.h"
 
 #define sensor1 PA0
 #define sensor2 PA1
@@ -22,7 +23,7 @@ public:
     bool isRightWall();         // Robot is against the right wall
     bool isOnRightLine();    
     bool findDamage();          // Robot found damage
-    void findObject();
+    void findObject(uint16_t EEPROM_ADDR_LOCAL);
 
     uint8_t offTrackAmount();   // Amount of sensors that are off track (0-5)
 
@@ -41,4 +42,6 @@ private:
 
     bool previousDamageState_ = false; // Previous state of damage detection
     bool previousObjectState_ = false;
+    Memoire24CXXX eeprom_;
+
 };

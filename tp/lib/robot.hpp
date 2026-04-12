@@ -45,6 +45,8 @@ public:
 
 
     void wait(uint16_t multiplicator);
+    void playEepromNotes(Robot& robot);
+
 
 };
 
