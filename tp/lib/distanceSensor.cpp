@@ -1,5 +1,6 @@
 #define F_CPU 8000000UL
 #include "libstatique.hpp"
+#include "robot.hpp"
 #include "distanceSensor.hpp"
 #include "debug.hpp"
 
@@ -75,7 +76,7 @@ void DistanceSensor::evacuatePoteau(Robot& robot) {
     blinkGreenClear(robot);
 }
 
-void DistanceSensor::scanRoom(Robot& robot, Direction dir, uint16_t EEPROM_ADDR_LOCAL) {
+void DistanceSensor::scanRoom(Robot& robot, EEPROMAddress addr , Direction dir) { //marc (adresse 10(A)-13(D))
 
     uint16_t elapsed = 0;
     uint8_t localCount = 0;
@@ -86,7 +87,7 @@ void DistanceSensor::scanRoom(Robot& robot, Direction dir, uint16_t EEPROM_ADDR_
             if (!objectPresent_) {
                 objectPresent_ = true;
                 localCount++;
-                eeprom_.ecriture(EEPROM_ADDR_LOCAL, localCount);
+                eeprom_.ecriture(addr, localCount);
             }
             evacuatePoteau(robot);
             objectPresent_ = false;

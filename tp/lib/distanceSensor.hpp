@@ -6,7 +6,7 @@
 #include "can.h"
 #include "robot.hpp"
 #include "memoire_24.h"
-
+#include "eepromAdresses.hpp"
 static const uint16_t POTEAU_THRESHOLD = 100;
 static const uint16_t SPIN_SPEED       = 100;
 static const uint16_t FULL_ROTATION_MS = 2800;
@@ -14,7 +14,7 @@ static const uint8_t  SCAN_STEP_MS     = 20;
 static const uint16_t NOTE_GAP_MS      = 125;
 static const uint16_t NOTE_DURATION_MS = 25;
 static const uint8_t  PORT_POSITION    = 5;
-
+class Robot;
 enum Direction { LEFT, RIGHT };
 
 class DistanceSensor
@@ -32,7 +32,7 @@ public:
     void sortArray(uint16_t array[], uint8_t size);
 
 
-    void scanRoom(Robot& robot, Direction dir = LEFT, uint16_t EEPROM_ADDR_LOCAL = EEPROM_ADDR_LOCAL_A);
+    void scanRoom(Robot& robot, EEPROMAddress addr ,Direction dir = LEFT);
 
     void evacuatePoteau(Robot& robot);
 
@@ -49,7 +49,7 @@ private:
 
     uint16_t readings[N_READINGS];
 
-    static const uint16_t EEPROM_ADDR_LOCAL_A = 0x0000;
+    // static const uint16_t EEPROM_ADDR_LOCAL_A = 0x0000; 
 
     Memoire24CXXX eeprom_;
     bool objectPresent_ = false;
