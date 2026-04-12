@@ -2,6 +2,7 @@
 #define F_CPU 8000000UL
 #include <avr/io.h>
 #include "memoire_24.h"
+#include "libstatique.hpp"
 
 #define sensor1 PA0
 #define sensor2 PA1

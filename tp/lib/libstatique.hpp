@@ -14,14 +14,14 @@ Description : Regroupe les inclusions de toutes les bibliothèques statiques du 
 #include <debug.hpp>
 #include <interpreter.hpp>
 #include <memoryReader.hpp>
-#include <motor.hpp>
 #include <robot.hpp>
+#include <motor.hpp>
 #include <sound.hpp>
 #include <timer.hpp>
 #include <wheel.hpp>
 #include <sound.hpp> 
 #include <memoryReader.hpp>  
 #include <interpreter.hpp> 
-#include <robot.hpp>
 #include <lineSensor.hpp>
 #include <distanceSensor.hpp>
+#include <eepromAdresses.hpp>

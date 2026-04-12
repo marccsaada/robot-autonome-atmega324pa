@@ -80,7 +80,7 @@ bool LineSensor::isOnRightLine() {
 // RIGHT OFFSET : (PINA & (1 << sensor5)) && ( (PINA & (1 << sensor1)) || (PINA & (1 << sensor2)) )
 // NO   OFFSET : (offTrackAmount() < 3) && ( (PINA & (1 << sensor2) || PINA & (1 << sensor3) || PINA & (1 << sensor4) )
 
-bool LineSensor::findDamage() {
+bool LineSensor::findDamage(EEPROMAddress addr) { //marc (adresse 14(OUEST)-15(EST))
     bool damagePresent = !robotBumpLine() && (
         ((PINA & (1 << sensor1)) && ( (PINA & (1 << sensor4)) || (PINA & (1 << sensor5)) )) // LEFT OFFSET
      || ((PINA & (1 << sensor5)) && ( (PINA & (1 << sensor1)) || (PINA & (1 << sensor2)) )) // RIGHT OFFSET
@@ -98,13 +98,14 @@ bool LineSensor::findDamage() {
         if (!robotBumpLine()) { 
             nDamage_++;
             led1.off();
+            eeprom_.ecriture(addr, nDamage_); //marc
             return true;
         }
     }
     return false;
 }
 
-void LineSensor::findObject(uint16_t EEPROM_ADDR_LOCAL) {
+void LineSensor::findObject(EEPROMAddress addr) { //marc (adresse 11(B)-12(C))
     bool objectPresent = robotBumpLine();
 
     if (objectPresent) { 
@@ -117,7 +118,7 @@ void LineSensor::findObject(uint16_t EEPROM_ADDR_LOCAL) {
         _delay_ms(200);
         if (!robotBumpLine()) { 
             nObjects_++;
-            eeprom_.ecriture(EEPROM_ADDR_LOCAL, nObjects_);
+            eeprom_.ecriture(addr, nObjects_);
         }
     }
     led1.off();
