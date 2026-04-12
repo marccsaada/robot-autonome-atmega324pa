@@ -210,7 +210,7 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             if (robot.lineSensor.isRightWall() && robot.lineSensor.isOnLeftLine())
                 robot.motor.goForward(LEFT_DEFAULT_SPEED/1.5, RIGHT_DEFAULT_SPEED);
 
-            robot.lineSensor.findDamage();
+            robot.lineSensor.findDamage(DAMAGE_EST);
 
             followPath();
             break;
@@ -227,7 +227,6 @@ void movementLogic(Action& currentAction, Action& previousAction) {
                 _delay_ms(200);
                 timer.stopTimer();
                 ticks = 0;
-                currentAction = Action::SECOND_CORRIDOR;
             }
             break;
             
@@ -264,7 +263,7 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             if (previousAction != Action::PEOPLE_ROOM) { // Enter the room, scan the room
                 if (turnDirection == 0) robot.motor.spinLeft(45);
                 else robot.motor.spinRight(45);
-                distanceSensor.scanRoom(robot, turnDirection == 0 ? LEFT : RIGHT);
+                distanceSensor.scanRoom(robot, PERSON_A, turnDirection == 0 ? LEFT : RIGHT);
                 previousAction = Action::PEOPLE_ROOM;
             }
 
@@ -288,7 +287,7 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             robot.motor.goForward(109, 115);
 
             while (ticks < 300) { // detect object for n seconds
-                robot.lineSensor.findObject(13);
+                robot.lineSensor.findObject(OBJECT_B);
             }
 
             while (!robot.lineSensor.robotBumpLine()) { // Once the timer is over, 180 and go forward till wall is found
@@ -320,7 +319,7 @@ void movementLogic(Action& currentAction, Action& previousAction) {
                 robot.motor.goForward(LEFT_DEFAULT_SPEED/1.5, RIGHT_DEFAULT_SPEED);
 
             followPath();
-            robot.lineSensor.findDamage();
+            robot.lineSensor.findDamage(DAMAGE_OUEST);
             break;
 
         case Action::FOURTH_TURN: //completed
@@ -435,10 +434,10 @@ void switchLogic(Action& currentAction, Action& previousAction) {
             break;
 
         case Action::SECOND_TURN:
-            // if (robot.lineSensor.robotMiddle()) {
-            //     _delay_ms(500);
-            //     currentAction = Action::SECOND_CORRIDOR;
-            // }
+            if (robot.lineSensor.robotMiddle()) {
+                _delay_ms(500);
+                currentAction = Action::SECOND_CORRIDOR;
+            }
             break;
         
         case Action::SECOND_CORRIDOR:  
