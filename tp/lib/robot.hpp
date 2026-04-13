@@ -35,6 +35,7 @@ public:
     LED led;
     Sound sound;
     Button button;
+
     LineSensor lineSensor;
     
     uint8_t direction;

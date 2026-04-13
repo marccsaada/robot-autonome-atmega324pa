@@ -253,18 +253,23 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             }
             else if (roomCount == 1) { // ROOM B OR C
                 timer.startTimer();
-                while (ticks < 600) { followPath(); }
+                while (ticks < 580) { followPath(); }
                 timer.stopTimer();
                 ticks = 0;
             }
             else if (roomCount == 2) { // ROOM B OR C
                 timer.startTimer();
-                while (ticks < 600) { followPath(); }
+                while (ticks < 440) { followPath(); }
                 timer.stopTimer();
                 ticks = 0;
             }
             else if (roomCount == 3) { // ROOM A OR D
-                followPath();
+                timer.startTimer();
+                while (ticks < 465) { followPath(); }
+                robot.motor.stop();
+                _delay_ms(2000);
+                timer.stopTimer();
+                ticks = 0;
             }
             else if (roomCount == 4) {
                 currentAction = Action::THIRD_TURN; // Transition to the second turn
@@ -311,8 +316,8 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             break;
 
         case Action::OBJECT_ROOM:
-        if (previousAction != Action::OBJECT_ROOM)
-        { // Turn towards the room
+        // if (previousAction != Action::OBJECT_ROOM) { // Turn towards the room
+            _delay_ms(500);
             if (turnDirection == 0) robot.motor.spinLeft(90);
             else                    robot.motor.spinRight(90);
 
@@ -321,54 +326,68 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             _delay_ms(1000);
 
             timer.startTimer();
-            robot.motor.goForward(109, 115);
+            robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
 
             while (ticks < 200) { // detect object for n seconds
                 robot.lineSensor.findObject(OBJECT_B);
             }
+            robot.led.off();
 
             while (!robot.lineSensor.robotBumpLine()) { // Once the timer is over, 180 and go forward till wall is found
-                robot.motor.goForward(105, 100);
+                robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
             }
+
             robot.motor.stop();
             _delay_ms(2000);
-            if (turnDirection == 0) robot.motor.spinLeft(157);
-            else                    robot.motor.spinRight(157);
+            if (turnDirection == 0) robot.motor.spinRight(169);
+            else robot.motor.spinLeft(167);
             robot.motor.stop();
             _delay_ms(1000);
 
             timer.stopTimer();
             ticks = 0;
-
-            _delay_ms(50);
             
              while (!robot.lineSensor.robotBumpLine()) {
-                robot.motor.goForward(105, 100);
+                robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
             }
-            
-            turn();
-        }
+            robot.motor.stop();
 
+            _delay_ms(500);
+
+            if (!robot.lineSensor.robotBumpLine()) {
+                robot.motor.goBackward(200, 200);
+                _delay_ms(100);
+                while (!robot.lineSensor.robotBumpLine()) {
+                    robot.motor.goBackward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
+
+                }
+                robot.motor.stop();
+            }
+
+                robot.motor.goForward(0, RIGHT_DEFAULT_SPEED);
+                _delay_ms(700);
+
+                while (!(robot.lineSensor.offTrackAmount() <= 3 && robot.lineSensor.offTrackRight())) {
+                }
+            
+            // _delay_ms(500); 
+
+            while (!robot.lineSensor.robotMiddle()) {
+                turn();
+            }
+        // }
+            previousAction = Action::OBJECT_ROOM;
             break;
         
         case Action::THIRD_TURN: //completed
             turn();
             break;
 
-        case Action::THIRD_CORRIDOR: //completed
-                                                                                                            // PEUTETRE ENLEVER
-            if (robot.lineSensor.isLeftWall() && robot.lineSensor.isOnRightLine()) {
-                robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED/1.5);
-                _delay_ms(200);
-            }
-
-            else if (robot.lineSensor.isRightWall() && robot.lineSensor.isOnLeftLine()) { 
-                robot.motor.goForward(LEFT_DEFAULT_SPEED/1.5, RIGHT_DEFAULT_SPEED);
-                _delay_ms(200);
-            }
-
-            followPath();
-            robot.lineSensor.findDamage(DAMAGE_OUEST);
+        case Action::THIRD_CORRIDOR: //completed                                                                                                       // PEUTETRE ENLEVER
+            if (robot.lineSensor.findDamage(DAMAGE_OUEST)) {
+                followLine();
+            }   
+            else followPath();
             break;
 
         case Action::FOURTH_TURN: //completed
@@ -498,6 +517,8 @@ void switchLogic(Action& currentAction, Action& previousAction) {
 
                 while (!(robot.lineSensor.offTrackAmount() >= 3 && robot.lineSensor.offTrackRight())) {
                 }
+                robot.lineSensor.setPreviousDamageState(false);
+                robot.led.off();
                 currentAction = Action::SECOND_TURN; // Transition to the second turn
 
             }
@@ -558,7 +579,24 @@ void switchLogic(Action& currentAction, Action& previousAction) {
 
         case Action::THIRD_CORRIDOR: //completed
             if (robot.lineSensor.robotBumpLine()) {
+                robot.motor.stop();
+                _delay_ms(1000);
+
+
+                while (!robot.lineSensor.robotBumpLine()) {
+                    robot.motor.goBackward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
+                }
+                robot.motor.stop();
+                
+                robot.motor.goForward(0, RIGHT_DEFAULT_SPEED);
+                _delay_ms(1000);
+
+                while (!(robot.lineSensor.offTrackAmount() >= 3 && robot.lineSensor.offTrackRight())) {
+                }
+                robot.lineSensor.setPreviousDamageState(false);
+                robot.led.off();
                 currentAction = Action::FOURTH_TURN; // Transition to the second turn
+
             }
             break;
 
@@ -606,7 +644,7 @@ void switchLogic(Action& currentAction, Action& previousAction) {
     sei();
 
     _delay_ms(500);
-    Action currentAction = Action::FIRST_CORRIDOR;
+    Action currentAction = Action::PARKING;
     Action previousAction = static_cast<Action>(-1);
 
     while (true) {

@@ -102,6 +102,7 @@ bool LineSensor::findDamage(EEPROMAddress addr) { //marc (adresse 14(OUEST)-15(E
             return true;
         }
     }
+    previousDamageState_ = false;
     led1.off();
     return false;
 }
