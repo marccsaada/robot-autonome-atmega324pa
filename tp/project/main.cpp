@@ -6,7 +6,7 @@ Robot robot;
 Timer timer(Timer::TIMER1);
 DistanceSensor distanceSensor;
 
-const uint8_t LEFT_DEFAULT_SPEED = 110;
+const uint8_t LEFT_DEFAULT_SPEED = 115;
 const uint8_t RIGHT_DEFAULT_SPEED = 110;
 uint8_t stepCount = 0;
 bool completeTurn = false;
@@ -99,13 +99,13 @@ void followPath() {
 
 void followLine() { 
     if (robot.lineSensor.getSensor(1)) {
-        robot.motor.goForward(LEFT_DEFAULT_SPEED/1.2, RIGHT_DEFAULT_SPEED);
+        robot.motor.goForward(/*LEFT_DEFAULT_SPEED*/110/1.3, /*RIGHT_DEFAULT_SPEED*/ 110);
     }
     else if (robot.lineSensor.getSensor(3)) {
-        robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED/1.2);
+        robot.motor.goForward(/*LEFT_DEFAULT_SPEED*/ 110, /*LEFT_DEFAULT_SPEED*/110/1.3);
     }
      else {
-        robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
+        robot.motor.goForward(/*LEFT_DEFAULT_SPEED*/ 110, /*RIGHT_DEFAULT_SPEED*/ 110);
     }
     // followPath();
 }
@@ -245,7 +245,7 @@ void movementLogic(Action& currentAction, Action& previousAction) {
         case Action::SECOND_CORRIDOR:
             if (roomCount == 0) { // ROOM A OR D
                 timer.startTimer();
-                while (ticks < 225) { followPath(); }
+                while (ticks < 245) { followPath(); }
                 robot.motor.stop();
                 _delay_ms(2000);
                 timer.stopTimer();
@@ -253,26 +253,23 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             }
             else if (roomCount == 1) { // ROOM B OR C
                 timer.startTimer();
-                while (ticks < 580) { followPath(); }
+                while (ticks < 617) { followPath(); }
                 timer.stopTimer();
                 ticks = 0;
             }
             else if (roomCount == 2) { // ROOM B OR C
                 timer.startTimer();
-                while (ticks < 440) { followPath(); }
+                while (ticks < 413) { followPath(); }
                 timer.stopTimer();
                 ticks = 0;
             }
             else if (roomCount == 3) { // ROOM A OR D
                 timer.startTimer();
-                while (ticks < 465) { followPath(); }
+                while (ticks < 580) { followPath(); }
                 robot.motor.stop();
                 _delay_ms(2000);
                 timer.stopTimer();
                 ticks = 0;
-            }
-            else if (roomCount == 4) {
-                currentAction = Action::THIRD_TURN; // Transition to the second turn
             }
             break;
 
@@ -281,7 +278,7 @@ void movementLogic(Action& currentAction, Action& previousAction) {
         case Action::PEOPLE_ROOM: //COMPLET
             if (previousAction != Action::PEOPLE_ROOM) { // Enter the room, scan the room
                 if (turnDirection == 0) {
-                robot.motor.spinLeft(125); // 120 degree turn
+                robot.motor.spinLeft(135); // 120 degree turn
                 robot.motor.stop();
                 _delay_ms(800);
                 }
@@ -318,7 +315,7 @@ void movementLogic(Action& currentAction, Action& previousAction) {
         case Action::OBJECT_ROOM:
         // if (previousAction != Action::OBJECT_ROOM) { // Turn towards the room
             _delay_ms(500);
-            if (turnDirection == 0) robot.motor.spinLeft(90);
+            if (turnDirection == 0) robot.motor.spinLeft(105);
             else                    robot.motor.spinRight(90);
 
             robot.motor.stop();
@@ -326,21 +323,21 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             _delay_ms(1000);
 
             timer.startTimer();
-            robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
+            robot.motor.goForward(110, 110);
 
-            while (ticks < 200) { // detect object for n seconds
+            while (ticks < 260) { // detect object for n seconds
                 robot.lineSensor.findObject(OBJECT_B);
             }
             robot.led.off();
 
             while (!robot.lineSensor.robotBumpLine()) { // Once the timer is over, 180 and go forward till wall is found
-                robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
+                robot.motor.goForward(110, 110);
             }
 
             robot.motor.stop();
             _delay_ms(2000);
-            if (turnDirection == 0) robot.motor.spinRight(169);
-            else robot.motor.spinLeft(167);
+            if (turnDirection == 0) robot.motor.spinRight(195);
+            else robot.motor.spinLeft(198);
             robot.motor.stop();
             _delay_ms(1000);
 
@@ -380,10 +377,30 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             break;
         
         case Action::THIRD_TURN: //completed
-            turn();
+            if (previousAction != Action::THIRD_TURN) { 
+                if (!robot.lineSensor.robotBumpLine()) { 
+                    while (!robot.lineSensor.robotBumpLine()) {
+                    robot.motor.goBackward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
+                    }    
+                }
+                previousAction = Action::THIRD_TURN;            
+            }
+            else {
+                turn();
+            }
             break;
 
-        case Action::THIRD_CORRIDOR: //completed                                                                                                       // PEUTETRE ENLEVER
+        case Action::THIRD_CORRIDOR: //completed
+            if (previousAction != Action::THIRD_CORRIDOR) {
+                timer.startTimer();
+                while (ticks < 150) {
+                    followPath();
+                }
+                timer.stopTimer();
+                ticks = 0;
+                previousAction = Action::THIRD_CORRIDOR;
+            }
+            
             if (robot.lineSensor.findDamage(DAMAGE_OUEST)) {
                 followLine();
             }   
@@ -546,6 +563,8 @@ void switchLogic(Action& currentAction, Action& previousAction) {
             }
             else if (roomCount == 4) {
                 while (!robot.lineSensor.robotBumpLine()) { followPath(); }
+                robot.motor.stop();
+                _delay_ms(500);
                 currentAction = Action::THIRD_TURN; // Transition to the second turn
             }
             break;
