@@ -157,6 +157,47 @@ void followWall() {
     else followLeftWall();
 }
 
+// At a corridor end: back up onto the intersection line if needed, then do a short
+// blind pivot in the turn direction. After this, turn() takes over in the turn state.
+void alignToTurn() {
+    robot.motor.stop();
+    _delay_ms(1000);
+
+    if (!robot.lineSensor.robotBumpLine()) {
+        while (!robot.lineSensor.robotBumpLine())
+            robot.motor.goBackward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
+        robot.motor.stop();
+    }
+
+    if (turnDirection == 0)
+        robot.motor.goForward(0, RIGHT_DEFAULT_SPEED);
+    else
+        robot.motor.goForward(LEFT_DEFAULT_SPEED, 0);
+    _delay_ms(1000);
+}
+
+// Returns true when a turn is genuinely complete.
+// Security 1: if the robot overshot (bumpLine after robotMiddle), back up to the line.
+// Security 2: spin for 700 ms in the turn direction before confirming, to filter false detections.
+bool confirmTurn() {
+    if (!robot.lineSensor.robotMiddle()) return false;
+
+    if (robot.lineSensor.robotBumpLine()) {
+        while (!robot.lineSensor.robotBumpLine())
+            robot.motor.goBackward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
+        robot.motor.stop();
+        return false;
+    }
+
+    // if (turnDirection == 0)
+    //     robot.motor.goForward(0, RIGHT_DEFAULT_SPEED);
+    // else
+    //     robot.motor.goForward(LEFT_DEFAULT_SPEED, 0);
+    // _delay_ms(200);
+
+    return true;
+}
+
 void movementLogic(Action& currentAction, Action& previousAction) {
     switch (currentAction) {
         case Action::PARKING:   //parking a swit
@@ -229,11 +270,20 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             // robot.lineSensor.findDamage(DAMAGE_EST);
 
             // followPath();
-
+            timer.startTimer();
+            while (ticks < 400) {
             if (robot.lineSensor.findDamage(DAMAGE_EST)) {
                 followLine();
             }   
             else followPath();
+            }
+            timer.stopTimer();
+            ticks = 0;
+
+            while (!robot.lineSensor.robotBumpLine()) {
+                followPath();
+            }
+            
             break;
 
 
@@ -282,22 +332,11 @@ void movementLogic(Action& currentAction, Action& previousAction) {
                 robot.motor.stop();
                 _delay_ms(800);
                 }
-                else robot.motor.spinRight(45);                                         // A CHANGER
+                else robot.motor.spinRight(135);                                         // A CHANGER
                 distanceSensor.scanRoom(robot, PERSON_A, turnDirection == 0 ? LEFT : RIGHT);
                 // _delay_ms(3000); 
                 previousAction = Action::PEOPLE_ROOM;
             }
-
-            // if (turnDirection == 0)
-            //     while (!robot.lineSensor.offTrackLeft()) robot.motor.spinLeftSpeed(100);
-            // else
-            //     while (!robot.lineSensor.offTrackLeft()) robot.motor.spinLeftSpeed(100); // A CHANGER
-
-            // _delay_ms(1000);
-
-            // while (!robot.lineSensor.robotBumpLine()) {
-            //     robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
-            // }
 
             while(!(robot.lineSensor.offTrackLeft() && robot.lineSensor.offTrackAmount() < 3)) { 
                 robot.motor.spinRightSpeed(100); 
@@ -377,17 +416,7 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             break;
         
         case Action::THIRD_TURN: //completed
-            if (previousAction != Action::THIRD_TURN) { 
-                if (!robot.lineSensor.robotBumpLine()) { 
-                    while (!robot.lineSensor.robotBumpLine()) {
-                    robot.motor.goBackward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
-                    }    
-                }
-                previousAction = Action::THIRD_TURN;            
-            }
-            else {
-                turn();
-            }
+            turn();
             break;
 
         case Action::THIRD_CORRIDOR: //completed
@@ -401,10 +430,20 @@ void movementLogic(Action& currentAction, Action& previousAction) {
                 previousAction = Action::THIRD_CORRIDOR;
             }
             
-            if (robot.lineSensor.findDamage(DAMAGE_OUEST)) {
+            timer.startTimer();
+            while (ticks < 400) {
+            if (robot.lineSensor.findDamage(DAMAGE_EST)) {
                 followLine();
             }   
             else followPath();
+            }
+            timer.stopTimer();
+            ticks = 0;
+            
+            while (!robot.lineSensor.robotBumpLine()) {
+                followPath();
+            }
+            
             break;
 
         case Action::FOURTH_TURN: //completed
@@ -483,69 +522,28 @@ void switchLogic(Action& currentAction, Action& previousAction) {
                 currentAction = Action::AFTER_PARKING;
             }
             break;
-        case Action::AFTER_PARKING:  //
+        case Action::AFTER_PARKING:
             if (robot.lineSensor.robotBumpLine()) {
-        
-                robot.motor.stop();
-                _delay_ms(1000);
-
-                if (!robot.lineSensor.robotBumpLine()) {
-                    robot.motor.goBackward(200, 200);
-                    _delay_ms(100);
-                    while (!robot.lineSensor.robotBumpLine()) {
-                        robot.motor.goBackward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
-
-                    }
-                    robot.motor.stop();
-                }
-
-                
-
-                robot.motor.goForward(0, RIGHT_DEFAULT_SPEED);
-                _delay_ms(1000);
-
-                while (!(robot.lineSensor.offTrackAmount() >= 3 && robot.lineSensor.offTrackRight())) {
-                }
-
+                alignToTurn();
                 currentAction = Action::FIRST_TURN;
             }
             break;
 
         case Action::FIRST_TURN:
-            if (robot.lineSensor.robotMiddle()) {
-                _delay_ms(500);
-                currentAction = Action::FIRST_CORRIDOR;
-            }
+            if (confirmTurn()) currentAction = Action::FIRST_CORRIDOR;
             break;
 
-        case Action::FIRST_CORRIDOR:  
+        case Action::FIRST_CORRIDOR:
             if (robot.lineSensor.robotBumpLine()) {
-                robot.motor.stop();
-                _delay_ms(1000);
-
-
-                while (!robot.lineSensor.robotBumpLine()) {
-                    robot.motor.goBackward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
-                }
-                robot.motor.stop();
-                
-                robot.motor.goForward(0, RIGHT_DEFAULT_SPEED);
-                _delay_ms(1000);
-
-                while (!(robot.lineSensor.offTrackAmount() >= 3 && robot.lineSensor.offTrackRight())) {
-                }
+                alignToTurn();
                 robot.lineSensor.setPreviousDamageState(false);
                 robot.led.off();
-                currentAction = Action::SECOND_TURN; // Transition to the second turn
-
+                currentAction = Action::SECOND_TURN;
             }
             break;
 
         case Action::SECOND_TURN:
-            if (robot.lineSensor.robotMiddle()) {
-                _delay_ms(500);
-                currentAction = Action::SECOND_CORRIDOR;
-            }
+            if (confirmTurn()) currentAction = Action::SECOND_CORRIDOR;
             break;
         
         case Action::SECOND_CORRIDOR:  
@@ -563,9 +561,8 @@ void switchLogic(Action& currentAction, Action& previousAction) {
             }
             else if (roomCount == 4) {
                 while (!robot.lineSensor.robotBumpLine()) { followPath(); }
-                robot.motor.stop();
-                _delay_ms(500);
-                currentAction = Action::THIRD_TURN; // Transition to the second turn
+                alignToTurn();
+                currentAction = Action::THIRD_TURN;
             }
             break;
 
@@ -589,41 +586,21 @@ void switchLogic(Action& currentAction, Action& previousAction) {
             }
             break;
         
-        case Action::THIRD_TURN: //completed
-            if (robot.lineSensor.robotMiddle()) {
-                _delay_ms(500);
-                currentAction = Action::THIRD_CORRIDOR;
-            }
+        case Action::THIRD_TURN:
+            if (confirmTurn()) currentAction = Action::THIRD_CORRIDOR;
             break;
 
-        case Action::THIRD_CORRIDOR: //completed
+        case Action::THIRD_CORRIDOR:
             if (robot.lineSensor.robotBumpLine()) {
-                robot.motor.stop();
-                _delay_ms(1000);
-
-
-                while (!robot.lineSensor.robotBumpLine()) {
-                    robot.motor.goBackward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
-                }
-                robot.motor.stop();
-                
-                robot.motor.goForward(0, RIGHT_DEFAULT_SPEED);
-                _delay_ms(1000);
-
-                while (!(robot.lineSensor.offTrackAmount() >= 3 && robot.lineSensor.offTrackRight())) {
-                }
+                alignToTurn();
                 robot.lineSensor.setPreviousDamageState(false);
                 robot.led.off();
-                currentAction = Action::FOURTH_TURN; // Transition to the second turn
-
+                currentAction = Action::FOURTH_TURN;
             }
             break;
 
-        case Action::FOURTH_TURN: //completed
-            if (robot.lineSensor.robotMiddle()) {
-                _delay_ms(500);
-                currentAction = Action::ENTER_PARKING;
-            }
+        case Action::FOURTH_TURN:
+            if (confirmTurn()) currentAction = Action::ENTER_PARKING;
             break;
             
         case Action::ENTER_PARKING: //completed
@@ -669,6 +646,5 @@ void switchLogic(Action& currentAction, Action& previousAction) {
     while (true) {
         movementLogic(currentAction, previousAction);
         switchLogic(currentAction, previousAction);
-        // followLine();
     }
 }
