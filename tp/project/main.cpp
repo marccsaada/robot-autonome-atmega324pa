@@ -188,13 +188,6 @@ bool confirmTurn() {
         robot.motor.stop();
         return false;
     }
-
-    // if (turnDirection == 0)
-    //     robot.motor.goForward(0, RIGHT_DEFAULT_SPEED);
-    // else
-    //     robot.motor.goForward(LEFT_DEFAULT_SPEED, 0);
-    // _delay_ms(200);
-
     return true;
 }
 
@@ -325,20 +318,8 @@ void movementLogic(Action& currentAction, Action& previousAction) {
 
 
 
-        case Action::PEOPLE_ROOM: //COMPLET
-            if (previousAction != Action::PEOPLE_ROOM) { // Enter the room, scan the room
-                if (turnDirection == 0) {
-                robot.motor.spinLeft(135); // 120 degree turn
-                robot.motor.stop();
-                _delay_ms(800);
-                }
-                else robot.motor.spinRight(135);                                         // A CHANGER
-                distanceSensor.scanRoom(robot, PERSON_A, turnDirection == 0 ? LEFT : RIGHT);
-                // _delay_ms(3000); 
-                previousAction = Action::PEOPLE_ROOM;
-            }
-
-            while(!(robot.lineSensor.offTrackLeft() && robot.lineSensor.offTrackAmount() < 3)) { 
+        case Action::PEOPLE_ROOM:
+            while(!(robot.lineSensor.offTrackLeft() && robot.lineSensor.offTrackAmount() < 3)) {
                 robot.motor.spinRightSpeed(100); 
             }
 
@@ -352,15 +333,6 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             break;
 
         case Action::OBJECT_ROOM:
-        // if (previousAction != Action::OBJECT_ROOM) { // Turn towards the room
-            _delay_ms(500);
-            if (turnDirection == 0) robot.motor.spinLeft(105);
-            else                    robot.motor.spinRight(90);
-
-            robot.motor.stop();
-
-            _delay_ms(1000);
-
             timer.startTimer();
             robot.motor.goForward(110, 110);
 
@@ -443,7 +415,7 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             while (!robot.lineSensor.robotBumpLine()) {
                 followPath();
             }
-            
+
             break;
 
         case Action::FOURTH_TURN: //completed
@@ -546,18 +518,24 @@ void switchLogic(Action& currentAction, Action& previousAction) {
             if (confirmTurn()) currentAction = Action::SECOND_CORRIDOR;
             break;
         
-        case Action::SECOND_CORRIDOR:  
-            if (roomCount == 0) { // ROOM A OR D
-                currentAction = Action::PEOPLE_ROOM; // Transition to the second turn
+        case Action::SECOND_CORRIDOR:
+            if (roomCount == 0 || roomCount == 3) { // PEOPLE ROOM
+                if (turnDirection == 0) {
+                    robot.motor.spinLeft(135);
+                    robot.motor.stop();
+                    _delay_ms(800);
+                }
+                else robot.motor.spinRight(135);
+                distanceSensor.scanRoom(robot, PERSON_A, turnDirection == 0 ? LEFT : RIGHT);
+                currentAction = Action::PEOPLE_ROOM;
             }
-            else if (roomCount == 1) { // ROOM B OR C
-                currentAction = Action::OBJECT_ROOM; // Transition to the second turn
-            }
-            else if (roomCount == 2) { // ROOM B OR C
-                currentAction = Action::OBJECT_ROOM; // Transition to the second turn
-            }
-            else if (roomCount == 3) { // ROOM A OR D
-                currentAction = Action::PEOPLE_ROOM; // Transition to the second turn
+            else if (roomCount == 1 || roomCount == 2) { // OBJECT ROOM
+                _delay_ms(500);
+                if (turnDirection == 0) robot.motor.spinLeft(105);
+                else                    robot.motor.spinRight(90);
+                robot.motor.stop();
+                _delay_ms(1000);
+                currentAction = Action::OBJECT_ROOM;
             }
             else if (roomCount == 4) {
                 while (!robot.lineSensor.robotBumpLine()) { followPath(); }
