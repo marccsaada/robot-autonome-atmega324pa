@@ -103,13 +103,12 @@ int main() {
 //     DistanceSensor sensor; 
 //     Robot robot;
 //     UART uart;
-//     Memoire24CXXX eeprom;
 //     uint16_t EEPROM_ADDR_BASE = 10;
 //     static const uint8_t NB_ZONES = 6;
 
-//     for (uint8_t i = 0; i < NB_ZONES; i++) {
-//     uint8_t zero = 0;
-//     eeprom.ecriture(EEPROM_ADDR_BASE + i, zero);
+//     Memoire24CXXX eeprom;
+//     for (uint8_t i = 0; i < 6; i++) {
+//     eeprom.ecriture(10 + i, 0);
 //     _delay_ms(5);
 // }
 

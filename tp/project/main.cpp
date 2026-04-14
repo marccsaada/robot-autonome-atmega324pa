@@ -6,7 +6,7 @@ Robot robot;
 Timer timer(Timer::TIMER1);
 DistanceSensor distanceSensor;
 
-const uint8_t LEFT_DEFAULT_SPEED = 115;
+const uint8_t LEFT_DEFAULT_SPEED = 110;
 const uint8_t RIGHT_DEFAULT_SPEED = 110;
 uint8_t stepCount = 0;
 bool completeTurn = false;
@@ -36,6 +36,18 @@ enum class Action {
     ENTER_PARKING,
     COMPLETE_PARKING,
     END,
+};
+
+enum class Alignment {
+    DEFAULT,
+    LEFT,
+    RIGHT
+};
+
+enum class Speed {
+    SLOW,
+    DEFAULT,
+    FAST
 };
 
 ISR(TIMER1_COMPA_vect) {
@@ -70,27 +82,38 @@ void turnRight() {
     // Virage à gauche proportionnel: plus de capteurs noirs = arc plus serré
     // Aucun delay → le robot lit les capteurs à chaque itération sans jamais dépasser le tape
     uint8_t rightSpeed;
-    const uint8_t leftSpeed = LEFT_DEFAULT_SPEED;
+    const uint8_t leftSpeed = LEFT_DEFAULT_SPEED + 18;
 
-    if      (count == 5) rightSpeed = 0;    // pivot sur place (mur droit devant)
+    if      (count == 5 || robot.lineSensor.offTrackLeft()) rightSpeed = 0;    // pivot sur place (mur droit devant)
     else if (count == 4) rightSpeed = 0;
     else if (count == 3) rightSpeed = 0;
-    else if (count == 2) rightSpeed = 65;
-    else if (count == 1) rightSpeed = 75;
+    else if (count == 2) rightSpeed = 95;
+    else if (count == 1) rightSpeed = 100;
     else                 rightSpeed = RIGHT_DEFAULT_SPEED;  // aucun capteur → tout droit
 
     robot.motor.goForward(leftSpeed, rightSpeed);
 }
 
-void followPath() { 
-    uint8_t leftWheelSpeed = LEFT_DEFAULT_SPEED-10;
-    uint8_t rightWheelSpeed = RIGHT_DEFAULT_SPEED-10;
+void followPath(Alignment alignement) { 
+
+    uint8_t leftWheelSpeed = LEFT_DEFAULT_SPEED;
+    uint8_t rightWheelSpeed = RIGHT_DEFAULT_SPEED;
+
+    if (alignement == Alignment::LEFT) {
+        leftWheelSpeed = LEFT_DEFAULT_SPEED - 8;
+        rightWheelSpeed = RIGHT_DEFAULT_SPEED + 3;
+
+    } else if (alignement == Alignment::RIGHT) {
+        leftWheelSpeed = LEFT_DEFAULT_SPEED + 3;
+        rightWheelSpeed = RIGHT_DEFAULT_SPEED - 8;
+
+    } else if (alignement == Alignment::DEFAULT) {}
+
     
     if (robot.lineSensor.offTrackLeft()) { 
         leftWheelSpeed += robot.lineSensor.offTrackAmount() * 30;
         rightWheelSpeed -= robot.lineSensor.offTrackAmount() * 5;
-    }
-    else if (robot.lineSensor.offTrackRight()) { 
+    } else if (robot.lineSensor.offTrackRight()) { 
         rightWheelSpeed += robot.lineSensor.offTrackAmount() * 30;
         leftWheelSpeed -= robot.lineSensor.offTrackAmount() * 5;
     }
@@ -99,15 +122,14 @@ void followPath() {
 
 void followLine() { 
     if (robot.lineSensor.getSensor(1)) {
-        robot.motor.goForward(/*LEFT_DEFAULT_SPEED*/110/1.3, /*RIGHT_DEFAULT_SPEED*/ 110);
+        robot.motor.goForward(LEFT_DEFAULT_SPEED / 1.3, 110);
     }
     else if (robot.lineSensor.getSensor(3)) {
-        robot.motor.goForward(/*LEFT_DEFAULT_SPEED*/ 110, /*LEFT_DEFAULT_SPEED*/110/1.3);
+        robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED / 1.3);
     }
      else {
-        robot.motor.goForward(/*LEFT_DEFAULT_SPEED*/ 110, /*RIGHT_DEFAULT_SPEED*/ 110);
+        robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
     }
-    // followPath();
 }
 
 void turn() {
@@ -137,19 +159,32 @@ void followLeftWall() {
 }
 
 void followRightWall() {
-    uint8_t leftWheelSpeed = LEFT_DEFAULT_SPEED;
-    uint8_t rightWheelSpeed = RIGHT_DEFAULT_SPEED;
-    uint8_t amount = robot.lineSensor.offTrackAmount();
+    uint8_t leftWheelSpeed = LEFT_DEFAULT_SPEED-30;
+    uint8_t rightWheelSpeed = RIGHT_DEFAULT_SPEED-30;
+    // uint8_t amount = robot.lineSensor.offTrackAmount();
 
-    if (robot.lineSensor.offTrackRight() && amount >= 1) {
-        // Too close to right wall → turn left to move away
-        leftWheelSpeed -= amount * 5;
-        rightWheelSpeed += amount * 20;
-    } else {
-        // Right wall not detected → gentle right drift to re-acquire it
-        rightWheelSpeed -= robot.lineSensor.offTrackAmount() * 5;
+    // if (robot.lineSensor.offTrackRight() && amount >= 1) {
+    //     // Too close to right wall → turn left to move away
+    //     leftWheelSpeed -= amount * 5;
+    //     rightWheelSpeed += amount * 20;
+    // } else {
+    //     // Right wall not detected → gentle right drift to re-acquire it
+    //     rightWheelSpeed -= robot.lineSensor.offTrackAmount() * 5;
+    // }
+    // robot.motor.goForward(leftWheelSpeed, rightWheelSpeed);
+
+    if (robot.lineSensor.offTrackLeft() || robot.lineSensor.robotMiddle()) {
+        while (!robot.lineSensor.isLeftWall()){
+            robot.motor.goForward(LEFT_DEFAULT_SPEED + 30, RIGHT_DEFAULT_SPEED);
+        }
     }
-    robot.motor.goForward(leftWheelSpeed, rightWheelSpeed);
+
+    // if (robot.lineSensor.)
+    if (robot.lineSensor.offTrackRight()) {
+        while (!robot.lineSensor.robotMiddle()) {
+            robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED+30);
+        }
+    }
 }
 
 void followWall() {
@@ -173,7 +208,7 @@ void alignToTurn() {
         robot.motor.goForward(0, RIGHT_DEFAULT_SPEED);
     else
         robot.motor.goForward(LEFT_DEFAULT_SPEED, 0);
-    _delay_ms(1000);
+    _delay_ms(1500);
 }
 
 // Returns true when a turn is genuinely complete.
@@ -198,6 +233,13 @@ void detectObject(EEPROMAddress addr) {
         robot.lineSensor.findObject(addr);
     }
     robot.led.off();
+}
+
+bool foundRoom() { 
+    while (!(robot.lineSensor.getSensor(1) || robot.lineSensor.getSensor(2) || robot.lineSensor.getSensor(3)) || (turnDirection == 0 ? robot.lineSensor.getSensor(4) : robot.lineSensor.getSensor(0))) { 
+        followPath(turnDirection == 0 ? Alignment::LEFT : Alignment::RIGHT);
+    }
+    return true;
 }
 
 void movementLogic(Action& currentAction, Action& previousAction) {
@@ -229,8 +271,8 @@ void movementLogic(Action& currentAction, Action& previousAction) {
                 if (turnDirection == 0) // Sort vers la droite, puis tourne à gauche
                     robot.motor.goForward(0, RIGHT_DEFAULT_SPEED - 10);
                 
-                else // Sort vers la gauche, puis tourne à droite
-                    robot.motor.goForward(LEFT_DEFAULT_SPEED - 10, 0);
+                else robot.motor.goForward(LEFT_DEFAULT_SPEED - 10, 0); // Sort vers la gauche, puis tourne à droite
+                
                 if (robot.lineSensor.sensors345()) {
                     _delay_ms(50);
                     while (!robot.lineSensor.sensors345()){
@@ -251,7 +293,7 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             if (afterParkingCount < 600)  {
                 followWall();
                 afterParkingCount++;
-            } else followPath();
+            } else followPath(Alignment::DEFAULT);
             break;
 
         case Action::FIRST_TURN:
@@ -259,31 +301,19 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             break;
 
         case Action::FIRST_CORRIDOR:
-                                                                                                            // PEUTETRE ENLEVER
-            // if (robot.lineSensor.isLeftWall() && robot.lineSensor.isOnRightLine())
-            //     robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED/1.5);
-            //     _delay_ms(400);
 
-            // if (robot.lineSensor.isRightWall() && robot.lineSensor.isOnLeftLine())
-            //     robot.motor.goForward(LEFT_DEFAULT_SPEED/1.5, RIGHT_DEFAULT_SPEED);
-            //     _delay_ms(400);
-
-
-            // robot.lineSensor.findDamage(DAMAGE_EST);
-
-            // followPath();
             timer.startTimer();
             while (ticks < 400) {
             if (robot.lineSensor.findDamage(DAMAGE_EST)) {
                 followLine();
             }   
-            else followPath();
+            else followPath(Alignment::DEFAULT);
             }
             timer.stopTimer();
             ticks = 0;
 
             while (!robot.lineSensor.robotBumpLine()) {
-                followPath();
+                followPath(Alignment::DEFAULT);
             }
             
             break;
@@ -295,9 +325,10 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             break;
             
         case Action::SECOND_CORRIDOR:
+
             if (roomCount == 0) { // PEOPLE ROOM A
                 timer.startTimer();
-                while (ticks < 245) { followPath(); }
+                while (ticks < 245) { followPath(Alignment::DEFAULT); }
                 robot.motor.stop();
                 _delay_ms(2000);
                 timer.stopTimer();
@@ -306,46 +337,76 @@ void movementLogic(Action& currentAction, Action& previousAction) {
                 else                    robot.motor.spinRight(135);
                 robot.motor.stop();
                 _delay_ms(800);
-                distanceSensor.scanRoom(robot, PERSON_A, turnDirection == 0 ? LEFT : RIGHT);
             }
-            else if (roomCount == 1) { // OBJECT ROOM B
-                timer.startTimer();
-                while (ticks < 617) { followPath(); }
-                timer.stopTimer();
-                ticks = 0;
-                _delay_ms(500);
-                if (turnDirection == 0) robot.motor.spinLeft(105);
-                else                    robot.motor.spinRight(90);
-                robot.motor.stop();
-                _delay_ms(1000);
-            }
-            else if (roomCount == 2) { // OBJECT ROOM C
-                timer.startTimer();
-                while (ticks < 413) { followPath(); }
-                timer.stopTimer();
-                ticks = 0;
-                _delay_ms(500);
-                if (turnDirection == 0) robot.motor.spinLeft(105);
-                else                    robot.motor.spinRight(90);
-                robot.motor.stop();
-                _delay_ms(1000);
+            else if (roomCount == 1 || roomCount == 2) { // OBJECT ROOM B ou C
+                if (foundRoom()) {
+                    robot.motor.stop();
+                    _delay_ms(500);
+                    if (turnDirection == 0) robot.motor.spinLeft(100);
+                    else                    robot.motor.spinRight(100);
+                    robot.motor.stop();
+                    _delay_ms(800);
+                }
             }
             else if (roomCount == 3) { // PEOPLE ROOM D
-                timer.startTimer();
-                while (ticks < 580) { followPath(); }
-                robot.motor.stop();
-                _delay_ms(2000);
-                timer.stopTimer();
-                ticks = 0;
-                if (turnDirection == 0) robot.motor.spinLeft(135);
-                else                    robot.motor.spinRight(135);
-                robot.motor.stop();
-                _delay_ms(800);
-                distanceSensor.scanRoom(robot, PERSON_A, turnDirection == 0 ? LEFT : RIGHT);
+                if (foundRoom()) {
+                    robot.motor.stop();
+                    _delay_ms(500);
+                    if (turnDirection == 0) robot.motor.spinLeft(135);
+                    else                    robot.motor.spinRight(135);
+                    robot.motor.stop();
+                    _delay_ms(800);
+                }
             }
+
+
+            // if (roomCount == 0) { // PEOPLE ROOM A
+            //     timer.startTimer();
+            //     while (ticks < 245) { followPath(Alignment::DEFAULT); }
+            //     robot.motor.stop();
+            //     _delay_ms(2000);
+            //     timer.stopTimer();
+            //     ticks = 0;
+            //     if (turnDirection == 0) robot.motor.spinLeft(135);
+            //     else                    robot.motor.spinRight(135);
+            //     robot.motor.stop();
+            //     _delay_ms(800);
+            // }
+            // else if (roomCount == 1) { // OBJECT ROOM B
+            //     timer.startTimer();
+            //     while (ticks < 617) { followPath(Alignment::DEFAULT); }
+            //     timer.stopTimer();
+            //     ticks = 0;
+            //     _delay_ms(500);
+            //     if (turnDirection == 0) robot.motor.spinLeft(105);
+            //     else                    robot.motor.spinRight(90);
+            //     robot.motor.stop();
+            //     _delay_ms(1000);
+            // }
+            // else if (roomCount == 2) { // OBJECT ROOM C
+            //     timer.startTimer();
+            //     while (ticks < 413) { followPath(Alignment::DEFAULT); }
+            //     timer.stopTimer();
+            //     ticks = 0;
+            //     _delay_ms(500);
+            //     if (turnDirection == 0) robot.motor.spinLeft(105);
+            //     else                    robot.motor.spinRight(90);
+            //     robot.motor.stop();
+            //     _delay_ms(1000);
+            // }
+            // else if (roomCount == 3) { // PEOPLE ROOM D
+            //     timer.startTimer();
+            //     while (ticks < 580) { followPath(Alignment::DEFAULT); }
+            //     robot.motor.stop();
+            //     _delay_ms(2000);
+            //     timer.stopTimer();
+            //     ticks = 0;
+            //     if (turnDirection == 0) robot.motor.spinLeft(135);
+            //     else                    robot.motor.spinRight(135);
+            //     robot.motor.stop();
+            //     _delay_ms(800);
+            // }
             break;
-
-
 
         case Action::PEOPLE_ROOM:
             if (roomCount == 0) { 
@@ -362,7 +423,7 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             _delay_ms(500);
 
             while(!robot.lineSensor.robotMiddle()) {
-                followPath();
+                followPath(Alignment::DEFAULT);
             }
 
             break;
@@ -379,8 +440,8 @@ void movementLogic(Action& currentAction, Action& previousAction) {
 
             robot.motor.stop();
             _delay_ms(2000);
-            if (turnDirection == 0) robot.motor.spinRight(195);
-            else robot.motor.spinLeft(198);
+            if (turnDirection == 0) robot.motor.spinRight(188);
+            else robot.motor.spinLeft(188);
             robot.motor.stop();
             _delay_ms(1000);
 
@@ -432,7 +493,7 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             if (previousAction != Action::THIRD_CORRIDOR) {
                 timer.startTimer();
                 while (ticks < 150) {
-                    followPath();
+                    followPath(Alignment::DEFAULT);
                 }
                 timer.stopTimer();
                 ticks = 0;
@@ -444,13 +505,13 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             if (robot.lineSensor.findDamage(DAMAGE_OUEST)) {
                 followLine();
             }   
-            else followPath();
+            else followPath(Alignment::DEFAULT);
             }
             timer.stopTimer();
             ticks = 0;
             
             while (!robot.lineSensor.robotBumpLine()) {
-                followPath();
+                followPath(Alignment::DEFAULT);
             }
 
             break;
@@ -460,22 +521,23 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             break;
 
         case Action::ENTER_PARKING:
-            followPath();
+            // followPath(Alignment::RIGHT);
+            followRightWall();
             break;
 
         case Action::COMPLETE_PARKING:
-            robot.led.green();
-            if (turnDirection == 0) {
-                while (!robot.lineSensor.isOnRightLine()) {
-                    robot.led.red();
-                    followPath();
-                }
-            } else {
-                while (!robot.lineSensor.isOnLeftLine()) {
-                    robot.led.red();
-                    followPath();
-                }
-            }
+
+            // if (turnDirection == 0) {
+            //     while (!robot.lineSensor.isOnRightLine()) {
+            //         robot.led.red();
+            //         followPath(Alignment::RIGHT);
+            //     }
+            // } else {
+            //     while (!robot.lineSensor.isOnLeftLine()) {
+            //         robot.led.red();
+            //         followPath(Alignment::RIGHT);
+            //     }
+            // }
 
             robot.led.green();
             timer.startTimer();
@@ -496,11 +558,12 @@ void movementLogic(Action& currentAction, Action& previousAction) {
 			}
 
             timer.startTimer();
-            while (robot.lineSensor.robotBumpLine() && ticks < 150) { // Stop touching the edge
+            while (robot.lineSensor.robotBumpLine() && ticks < 270) { // Stop touching the edge
                 robot.motor.goBackward(LEFT_DEFAULT_SPEED - 15, RIGHT_DEFAULT_SPEED - 15);
 			}
 			timer.stopTimer();
 			ticks = 0;
+            
             break;
 
         case Action::END:
@@ -561,7 +624,7 @@ void switchLogic(Action& currentAction, Action& previousAction) {
             else if (roomCount == 1 || roomCount == 2)
                 currentAction = Action::OBJECT_ROOM;
             else if (roomCount == 4) {
-                while (!robot.lineSensor.robotBumpLine()) { followPath(); }
+                while (!robot.lineSensor.robotBumpLine()) { followPath(Alignment::DEFAULT); }
                 alignToTurn();
                 currentAction = Action::THIRD_TURN;
             }
@@ -606,27 +669,27 @@ void switchLogic(Action& currentAction, Action& previousAction) {
             
         case Action::ENTER_PARKING: //completed
             if (turnDirection == 0 ? robot.lineSensor.isOnRightLine() : robot.lineSensor.isOnLeftLine()) {
-                // timer.startTimer();
-                // while (ticks < 18) {
-                //     robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
-                // }
-
-                // if (turnDirection == 0 ? robot.lineSensor.isOnRightLine() : robot.lineSensor.isOnLeftLine()) {
-                if (parkingCount == 1) {
-                    _delay_ms(200);
-                    currentAction = Action::COMPLETE_PARKING;
-                }
                 parkingCount++;
-            
-
-                // timer.stopTimer();
-                // ticks = 0;
+                if (parkingCount == 2) {
+                    _delay_ms(20);
+                    currentAction = Action::COMPLETE_PARKING;
+                    break;
+                }
+                
+                robot.led.red();
+                timer.startTimer();
+                while (ticks < 40) {
+                    // robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
+                    followPath(Alignment::RIGHT);
+                }
+                robot.led.off();
+                timer.stopTimer();
+                ticks = 0;
             }
             break;
 
         case Action::COMPLETE_PARKING: //completed
-            if (robot.lineSensor.robotBumpLine())
-                currentAction = Action::END;
+            currentAction = Action::END;
             break;
 
         case Action::END:
@@ -636,13 +699,17 @@ void switchLogic(Action& currentAction, Action& previousAction) {
 }
 
  int main(){
-
+    //     Memoire24CXXX eeprom;                Pour reset adresses 10 à 15 du eeprom à 0
+    //     for (uint8_t i = 0; i < 6; i++) {
+    //     eeprom.ecriture(10 + i, 0);
+    //     _delay_ms(5);
+    // }
     timer.setModeCTC(Timer::PRESCALE_64);
     timer.setOCRA(OCR1A_10MS);
     sei();
 
     _delay_ms(500);
-    Action currentAction = Action::ENTER_PARKING;
+    Action currentAction = Action::SECOND_CORRIDOR;
     Action previousAction = static_cast<Action>(-1);
 
     while (true) {
