@@ -88,6 +88,7 @@ void DistanceSensor::scanRoom(Robot& robot, EEPROMAddress addr , Direction dir) 
             robot.motor.stop();
             if (!objectPresent_) {
                 objectPresent_ = true;
+                localCount++;
                 eeprom_.ecriture(addr, localCount);
             }
             evacuatePoteau(robot);
