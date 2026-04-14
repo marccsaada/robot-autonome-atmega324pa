@@ -49,10 +49,10 @@ uint16_t DistanceSensor::readADC() {
 
 
 void DistanceSensor::playConfirmSequence(Robot& robot) {
-    for (uint8_t i = 0; i < 3 ; i++) {
-        _delay_ms(NOTE_GAP_MS);
-        robot.sound.playSound(70);
-        _delay_ms(NOTE_DURATION_MS);
+    for (uint8_t i = 0; i < robot.noteCount; i++) {
+        _delay_ms(125);
+        robot.sound.playSound(robot.note[i]);
+        _delay_ms(250);
         robot.sound.stopSound();
     }
 }

@@ -192,7 +192,7 @@ int main() {
 
     switch (selectedMode) {
         case INSTRUCTION: modeInstruction(); break;
-        case EXECUTION: { Interpreter interpreter; interpreter.execute(); break; }
+        case EXECUTION: { /*Interpreter interpreter; interpreter.execute();*/ break; }
         case RAPPORT: modeRapport();     break;
     }
 

@@ -229,7 +229,7 @@ bool confirmTurn() {
 void detectObject(EEPROMAddress addr) {
     timer.startTimer();
     robot.motor.goForward(110, 110);
-    while (ticks < 260) {
+    while (ticks < 230) {
         robot.lineSensor.findObject(addr);
     }
     robot.led.off();

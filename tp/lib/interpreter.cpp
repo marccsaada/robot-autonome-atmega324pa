@@ -101,15 +101,14 @@ void Interpreter::confirm(){
 void Interpreter::executeInstruction(uint8_t instruction, uint8_t operand) {
        switch (instruction) {
             case SGO:
-                while (robot.noteCount < 3) {
+                if (robot.noteCount < 3) {
+                    robot.note[robot.noteCount] = operand;
                     _delay_ms(125);
                       robot.sound.playSound(operand);
                      _delay_ms(250);
                     robot.sound.stopSound();
-                    robot.note[robot.noteCount];
                     robot.noteCount++;
                 }
-                robot.parkingOperand = operand; 
                 break;
             case TRD:
                robot.led.green();
