@@ -172,7 +172,7 @@ void modeInstruction() {
     }
  
     // fin de l'ecriture du bytecode en memoire externe (il faut utiliser serieViaUSB pour envoyer le bytecode complet au robot)
-    Interpreter interpreter;
+    Interpreter interpreter(robot);
     interpreter.confirm();
 }
 

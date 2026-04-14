@@ -660,7 +660,7 @@ void switchLogic(Action& currentAction, Action& previousAction) {
     sei();
 
     _delay_ms(500);
-    Action currentAction = Action::ENTER_PARKING;
+    Action currentAction = Action::PEOPLE_ROOM;
     Action previousAction = static_cast<Action>(-1);
 
     while (true) {

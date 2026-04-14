@@ -1,6 +1,7 @@
 dbt;
-sgo 46;
-
+sgo 67;
+sgo 67;
+sgo 67;
 att 4;
 fin;
 

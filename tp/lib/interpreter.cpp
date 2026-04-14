@@ -13,8 +13,9 @@
 
 
 
-Interpreter::Interpreter()
-    : loopAddress_(0),
+Interpreter::Interpreter(Robot& robot)
+    :robot(robot),
+     loopAddress_(0),
       loopCounter_(0),
       inLoop_(false)
 {}

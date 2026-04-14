@@ -17,7 +17,7 @@ void Robot::wait(uint16_t multiplicator) {
     }
 }
 
-void Robot::playEepromNotes(Robot& robot) {
+void Robot::playEepromNotes() {
 
     Memory  mem;
     uint16_t size  = mem.getSize();
@@ -34,8 +34,8 @@ void Robot::playEepromNotes(Robot& robot) {
     for (uint8_t i = 0; i < found; i++) {
         if (i > 0)
             _delay_ms(NOTE_GAP_MS);
-        robot.sound.playSound(notes[i]);
+        sound.playSound(notes[i]);
         _delay_ms(NOTE_DURATION_MS);
-        robot.sound.stopSound();
+        sound.stopSound();
     }
 }

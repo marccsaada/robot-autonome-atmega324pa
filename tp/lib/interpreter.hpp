@@ -40,7 +40,7 @@ const uint8_t FIN   = 0xFF;
 class Interpreter {
 public:
     /** @brief Constructs the interpreter. */
-    Interpreter();
+    Interpreter(Robot& robot);
     /** @brief Plays the startup LED sequence (2x red, 2x green). */
     void startSequence();
     /** @brief Reads and executes all instructions until the FIN instruction. */
@@ -49,7 +49,7 @@ public:
     void confirm();
 
 
-    Robot robot;
+    Robot& robot;
 
 
     private: 

@@ -97,9 +97,27 @@
 //     robot.motor.stop();
 // }
 
+// Robot robot;
+
+// int main() {
 
 
-int main() {
+// for (uint8_t i = 0; i < robot.noteCount; i++) {
+//     _delay_ms(125);
+//     robot.sound.playSound(robot.note[i]);
+//     _delay_ms(250);
+//     robot.sound.stopSound();
+
+// }
+
+// }
+
+
+
+
+
+
+
 //     DistanceSensor sensor; 
 //     Robot robot;
 //     UART uart;
@@ -123,9 +141,7 @@ int main() {
 //      sensor.scanRoom(robot, LEFT,14);
 //     _delay_ms(2000);
 
-Robot robot; 
-while(true){
-robot.motor.goBackward(255,255);
-}
-
-}
+// Robot robot; 
+// while(true){
+// robot.motor.goBackward(255,255);
+// }

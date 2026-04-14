@@ -15,7 +15,7 @@ static const uint8_t  IMPULSE_SPEED        = 255;
 static const uint8_t  IMPULSE_MS           = 40;
 static const uint8_t  SCAN_STEP_MS     = 50;
 static const uint16_t NOTE_GAP_MS      = 125;
-static const uint16_t NOTE_DURATION_MS = 25;
+static const uint16_t NOTE_DURATION_MS = 250;
 static const uint8_t  PORT_POSITION    = 5;
 class Robot;
 enum Direction { LEFT, RIGHT };
