@@ -159,32 +159,31 @@ void followLeftWall() {
 }
 
 void followRightWall() {
-    uint8_t leftWheelSpeed = LEFT_DEFAULT_SPEED-30;
-    uint8_t rightWheelSpeed = RIGHT_DEFAULT_SPEED-30;
-    // uint8_t amount = robot.lineSensor.offTrackAmount();
+    uint8_t leftWheelSpeed;
+    uint8_t rightWheelSpeed;
 
-    // if (robot.lineSensor.offTrackRight() && amount >= 1) {
-    //     // Too close to right wall → turn left to move away
-    //     leftWheelSpeed -= amount * 5;
-    //     rightWheelSpeed += amount * 20;
-    // } else {
-    //     // Right wall not detected → gentle right drift to re-acquire it
-    //     rightWheelSpeed -= robot.lineSensor.offTrackAmount() * 5;
-    // }
-    // robot.motor.goForward(leftWheelSpeed, rightWheelSpeed);
+    bool s4 = robot.lineSensor.getSensor(3); // sensor4
+    bool s5 = robot.lineSensor.getSensor(4); // sensor5
 
-    if (robot.lineSensor.offTrackLeft() || robot.lineSensor.robotMiddle()) {
-        while (!robot.lineSensor.isLeftWall()){
-            robot.motor.goForward(LEFT_DEFAULT_SPEED + 30, RIGHT_DEFAULT_SPEED);
-        }
+    if (s4 && s5) {
+        // Trop sur le tape (2 capteurs droits actifs) → virer à gauche
+        leftWheelSpeed = LEFT_DEFAULT_SPEED - 40;
+        rightWheelSpeed = RIGHT_DEFAULT_SPEED + 20;
+    } else if (s5) {
+        // Sensor 5 seul sur le bord → parfait, tout droit
+        leftWheelSpeed = LEFT_DEFAULT_SPEED;
+        rightWheelSpeed = RIGHT_DEFAULT_SPEED;
+    } else if (s4) {
+        // Sensor 4 seul → légèrement à droite du bord, léger ajustement droite
+        leftWheelSpeed = LEFT_DEFAULT_SPEED + 10;
+        rightWheelSpeed = RIGHT_DEFAULT_SPEED - 10;
+    } else {
+        // Aucun capteur droit → on perd le mur, virer à droite pour le retrouver
+        leftWheelSpeed = LEFT_DEFAULT_SPEED + 25;
+        rightWheelSpeed = RIGHT_DEFAULT_SPEED - 35;
     }
 
-    // if (robot.lineSensor.)
-    if (robot.lineSensor.offTrackRight()) {
-        while (!robot.lineSensor.robotMiddle()) {
-            robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED+30);
-        }
-    }
+    robot.motor.goForward(leftWheelSpeed, rightWheelSpeed);
 }
 
 void followWall() {
