@@ -25,3 +25,4 @@ Description : Regroupe les inclusions de toutes les bibliothèques statiques du 
 #include <lineSensor.hpp>
 #include <distanceSensor.hpp>
 #include <eepromAdresses.hpp>
+#include <project.hpp>
