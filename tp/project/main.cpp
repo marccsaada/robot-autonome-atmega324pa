@@ -338,8 +338,8 @@ void movementLogic(Action& currentAction, Action& previousAction) {
                 if (foundRoom()) {
                     robot.motor.stop();
                     _delay_ms(150);
-                    if (turnDirection == 0) robot.motor.spinLeft(105);
-                    else                    robot.motor.spinRight(105);
+                    if (turnDirection == 0) robot.motor.spinLeft(90);
+                    else                    robot.motor.spinRight(90);
                     robot.motor.stop();
                     _delay_ms(800);
                 }
@@ -348,8 +348,8 @@ void movementLogic(Action& currentAction, Action& previousAction) {
                 if (foundRoom()) {
                     robot.motor.stop();
                     _delay_ms(150);
-                    if (turnDirection == 0) robot.motor.spinLeft(135);
-                    else                    robot.motor.spinRight(135);
+                    if (turnDirection == 0) robot.motor.spinLeft(123);
+                    else                    robot.motor.spinRight(123);
                     robot.motor.stop();
                     _delay_ms(800);
                 }
@@ -388,8 +388,8 @@ void movementLogic(Action& currentAction, Action& previousAction) {
 
             robot.motor.stop();
             _delay_ms(2000);
-            if (turnDirection == 0) robot.motor.spinRight(188);
-            else robot.motor.spinLeft(188);
+            if (turnDirection == 0) robot.motor.spinRight(180);
+            else robot.motor.spinLeft(180);
             robot.motor.stop();
             _delay_ms(1000);
 
@@ -500,7 +500,11 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             robot.motor.goForward(LEFT_DEFAULT_SPEED - 40, RIGHT_DEFAULT_SPEED - 40);
             _delay_ms(400);
 
-        
+            while (robot.lineSensor.offTrackAmount() > 0){
+                robot.motor.goBackward(LEFT_DEFAULT_SPEED - 40, RIGHT_DEFAULT_SPEED - 40);
+            }
+
+                    
             // while (!robot.lineSensor.robotBumpLine()) {  // Go forward till bumpline
             //     robot.motor.goForward(LEFT_DEFAULT_SPEED - 40, RIGHT_DEFAULT_SPEED - 40);
             // }
@@ -660,7 +664,7 @@ void switchLogic(Action& currentAction, Action& previousAction) {
     sei();
 
     _delay_ms(500);
-    Action currentAction = Action::PEOPLE_ROOM;
+    Action currentAction = Action::PARKING;
     Action previousAction = static_cast<Action>(-1);
 
     while (true) {
