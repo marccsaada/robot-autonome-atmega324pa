@@ -390,7 +390,7 @@ void movementLogic(Action& currentAction, Action& previousAction) {
                 // }
                 ticks = 0;
                 timer.startTimer();
-                while (!foundRoom2()) {followPath(turnDirection == 0 ? Alignment::LEFT : Alignment::RIGHT); }
+                while (!foundRoom2()) {followPath(turnDirection == 0 ? Alignment::LEFT : Alignment::RIGHT, Speed::DEFAULT); }
                 robot.motor.stop();
                 _delay_ms(150);
                 if (turnDirection == 0) robot.motor.spinLeft(80);
@@ -409,7 +409,7 @@ void movementLogic(Action& currentAction, Action& previousAction) {
                 // }
                 ticks = 0;
                 timer.startTimer();
-                while (!foundRoom2()) {followPath(turnDirection == 0 ? Alignment::LEFT : Alignment::RIGHT); }
+                while (!foundRoom2()) {followPath(turnDirection == 0 ? Alignment::LEFT : Alignment::RIGHT, Speed::DEFAULT); }
                 robot.motor.stop();
                 _delay_ms(150);
                 if (turnDirection == 0) robot.motor.spinLeft(123);
