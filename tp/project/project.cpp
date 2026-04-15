@@ -2,9 +2,12 @@
 #include "lineSensor.hpp"
 #include <avr/interrupt.h>
 
-Robot robot;
-Timer timer(Timer::TIMER1);
-DistanceSensor distanceSensor;
+extern Robot robot;
+extern Timer timer;
+extern DistanceSensor distanceSensor;
+extern volatile uint16_t ticks;
+
+
 
 const uint8_t LEFT_DEFAULT_SPEED = 110;
 const uint8_t RIGHT_DEFAULT_SPEED = 110;
@@ -18,7 +21,6 @@ uint8_t turnDirection = 0; //0 = left, 1 = right
 
 
 const uint16_t OCR1A_10MS = 1250;
-volatile uint16_t ticks = 0;
 
 enum class Action {
     PARKING,
@@ -50,13 +52,6 @@ enum class Speed {
     FAST
 };
 
-ISR(TIMER1_COMPA_vect) {
-    ticks++;
-}
-
-ISR(TIMER1_COMPB_vect) {
-    // vide — nécessaire car setModeCTC active OCIE1B
-}
 
 void turnLeft() {
     uint8_t count = robot.lineSensor.offTrackAmount();
@@ -253,9 +248,22 @@ bool foundRoom() {
     return true;
 }
 
+bool foundRoom2() {
+    if (turnDirection == 0 ? robot.lineSensor.offTrackLeft() : robot.lineSensor.offTrackRight()) {
+        ticks = 0; // wall still detected → reset the no-wall window
+        return false;
+    }
+    if (ticks >= 200) {
+        timer.stopTimer();
+        ticks = 0;
+        return true;
+    }
+    return false;
+}
+
 void movementLogic(Action& currentAction, Action& previousAction) {
     switch (currentAction) {
-        case Action::PARKING:   //parking a switch
+        case Action::PARKING:   //parking a swit
             if (stepCount == 0) {
                 if (turnDirection == 0)
                     robot.motor.goBackward(LEFT_DEFAULT_SPEED, 0);
@@ -372,24 +380,42 @@ void movementLogic(Action& currentAction, Action& previousAction) {
                 _delay_ms(800);
             }
             else if (roomCount == 1 || roomCount == 2) { // OBJECT ROOM B ou C
-                if (foundRoom()) {
-                    robot.motor.stop();
-                    _delay_ms(150);
-                    if (turnDirection == 0) robot.motor.spinLeft(90);
-                    else                    robot.motor.spinRight(90);
-                    robot.motor.stop();
-                    _delay_ms(800);
-                }
+                // if (foundRoom()) {
+                //     robot.motor.stop();
+                //     _delay_ms(150);
+                //     if (turnDirection == 0) robot.motor.spinLeft(90);
+                //     else                    robot.motor.spinRight(90);
+                //     robot.motor.stop();
+                //     _delay_ms(800);
+                // }
+                ticks = 0;
+                timer.startTimer();
+                while (!foundRoom2()) {followPath(turnDirection == 0 ? Alignment::LEFT : Alignment::RIGHT); }
+                robot.motor.stop();
+                _delay_ms(150);
+                if (turnDirection == 0) robot.motor.spinLeft(80);
+                else                    robot.motor.spinRight(80);
+                robot.motor.stop();
+                _delay_ms(800);
             }
             else if (roomCount == 3) { // PEOPLE ROOM D
-                if (foundRoom()) {
-                    robot.motor.stop();
-                    _delay_ms(150);
-                    if (turnDirection == 0) robot.motor.spinLeft(123);
-                    else                    robot.motor.spinRight(123);
-                    robot.motor.stop();
-                    _delay_ms(800);
-                }
+                // if (foundRoom()) {
+                //     robot.motor.stop();
+                //     _delay_ms(150);
+                //     if (turnDirection == 0) robot.motor.spinLeft(123);
+                //     else                    robot.motor.spinRight(123);
+                //     robot.motor.stop();
+                //     _delay_ms(800);
+                // }
+                ticks = 0;
+                timer.startTimer();
+                while (!foundRoom2()) {followPath(turnDirection == 0 ? Alignment::LEFT : Alignment::RIGHT); }
+                robot.motor.stop();
+                _delay_ms(150);
+                if (turnDirection == 0) robot.motor.spinLeft(123);
+                else                    robot.motor.spinRight(123);
+                robot.motor.stop();
+                _delay_ms(800);
             }
             break;
 
@@ -690,7 +716,7 @@ void switchLogic(Action& currentAction, Action& previousAction) {
         }
 }
 
- int main(){
+ void runProject(){
     //     Memoire24CXXX eeprom;                Pour reset adresses 10 à 15 du eeprom à 0
     //     for (uint8_t i = 0; i < 6; i++) {
     //     eeprom.ecriture(10 + i, 0);

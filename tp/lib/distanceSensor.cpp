@@ -81,7 +81,6 @@ void DistanceSensor::scanRoom(Robot& robot, EEPROMAddress addr , Direction dir) 
     uint16_t elapsed = 0;
     uint8_t localCount = 0;
     uint16_t totalRotationMs = FULL_ROTATION_MS;
-    bool justStopped = false;
 
     while (elapsed < totalRotationMs) {
         if (readADC() >= POTEAU_THRESHOLD) {

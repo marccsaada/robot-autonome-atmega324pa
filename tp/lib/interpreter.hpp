@@ -49,7 +49,7 @@ public:
     void confirm();
 
 
-    Robot& robot;
+    Robot* robot;
 
 
     private: 

@@ -29,11 +29,10 @@ PROJECTNAME=selectMode
 # Utilisez le suffixe .cpp pour les fichiers C++
 # Listez tous les fichiers a compiler, separes par
 # un espace. exemple: 'tp1.c tp2.cpp':
-PRJSRC= main.cpp
+PRJSRC= main.cpp ../project/project.cpp 
 
 # Inclusions additionnels (ex: -I/path/to/mydir)
-INC=-I ../lib/
-
+INC=-I ../lib/ -I ../project/
 # Libraires a lier (ex: -lmylib)
 LIBS=-L ../lib/ -lstatique 
 
@@ -147,10 +146,10 @@ $(TRG): lib $(OBJDEPS)
 # Production des fichiers object
 # De C a objet
 %.o: %.c
-	$(CC) $(CFLAGS) -c $<
+	$(CC) $(CFLAGS) -c $< -o $@
 # De C++ a objet
 %.o: %.cpp
-	$(CC) $(CFLAGS) $(CXXFLAGS) -c $<
+	$(CC) $(CFLAGS) $(CXXFLAGS) -c $< -o $@
 
 # Verification des dependances (header dependencies)
 -include *.d

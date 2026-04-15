@@ -189,10 +189,12 @@ int main() {
         sleep_mode();
         handleModeSelection();
     }
+    timer.stopTimer();
+    ticks = 0;
 
     switch (selectedMode) {
         case INSTRUCTION: modeInstruction(); break;
-        case EXECUTION: { /*Interpreter interpreter; interpreter.execute();*/ break; }
+        case EXECUTION: { runProject(); break; }
         case RAPPORT: modeRapport();     break;
     }
 
