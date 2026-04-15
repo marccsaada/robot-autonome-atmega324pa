@@ -25,7 +25,7 @@ public:
     bool isOnRightLine();            
     bool sensors345(); // senseurs 3 4 et 5 actives (pour parking)
     bool findDamage(EEPROMAddress addr);          // Robot found damage
-    void findObject(EEPROMAddress addr);
+    bool findObject(EEPROMAddress addr);
 
     uint8_t offTrackAmount();   // Amount of sensors that are off track (0-5)
 
@@ -35,6 +35,9 @@ public:
 
     bool getPreviousDamageState() const { return previousDamageState_; }
     void setPreviousDamageState(bool state) { previousDamageState_ = state; }
+
+    void resetObjectCount() { nObjects_ = 0; }
+    uint8_t getNObjects() const { return nObjects_; }
 
     uint8_t getSensor(int index) const {
         if (index >= 0 && index < 5) {

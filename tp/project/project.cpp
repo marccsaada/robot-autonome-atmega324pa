@@ -232,6 +232,7 @@ bool confirmTurn() {
 }
 
 void detectObject(EEPROMAddress addr) {
+    robot.lineSensor.resetObjectCount();
     timer.startTimer();
     robot.motor.goForward(110, 110);
     while (ticks < 230) {
@@ -341,7 +342,7 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             break;
 
         case Action::FIRST_CORRIDOR:
-
+            robot.lineSensor.resetDamage();
             timer.startTimer();
             while (ticks < 400 && !robot.lineSensor.robotBumpLine()) {
             if (robot.lineSensor.findDamage(DAMAGE_EST)) {
@@ -510,7 +511,8 @@ void movementLogic(Action& currentAction, Action& previousAction) {
             //     ticks = 0;
             //     previousAction = Action::THIRD_CORRIDOR;
             // }
-            
+            robot.lineSensor.resetDamage();
+
             timer.startTimer();
             while (ticks < 400 && !robot.lineSensor.robotBumpLine()) {
             if (robot.lineSensor.findDamage(DAMAGE_OUEST)) {

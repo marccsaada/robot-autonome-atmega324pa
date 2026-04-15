@@ -129,7 +129,6 @@ void modeRapport(){
     eeprom.lecture(EEPROM_ADDR_BASE + i, &valeurs[i]);
     }
 
-    _delay_ms(3000); // laisse le temps de lancer serieViaUSB -l
     uart.UART_Transmission("Rapport de conformite\r\n\r\n");
     uart.UART_Transmission("Emplacement     conformite     detail\r\n");
     uart.UART_Transmission("--------------------------------------------------\r\n");
