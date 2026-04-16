@@ -53,12 +53,12 @@ bool LineSensor::isOnLeftLine() {
     return false;
 }
 
-bool LineSensor::sensors345() {
-    if ((PINA & (1 << sensor3)) && (PINA & (1 << sensor4)) && (PINA & (1 << sensor5))) {
-        return true;
-    }
-    return false;
-}
+// bool LineSensor::sensors345() {
+//     if ((PINA & (1 << sensor3)) && (PINA & (1 << sensor4)) && (PINA & (1 << sensor5))) {
+//         return true;
+//     }
+//     return false;
+// }
 
 
 

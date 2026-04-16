@@ -297,48 +297,59 @@ void Robot::movementLogic(Action& currentAction, Action& previousAction) {
 
 
         case Action::LEAVE_PARKING:
-            while (firstTime) {
-                if (direction == 0) // Sort vers la droite, puis tourne à gauche
-                    motor.goForward(0, RIGHT_SPEED - 10);
 
-                else motor.goForward(LEFT_SPEED - 10, 0); // Sort vers la gauche, puis tourne à droite
-
-                if (lineSensor.sensors345()) {
+            if (turnDirection == 0) // Sort vers la droite, puis tourne à gauche
+                robot.motor.goForward(0, RIGHT_DEFAULT_SPEED - 10);
+            
+            else robot.motor.goForward(LEFT_DEFAULT_SPEED - 10, 0); // Sort vers la gauche, puis tourne à droite
+            _delay_ms(1200);
+            while (true) {
+                if (robot.lineSensor.robotMiddle()) {
                     _delay_ms(50);
-                    while (!lineSensor.sensors345()){
-                        if (direction == 0) // Sort vers la droite, puis tourne à gauche
-                            motor.goForward(0, RIGHT_SPEED - 10);
-
-                        else // Sort vers la gauche, puis tourne à droite
-                            motor.goForward(LEFT_SPEED - 10, 0);
-
-                        firstTime = false;
+                    while (!robot.lineSensor.isOnRightLine()) {
+                        robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED);
+                        // followRightWall();
+                        robot.led.green();
                     }
+                    while (!robot.lineSensor.robotMiddle()) {
+                        robot.motor.goForward(72, RIGHT_DEFAULT_SPEED);
+                    }
+                    robot.motor.goForward(LEFT_DEFAULT_SPEED, RIGHT_DEFAULT_SPEED - 10);
+                    break;
+                    // while (true) followRightWall();
+                        // if (turnDirection == 0) // Sort vers la droite, puis tourne à gauche
+                        //     robot.motor.goForward(0, RIGHT_DEFAULT_SPEED - 10);
+                
+                        // else // Sort vers la gauche, puis tourne à droite
+                        //     robot.motor.goForward(LEFT_DEFAULT_SPEED - 10, 0);
+                        // firstTime = false;
                 }
             }
-            turn();
+            
             break;
 
 
         case Action::AFTER_PARKING:
-            // timer.startTimer();
-            // while (ticks < 250) {
-            //     followRightWall();
-            //     if (lineSensor.isOnRightLine()) ticks = 0;
-            // }
-            // timer.stopTimer();
-            // ticks = 0;
+            timer.startTimer();
+            while (ticks < 250){
+                followRightWall();
+                if (lineSensor.isOnRightLine()){
+                    ticks = 0;
+                }
+            }
+            timer.stopTimer();
+            ticks = 0;
 
-            // timer.startTimer();
-            // while (ticks < 200) followPath(Alignment::DEFAULT, Speed::DEFAULT);
-            // timer.stopTimer();
-            // ticks = 0;
+            timer.startTimer();
+            while (ticks < 150 && !lineSensor.robotBumpLine()) {
+                followPath(Alignment::DEFAULT, Speed::DEFAULT);
+            }
+            timer.stopTimer();
+            ticks = 0;
+            while (!lineSensor.robotBumpLine()) {
+                followPath(Alignment::DEFAULT, Speed::SLOW);
+            }
 
-            // while (!lineSensor.robotBumpLine())
-            //     followPath(Alignment::DEFAULT, Speed::SLOW);
-            // break;
-            while (!lineSensor.robotBumpLine())
-                followPath(Alignment::RIGHT, Speed::DEFAULT);
             break;
 
 
