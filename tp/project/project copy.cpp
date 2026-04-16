@@ -69,7 +69,6 @@ ISR(INT0_vect) {
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
-<<<<<<< Updated upstream
 int main() {
     robot.timer.setModeCTC(Timer::PRESCALE_64);
     robot.timer.setOCRA(OCR1A_10MS);
@@ -81,7 +80,6 @@ int main() {
     while (state != DONE) { sleep_mode(); handleModeSelection(); }
     robot.timer.stopTimer();
     ticks = 0;
-=======
 
 void followLeftWall() {
     uint8_t leftWheelSpeed = LEFT_DEFAULT_SPEED;
@@ -687,7 +685,6 @@ void switchLogic(Action& currentAction, Action& previousAction) {
     _delay_ms(500);
     Action currentAction = Action::PARKING;
     Action previousAction = static_cast<Action>(-1);
->>>>>>> Stashed changes
 
     switch (selectedMode) {
         case INSTRUCTION: robot.runInstruction(); break;

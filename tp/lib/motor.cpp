@@ -44,16 +44,16 @@ void Motor::goBackward(uint8_t speedValue1, uint8_t speedValue2) {
 
 void Motor::spinLeft(uint16_t angle) {
     DEBUG_PRINT("Motor::spinLeft()");
-    leftWheel_.goBackward(130);
-    rightWheel_.goForward(130);
+    leftWheel_.goBackward(150);
+    rightWheel_.goForward(150);
     delayFunction(angle);
     stop();
 }
 
 void Motor::spinRight(uint16_t angle) {
     DEBUG_PRINT("Motor::spinRight()");
-    leftWheel_.goForward(130);
-    rightWheel_.goBackward(130);
+    leftWheel_.goForward(150);
+    rightWheel_.goBackward(150);
     delayFunction(angle);
     stop();
 }
