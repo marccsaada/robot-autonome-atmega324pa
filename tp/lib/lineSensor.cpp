@@ -107,7 +107,7 @@ bool LineSensor::findDamage(EEPROMAddress addr) { //marc (adresse 14(OUEST)-15(E
     return false;
 }
 
-bool LineSensor::findObject(EEPROMAddress addr) { //marc (adresse 11(B)-12(C))
+void LineSensor::findObject(EEPROMAddress addr) { //marc (adresse 11(B)-12(C))
     bool objectPresent = offTrackAmount() >= 3;
 
     if (objectPresent) { 

@@ -94,8 +94,8 @@ void followPath(Alignment alignement, Speed speed) {
     uint8_t rightWheelSpeed = RIGHT_DEFAULT_SPEED;
 
     if (speed == Speed::SLOW){
-        leftWheelSpeed = LEFT_DEFAULT_SPEED - 30;
-        rightWheelSpeed = RIGHT_DEFAULT_SPEED - 30;
+        leftWheelSpeed = LEFT_DEFAULT_SPEED - 20;
+        rightWheelSpeed = RIGHT_DEFAULT_SPEED - 20;
 
     } else if (speed == Speed::DEFAULT){
         leftWheelSpeed = LEFT_DEFAULT_SPEED;
@@ -107,12 +107,12 @@ void followPath(Alignment alignement, Speed speed) {
     
 
     if (alignement == Alignment::LEFT) {
-        leftWheelSpeed = LEFT_DEFAULT_SPEED - 9;
+        leftWheelSpeed = LEFT_DEFAULT_SPEED - 10;
         rightWheelSpeed = RIGHT_DEFAULT_SPEED + 4;
 
     } else if (alignement == Alignment::RIGHT) {
         leftWheelSpeed = LEFT_DEFAULT_SPEED + 4;
-        rightWheelSpeed = RIGHT_DEFAULT_SPEED - 9;
+        rightWheelSpeed = RIGHT_DEFAULT_SPEED - 10;
 
     } else if (alignement == Alignment::DEFAULT) {}
 
@@ -245,7 +245,9 @@ void detectObject(EEPROMAddress addr) {
 }
 
 bool foundRoom() { 
-    while (!(robot.lineSensor.getSensor(1) || robot.lineSensor.getSensor(2) || robot.lineSensor.getSensor(3) || (turnDirection == 0 ? robot.lineSensor.getSensor(4) : robot.lineSensor.getSensor(0)))) { 
+    while (!(turnDirection == 0 ? 
+        (robot.lineSensor.getSensor(1) || robot.lineSensor.getSensor(2) || robot.lineSensor.getSensor(3)) : 
+        (robot.lineSensor.getSensor(3) || robot.lineSensor.getSensor(4) || robot.lineSensor.getSensor(5)))) { 
         followPath(turnDirection == 0 ? Alignment::LEFT : Alignment::RIGHT, Speed::DEFAULT);
     }
     _delay_ms(333);
@@ -253,11 +255,15 @@ bool foundRoom() {
 }
 
 bool foundRoom2() {
+    bool bumpRoom = turnDirection == 0 ? 
+        (robot.lineSensor.getSensor(1) || robot.lineSensor.getSensor(2) || robot.lineSensor.getSensor(3)) : 
+        (robot.lineSensor.getSensor(3) || robot.lineSensor.getSensor(4) || robot.lineSensor.getSensor(5));
+
     if (turnDirection == 0 ? robot.lineSensor.offTrackLeft() : robot.lineSensor.offTrackRight()) {
         ticks = 0; // wall still detected → reset the no-wall window
         return false;
     }
-    if (ticks >= 200) {
+    if (ticks >= 200 || bumpRoom) {
         timer.stopTimer();
         ticks = 0;
         return true;
@@ -397,8 +403,8 @@ void movementLogic(Action& currentAction, Action& previousAction) {
                 while (!foundRoom2()) {followPath(turnDirection == 0 ? Alignment::LEFT : Alignment::RIGHT, Speed::DEFAULT); }
                 robot.motor.stop();
                 _delay_ms(150);
-                if (turnDirection == 0) robot.motor.spinLeft(80);
-                else                    robot.motor.spinRight(80);
+                if (turnDirection == 0) robot.motor.spinLeft(roomCount == 1 ? 80 : 74);
+                else                    robot.motor.spinRight(roomCount == 1 ? 80 : 74);
                 robot.motor.stop();
                 _delay_ms(800);
             }
@@ -416,8 +422,8 @@ void movementLogic(Action& currentAction, Action& previousAction) {
                 while (!foundRoom2()) {followPath(turnDirection == 0 ? Alignment::LEFT : Alignment::RIGHT, Speed::DEFAULT); }
                 robot.motor.stop();
                 _delay_ms(150);
-                if (turnDirection == 0) robot.motor.spinLeft(123);
-                else                    robot.motor.spinRight(123);
+                if (turnDirection == 0) robot.motor.spinLeft(110);
+                else                    robot.motor.spinRight(110);
                 robot.motor.stop();
                 _delay_ms(800);
             }
@@ -732,7 +738,7 @@ void switchLogic(Action& currentAction, Action& previousAction) {
     sei();
 
     _delay_ms(500);
-    Action currentAction = Action::PARKING;
+    Action currentAction = Action::SECOND_CORRIDOR;
     Action previousAction = static_cast<Action>(-1);
 
     while (true) {
