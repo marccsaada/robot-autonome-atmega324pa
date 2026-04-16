@@ -169,20 +169,23 @@ void followRightWall() {
     uint8_t leftWheelSpeed;
     uint8_t rightWheelSpeed;
 
+    bool s3 = robot.lineSensor.getSensor(2); //s3
     bool s4 = robot.lineSensor.getSensor(3); // sensor4
     bool s5 = robot.lineSensor.getSensor(4); // sensor5
 
     if (s4 && s5) {
-        // Trop sur le tape (2 capteurs droits actifs) → virer à gauche
         leftWheelSpeed = LEFT_DEFAULT_SPEED;
         rightWheelSpeed = RIGHT_DEFAULT_SPEED ;
     } else if (s5) {
         // Sensor 5 seul sur le bord → parfait, tout droit
         leftWheelSpeed = LEFT_DEFAULT_SPEED;
         rightWheelSpeed = RIGHT_DEFAULT_SPEED+32;
+    } else if (s3 && s4){
+        leftWheelSpeed = LEFT_DEFAULT_SPEED;
+        rightWheelSpeed = RIGHT_DEFAULT_SPEED+32;
     } else {
         // Aucun capteur droit → on perd le mur, virer à droite pour le retrouver
-        leftWheelSpeed = LEFT_DEFAULT_SPEED + 13;
+        leftWheelSpeed = LEFT_DEFAULT_SPEED + 17;
         rightWheelSpeed = RIGHT_DEFAULT_SPEED;
     }
 
