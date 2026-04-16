@@ -4,7 +4,6 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include "can.h"
-#include "robot.hpp"
 #include "memoire_24.h"
 #include "eepromAdresses.hpp"
 static const uint16_t POTEAU_THRESHOLD = 100;

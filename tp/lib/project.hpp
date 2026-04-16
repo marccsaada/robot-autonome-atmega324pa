@@ -1,4 +1,2 @@
 #pragma once
-
-
-void runProject();
+// runProject() est maintenant Robot::runProject() — voir robot.hpp
