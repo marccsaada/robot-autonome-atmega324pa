@@ -69,7 +69,7 @@ void DistanceSensor::blinkGreenClear(Robot& robot) {
 void DistanceSensor::evacuatePoteau(Robot& robot) {
     do {
         // playConfirmSequence(robot);
-        robot.playEepromNotes();
+        robot.playEepromNotes(&robot.parkingOperand);
         _delay_ms(2000);
     } while (readADC() >= POTEAU_THRESHOLD);
 
