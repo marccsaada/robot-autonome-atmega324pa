@@ -81,6 +81,7 @@ private:
     void followPath(Alignment alignment, Speed speed);
     void followLine();
     void followLeftWall();
+    void followLeftLine();
     void followRightWall();
     void followWall();
     void alignToTurn();
