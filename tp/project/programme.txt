@@ -1,8 +1,8 @@
 dbt;
-trd;
-sgo 71;
-sgo 60;
-sgo 73;
+trg;
+sgo 50;
+sgo 50;
+sgo 50;
 att 4;
 fin;
 
