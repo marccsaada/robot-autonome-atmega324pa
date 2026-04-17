@@ -44,7 +44,8 @@ public:
 
     // ── Public interface ──────────────────────────────────────────────────
     void wait(uint16_t multiplicator);
-    void playEepromNotes(uint8_t* parkingOperand);
+    void playEepromNotes(uint8_t* parkingOperand, uint8_t* direction);
+    void readEepromOperands(uint8_t* parkingOperand, uint8_t* direction);
 
     void runInstruction();
     void runRapport();
@@ -89,6 +90,7 @@ private:
     void detectObject(EEPROMAddress addr);
     bool foundRoom();
     bool foundRoom2();
+    void findRoom3();
 
     // ── State-machine steps ───────────────────────────────────────────────
     void movementLogic(Action& current, Action& previous);

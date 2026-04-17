@@ -69,7 +69,7 @@ void DistanceSensor::blinkGreenClear(Robot& robot) {
 void DistanceSensor::evacuatePoteau(Robot& robot) {
     do {
         // playConfirmSequence(robot);
-        robot.playEepromNotes(&robot.parkingOperand);
+        robot.playEepromNotes(&robot.parkingOperand, &robot.direction);
         _delay_ms(2000);
     } while (readADC() >= POTEAU_THRESHOLD);
 
@@ -78,11 +78,9 @@ void DistanceSensor::evacuatePoteau(Robot& robot) {
 
 void DistanceSensor::scanRoom(Robot& robot, EEPROMAddress addr , Direction dir) { //marc (adresse 10(A)-13(D))
 
-    uint16_t elapsed = 0;
     uint8_t localCount = 0;
-    uint16_t totalRotationMs = FULL_ROTATION_MS;
 
-    while (elapsed < totalRotationMs) {
+    while (robot.lineSensor.robotMiddle()) {
         if (readADC() >= POTEAU_THRESHOLD) {
             robot.led.green();
             robot.motor.stop();
@@ -93,16 +91,9 @@ void DistanceSensor::scanRoom(Robot& robot, EEPROMAddress addr , Direction dir) 
             }
             evacuatePoteau(robot);
             objectPresent_ = false;
-            // justStopped = true;
         } else {
-            // if (justStopped) {
-            //     robot.motor.spinRightSpeed(IMPULSE_SPEED);
-            //     _delay_ms(IMPULSE_MS);
-            //     justStopped = false;
-            // }
             robot.motor.spinRightSpeed(SPIN_SPEED);
             _delay_ms(SCAN_STEP_MS);
-            elapsed += SCAN_STEP_MS;
         }
     }
     robot.motor.stop();

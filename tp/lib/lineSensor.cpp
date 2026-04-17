@@ -1,6 +1,8 @@
 #define F_CPU 8000000UL
 #include "libstatique.hpp"
 
+extern volatile uint16_t ticks;
+
 LED led1(PORTB, PB0, PB2);
 
 // Ici je prends en compte quon utilise le mode qui detecte les zones sombres et non les zones claires.
@@ -102,10 +104,13 @@ bool LineSensor::findDamage(EEPROMAddress addr) { //marc (adresse 14(OUEST)-15(E
             return true;
         }
     }
+
     previousDamageState_ = false;
     led1.off();
+        
     return false;
 }
+
 
 void LineSensor::findObject(EEPROMAddress addr) { //marc (adresse 11(B)-12(C))
     bool objectPresent = offTrackAmount() >= 2;

@@ -31,7 +31,7 @@ public:
 
     uint8_t getNDamage() const { return nDamage_; } // Getter for nDamage_
     void incrementDamage() { nDamage_++; }
-    void resetDamage() { nDamage_= 0; }
+    void resetDamage() { nDamage_ = 0; previousDamageState_ = false; }
 
     bool getPreviousDamageState() const { return previousDamageState_; }
     void setPreviousDamageState(bool state) { previousDamageState_ = state; }
@@ -52,8 +52,10 @@ private:
     uint8_t nDamage_ = 0; // Number of times the robot has found damage
     uint8_t nObjects_ = 0; // Number of times the robot has found an object
 
-    bool previousDamageState_ = false; // Previous state of damage detection
-    bool previousObjectState_ = false;
+    bool     previousDamageState_ = false;
+    bool     previousObjectState_ = false;
+    bool     debouncing_          = false;
+    uint16_t debounceStart_       = 0;
     Memoire24CXXX eeprom_;
 
 };
