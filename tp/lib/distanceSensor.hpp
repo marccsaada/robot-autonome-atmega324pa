@@ -6,7 +6,7 @@
 #include "can.h"
 #include "memoire_24.h"
 #include "eepromAdresses.hpp"
-static const uint16_t POTEAU_THRESHOLD = 100;
+static const uint16_t POTEAU_THRESHOLD = 125;
 static const uint16_t SPIN_SPEED       = 80;
 static const uint16_t FULL_ROTATION_MS     = 3150;
 static const uint16_t STOP_COMPENSATION_MS = 350;

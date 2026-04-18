@@ -37,7 +37,7 @@ public:
     Timer          timer;
 
     // ── State used by Interpreter ─────────────────────────────────────────
-    uint8_t direction      = 0;   // 0 = left, 1 = right
+    uint8_t direction      = 1;   // 0 = left, 1 = right
     uint8_t note[3]        = {};
     uint8_t parkingOperand = 0;
     uint8_t noteCount      = 0;
@@ -57,6 +57,8 @@ private:
     bool     firstTime    = true;
     uint8_t  roomCount    = 0;
     uint8_t  parkingCount = 0;
+    //test marc
+    bool parkingReady = false;
 
     static constexpr uint8_t  LEFT_SPEED  = 110;
     static constexpr uint8_t  RIGHT_SPEED = 110;
@@ -84,6 +86,7 @@ private:
     void followLeftWall();
     void followLeftLine();
     void followRightWall();
+    void followRightLine();
     void followWall();
     void alignToTurn();
     bool confirmTurn();
