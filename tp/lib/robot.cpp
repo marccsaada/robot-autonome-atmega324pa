@@ -209,7 +209,7 @@ void Robot::followLeftWall() {
     if      (s1 && s2) { leftWheelSpeed = LEFT_SPEED;      rightWheelSpeed = RIGHT_SPEED; }
     else if (s1)        { leftWheelSpeed = LEFT_SPEED+25;      rightWheelSpeed = RIGHT_SPEED; }
     else if (s2 && s3)  { leftWheelSpeed = LEFT_SPEED+25;      rightWheelSpeed = RIGHT_SPEED; }
-    else                { leftWheelSpeed = LEFT_SPEED; rightWheelSpeed = RIGHT_SPEED+39;      }
+    else                { leftWheelSpeed = LEFT_SPEED-25; rightWheelSpeed = RIGHT_SPEED;      }
 
     motor.goForward(leftWheelSpeed, rightWheelSpeed);
 }
@@ -825,15 +825,13 @@ void Robot::runProject() {
     parkingCount = 0;
     parkingReady = false;
 
-    Action currentAction  = Action::THIRD_CORRIDOR;
+    Action currentAction  = Action::PARKING;
     Action previousAction = static_cast<Action>(-1);
 
     while (true) {
         movementLogic(currentAction, previousAction);
         switchLogic(currentAction, previousAction);
-        // motor.spinLeft(120);
-        // motor.spinRight(120);
-        // motor.goForward(LEFT_SPEED, RIGHT_SPEED);
+        // followLeftWall();
 
     }
 
