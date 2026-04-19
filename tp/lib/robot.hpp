@@ -44,7 +44,7 @@ public:
 
     // ── Public interface ──────────────────────────────────────────────────
     void wait(uint16_t multiplicator);
-    void playEepromNotes(uint8_t* parkingOperand, uint8_t* direction);
+    void playEepromNotes();
     void readEepromOperands(uint8_t* parkingOperand, uint8_t* direction);
 
     void runInstruction();
@@ -83,11 +83,11 @@ private:
     void turnOpposite();
     void followPath(Alignment alignment, Speed speed);
     void followLine();
-    void followLeftWall();
+    void followLeftWall(Speed speed);
     void followLeftLine();
-    void followRightWall();
+    void followRightWall(Speed speed);
     void followRightLine();
-    void followWall();
+    void followWall(Speed speed);
     void alignToTurn();
     bool confirmTurn();
     void detectObject(EEPROMAddress addr);

@@ -48,14 +48,14 @@ uint16_t DistanceSensor::readADC() {
 
 
 
-void DistanceSensor::playConfirmSequence(Robot& robot) {
-    for (uint8_t i = 0; i < robot.noteCount; i++) {
-        _delay_ms(125);
-        robot.sound.playSound(robot.note[i]);
-        _delay_ms(250);
-        robot.sound.stopSound();
-    }
-}
+// void DistanceSensor::playConfirmSequence(Robot& robot) {
+//     for (uint8_t i = 0; i < robot.noteCount; i++) {
+//         _delay_ms(125);
+//         robot.sound.playSound(robot.note[i]);
+//         _delay_ms(250);
+//         robot.sound.stopSound();
+//     }
+// }
 
 void DistanceSensor::blinkGreenClear(Robot& robot) {
     for (uint8_t i = 0; i < 8; i++) {
@@ -69,7 +69,7 @@ void DistanceSensor::blinkGreenClear(Robot& robot) {
 void DistanceSensor::evacuatePoteau(Robot& robot) {
     do {
         // playConfirmSequence(robot);
-        robot.playEepromNotes(&robot.parkingOperand, &robot.direction);
+        robot.playEepromNotes();
         _delay_ms(2000);
     } while (readADC() >= POTEAU_THRESHOLD);
 
@@ -79,6 +79,7 @@ void DistanceSensor::evacuatePoteau(Robot& robot) {
 void DistanceSensor::scanRoom(Robot& robot, EEPROMAddress addr , Direction dir) { //marc (adresse 10(A)-13(D))
 
     uint8_t localCount = 0;
+    bool startMoving = true;
 
     while (robot.lineSensor.robotMiddle()) {
         if (readADC() >= POTEAU_THRESHOLD) {
@@ -91,8 +92,16 @@ void DistanceSensor::scanRoom(Robot& robot, EEPROMAddress addr , Direction dir) 
             }
             evacuatePoteau(robot);
             objectPresent_ = false;
+            startMoving = true;
         } else {
-            robot.motor.spinRightSpeed(SPIN_SPEED);
+            if (startMoving) { 
+                if (robot.direction == 0) robot.motor.spinRightSpeed(255);
+                else robot.motor.spinLeftSpeed(255);
+                _delay_ms(75);
+                startMoving = false;
+            }
+            if (robot.direction == 0) robot.motor.spinRightSpeed(SPIN_SPEED);
+            else robot.motor.spinLeftSpeed(SPIN_SPEED);
             _delay_ms(SCAN_STEP_MS);
         }
     }

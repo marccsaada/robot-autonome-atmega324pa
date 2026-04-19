@@ -81,16 +81,19 @@ void Interpreter::confirm(){
         uint8_t instr = memory_.readInstruction();
         uint8_t op    = memory_.readOperand();
 
-    executeInstruction(instr, op);
+        if (instr == TRD || instr == TRG) trInstr = instr;
+        if (instr == ATT)                 attOp   = op;
+
+        if (instr == SGO) executeInstruction(instr, op);   //fait juste jouer le son. 
     }
 
     _delay_ms(2000);
 
-    if (trInstr != 0) executeInstruction(trInstr, 0);
+    if (trInstr != 0) executeInstruction(trInstr, 0);  //joue seulement la couleur selon la direction. 
 
     _delay_ms(2000);
 
-    for (uint8_t i = 0; i < attOp; i++) {
+    for (uint8_t i = 0; i < attOp; i++) {   //selon operande de ATT, il clignote ambre.
         for (uint8_t j = 0; j < 83; j++)
             robot->led.amber();  
         robot->led.off();
@@ -102,7 +105,7 @@ void Interpreter::executeInstruction(uint8_t instruction, uint8_t operand) {
        switch (instruction) {
             case SGO:
                 if (robot->noteCount < 3) {
-                    robot->note[robot->noteCount] = operand;
+                    // robot->note[robot->noteCount] = operand;
                     _delay_ms(125);
                       robot->sound.playSound(operand);
                      _delay_ms(250);

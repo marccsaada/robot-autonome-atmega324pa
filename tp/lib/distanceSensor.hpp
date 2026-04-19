@@ -7,7 +7,7 @@
 #include "memoire_24.h"
 #include "eepromAdresses.hpp"
 static const uint16_t POTEAU_THRESHOLD = 125;
-static const uint16_t SPIN_SPEED       = 80;
+static const uint16_t SPIN_SPEED       = 82;
 static const uint16_t FULL_ROTATION_MS     = 3150;
 static const uint16_t STOP_COMPENSATION_MS = 350;
 static const uint8_t  IMPULSE_SPEED        = 255;
@@ -37,8 +37,6 @@ public:
     void scanRoom(Robot& robot, EEPROMAddress addr ,Direction dir = LEFT);
 
     void evacuatePoteau(Robot& robot);
-
-    void playConfirmSequence(Robot& robot);
 
     void blinkGreenClear(Robot& robot);
 
