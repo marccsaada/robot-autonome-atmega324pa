@@ -75,12 +75,12 @@ int main() {
     robot.timer.startTimer();
     robot.button.init();
     sei();
-
+   
     set_sleep_mode(SLEEP_MODE_IDLE);
     while (state != DONE) { sleep_mode(); handleModeSelection(); }
     robot.timer.stopTimer();
     ticks = 0;
-
+    robot.readEepromOperands();
     switch (selectedMode) {
         case INSTRUCTION: robot.runInstruction(); break;
         case EXECUTION:   robot.runProject();     break;
