@@ -94,6 +94,7 @@ private:
     bool foundRoom();
     bool foundRoom2();
     void findRoom3();
+    void turnYBB();
 
     // ── State-machine steps ───────────────────────────────────────────────
     void movementLogic(Action& current, Action& previous);
