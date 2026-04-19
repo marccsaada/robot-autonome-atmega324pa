@@ -95,13 +95,18 @@ void DistanceSensor::scanRoom(Robot& robot, EEPROMAddress addr , Direction dir) 
             startMoving = true;
         } else {
             if (startMoving) { 
-                if (robot.direction == 0) robot.motor.spinRightSpeed(255);
-                else robot.motor.spinLeftSpeed(255);
-                _delay_ms(75);
+                // if (robot.direction == 0) robot.motor.spinRightSpeed(255);
+                // else robot.motor.spinLeftSpeed(255);
+                 if (robot.direction == 0) robot.motor.goBackward(0, 255);
+                else robot.motor.goBackward(255, 0);
+
+                _delay_ms(50);
                 startMoving = false;
             }
             if (robot.direction == 0) robot.motor.spinRightSpeed(SPIN_SPEED);
             else robot.motor.spinLeftSpeed(SPIN_SPEED);
+            // if (robot.direction == 0) robot.motor.spinRightSpeed(SPIN_SPEED);
+            // else robot.motor.spinLeftSpeed(SPIN_SPEED);
             _delay_ms(SCAN_STEP_MS);
         }
     }

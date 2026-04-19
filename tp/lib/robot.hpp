@@ -45,7 +45,7 @@ public:
     // ── Public interface ──────────────────────────────────────────────────
     void wait(uint16_t multiplicator);
     void playEepromNotes();
-    void readEepromOperands(uint8_t* parkingOperand, uint8_t* direction);
+    void readEepromOperands();
 
     void runInstruction();
     void runRapport();
