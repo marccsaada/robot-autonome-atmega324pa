@@ -35,6 +35,7 @@ public:
     LineSensor     lineSensor;
     DistanceSensor distanceSensor;
     Timer          timer;
+    Memoire24CXXX  eeprom;
 
     // ── State used by Interpreter ─────────────────────────────────────────
     uint8_t direction      = 1;   // 0 = left, 1 = right

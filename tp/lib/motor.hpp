@@ -62,6 +62,8 @@ public:
     /** @brief Stops both motors. */
     void stop();
 
+    void setPrescaler(Timer::Prescaler prescaler) { timer_.setModePWM(Timer::PWMMode::PHASE_CORRECT, prescaler); }
+    void resetPrescaler() { timer_.setModePWM(Timer::PWMMode::PHASE_CORRECT, Timer::Prescaler::PRESCALE_64); }
 private:
     Timer timer_ = Timer::Id::TIMER2;
     Wheel leftWheel_;
