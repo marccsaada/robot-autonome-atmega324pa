@@ -9,6 +9,44 @@ Description : Point d'entrée principal. Sélection du mode (instruction / exéc
               Entièrement piloté par interruptions (Timer1 CTC + INT0). Aucune scrutation.
 */
 
+/*
+ * ========== I/O IDENTIFICATION (CONNEXIONS SUR LE ROBOT) =============
+ *
+ * ┌───────────────────────────────────────────────────────────────────┐
+ * │                    ATmega324PA - Pinout                           │
+ * ├───────────────────────────────────────────────────────────────────┤
+ * │                                                                   │
+ * │   PORTA            PORTB           PORTC          PORTD           │
+ * │  ┌───────┐        ┌──────┐         ┌──────┐       ┌──────┐        │
+ * │  │ PA0 ●-│→LIGNE1 │PB0 ●-│→LED-V   │PC0 ●-│→SCL   │PD0 ●-│→RXD    │
+ * │  │ PA1 ●-│→LIGNE2 │PB1 ●-│→HP-EN   │PC1 ●-│→SDA   │PD1 ●-│→TXD    │
+ * │  │ PA2 ●-│→LIGNE3 │PB2 ●-│→LED-R   │PC2 ○ │       │PD2 ●-│→BOUTON │
+ * │  │ PA3 ●-│→LIGNE4 │PB3 ●-│→HP-PWM  │PC3 ○ │       │PD3 ○ │        │
+ * │  │ PA4 ●-│→LIGNE5 │PB4 ●-│→SS      │PC4 ○ │       │PD4 ●-│→ROU-D  │
+ * │  │ PA5 ●-│→DIST   │PB5 ●-│→MOSI    │PC5 ○ │       │PD5 ●-│→ROU-G  │
+ * │  │ PA6 ○ │        │PB6 ●-│→MISO    │PC6 ○ │       │PD6 ●-│→DIR-D  │
+ * │  │ PA7 ○ │        │PB7 ●-│→SCK     │PC7 ○ │       │PD7 ●-│→DIR-G  │
+ * │  └───────┘        └──────┘         └──────┘       └──────┘        │
+ * │                                                                   │
+ * │  ● = Utilisé          ○ = Non utilisé                             │
+ * └───────────────────────────────────────────────────────────────────┘
+ *
+ * LEGENDE :
+ * LIGNE1..5 : capteurs de ligne infrarouges (PA0..PA4)
+ * DIST      : capteur de distance infrarouge (PA5, lu par le CAN)
+ * LED-V     : DEL verte bicolore        (PB0)
+ * LED-R     : DEL rouge bicolore        (PB2)
+ * HP-EN     : activation du haut-parleur (PB1)
+ * HP-PWM    : sortie PWM du son (OC0A)   (PB3)
+ * SS / MOSI / MISO / SCK : bus SPI du programmeur (PB4..PB7)
+ * SCL / SDA : bus I2C vers l'EEPROM externe (PC0, PC1)
+ * RXD / TXD : UART de débogage (PD0, PD1)
+ * BOUTON    : bouton de la carte mère sur INT0 (PD2)
+ * ROU-D / ROU-G : sorties PWM des moteurs droit et gauche (PD4, PD5)
+ * DIR-D / DIR-G : pins de direction des deux moteurs (PD6, PD7)
+ * =====================================================================
+ */
+
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
 #include <libstatique.hpp>

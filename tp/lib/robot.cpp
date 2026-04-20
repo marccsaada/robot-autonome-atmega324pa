@@ -6,6 +6,67 @@ Description : Implémentation de l'interface unifiée du robot : mouvement, LED,
 son, et logique complète d'exécution du projet (machine à états).
 */
 
+/*
+ * ========================= MACHINE A ETATS (runProject) =========================
+ *
+ * La boucle principale appelle movementLogic() (action continue dans l'état courant)
+ * puis switchLogic() (test de transition vers l'état suivant). Les entrées sont des
+ * conditions de capteurs (ligne, distance, bouton), les sorties sont des commandes
+ * envoyées aux moteurs et à la DEL.
+ *
+ * +------------------+----------------------+------------------+------------------------------+
+ * |                  |        INPUT         |                  |           OUTPUT             |
+ * |  État actuel     +----------------------+   État suivant   +------------------------------+
+ * |                  |  Condition capteur   |                  |         Action robot         |
+ * +------------------+----------------------+------------------+------------------------------+
+ * | PARKING          | !robotBumpLine()     | PARKING          | Recule en diagonale          |
+ * | PARKING          | robotBumpLine()      | LEAVE_PARKING    | Arrêt (délai 500 ms)         |
+ * +------------------+----------------------+------------------+------------------------------+
+ * | LEAVE_PARKING    | !robotMiddle()       | LEAVE_PARKING    | Manoeuvre vers la ligne      |
+ * | LEAVE_PARKING    | robotMiddle()        | AFTER_PARKING    | Arrêt (délai 500 ms)         |
+ * +------------------+----------------------+------------------+------------------------------+
+ * | AFTER_PARKING    | !robotBumpLine()     | AFTER_PARKING    | Suit le mur (vitesse SLOW)   |
+ * | AFTER_PARKING    | robotBumpLine()      | FIRST_TURN       | Arrêt                        |
+ * +------------------+----------------------+------------------+------------------------------+
+ * | FIRST_TURN       | !confirmTurn()       | FIRST_TURN       | Tourne (turnYBB)             |
+ * | FIRST_TURN       | confirmTurn()        | FIRST_CORRIDOR   | (transition directe)         |
+ * +------------------+----------------------+------------------+------------------------------+
+ * | FIRST_CORRIDOR   | toujours             | SECOND_TURN      | DEL verte, suit le couloir   |
+ * +------------------+----------------------+------------------+------------------------------+
+ * | SECOND_TURN      | toujours             | SECOND_CORRIDOR  | (transition directe)         |
+ * +------------------+----------------------+------------------+------------------------------+
+ * | SECOND_CORRIDOR  | roomCount = 0 ou 3   | PEOPLE_ROOM      | Avance vers le local         |
+ * | SECOND_CORRIDOR  | roomCount = 1 ou 2   | OBJECT_ROOM      | Avance vers le local         |
+ * | SECOND_CORRIDOR  | roomCount = 4        | THIRD_TURN       | Suit le couloir (SLOW)       |
+ * +------------------+----------------------+------------------+------------------------------+
+ * | PEOPLE_ROOM      | !robotMiddle()       | PEOPLE_ROOM      | Scan IR, cherche poteaux     |
+ * | PEOPLE_ROOM      | robotMiddle()        | SECOND_CORRIDOR  | roomCount++                  |
+ * +------------------+----------------------+------------------+------------------------------+
+ * | OBJECT_ROOM      | !robotMiddle()       | OBJECT_ROOM      | Suit ligne, cherche objets   |
+ * | OBJECT_ROOM      | robotMiddle()        | SECOND_CORRIDOR  | roomCount++                  |
+ * +------------------+----------------------+------------------+------------------------------+
+ * | THIRD_TURN       | !confirmTurn()       | THIRD_TURN       | Tourne                       |
+ * | THIRD_TURN       | confirmTurn()        | THIRD_CORRIDOR   | (transition directe)         |
+ * +------------------+----------------------+------------------+------------------------------+
+ * | THIRD_CORRIDOR   | !robotBumpLine()     | THIRD_CORRIDOR   | Suit le mur                  |
+ * | THIRD_CORRIDOR   | robotBumpLine()      | FOURTH_TURN      | Arrêt                        |
+ * +------------------+----------------------+------------------+------------------------------+
+ * | FOURTH_TURN      | !confirmTurn()       | FOURTH_TURN      | Tourne                       |
+ * | FOURTH_TURN      | confirmTurn()        | ENTER_PARKING    | (transition directe)         |
+ * +------------------+----------------------+------------------+------------------------------+
+ * | ENTER_PARKING    | parkingCount < op    | ENTER_PARKING    | Suit mur, compte les lignes  |
+ * | ENTER_PARKING    | parkingCount = op    | COMPLETE_PARKING | (transition directe)         |
+ * +------------------+----------------------+------------------+------------------------------+
+ * | COMPLETE_PARKING | toujours             | END              | (transition directe)         |
+ * +------------------+----------------------+------------------+------------------------------+
+ * | END              | toujours             | END              | Boucle infinie               |
+ * +------------------+----------------------+------------------+------------------------------+
+ *
+ * Note : "op" désigne parkingOperand, lu dans la mémoire EEPROM externe par
+ *        readEepromOperands() au début du runProject().
+ * ================================================================================
+ */
+
 #include <libstatique.hpp>
 #include <robot.hpp>
 
