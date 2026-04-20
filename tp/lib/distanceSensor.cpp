@@ -81,26 +81,30 @@ void DistanceSensor::scanRoom(Robot& robot, EEPROMAddress addr , Direction dir) 
     uint8_t localCount = 0;
     bool startMoving = true;
 
-    while (robot.lineSensor.robotMiddle()) {
+    while (/*robot.lineSensor.robotMiddle()*/ robot.direction == 0 ? !robot.lineSensor.getSensor(4) : !robot.lineSensor.getSensor(0)) {
         if (readADC() >= POTEAU_THRESHOLD) {
             robot.led.green();
             robot.motor.stop();
             if (!objectPresent_) {
                 objectPresent_ = true;
                 localCount++;
-                eeprom_.ecriture(addr, localCount);
+                
             }
             evacuatePoteau(robot);
             objectPresent_ = false;
             startMoving = true;
         } else {
-            if (startMoving) { 
-                // if (robot.direction == 0) robot.motor.spinRightSpeed(255);
-                // else robot.motor.spinLeftSpeed(255);
-                 if (robot.direction == 0) robot.motor.goBackward(0, 255);
-                else robot.motor.goBackward(255, 0);
-
-                _delay_ms(50);
+            if (startMoving) {
+                if (robot.direction == 0) {
+                    robot.motor.goForward(255, 0);
+                    _delay_ms(50);
+                    robot.motor.spinRightSpeed(200);
+                } else {
+                    robot.motor.goBackward(255, 0);
+                    _delay_ms(50);
+                    robot.motor.spinLeftSpeed(200);
+                }
+                _delay_ms(75);
                 startMoving = false;
             }
             if (robot.direction == 0) robot.motor.spinRightSpeed(SPIN_SPEED);
@@ -111,6 +115,7 @@ void DistanceSensor::scanRoom(Robot& robot, EEPROMAddress addr , Direction dir) 
         }
     }
     robot.motor.stop();
+    eeprom_.ecriture(addr, localCount);
 }
 
 

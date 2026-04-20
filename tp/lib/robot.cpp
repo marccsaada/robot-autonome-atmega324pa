@@ -178,7 +178,6 @@ void Robot::followPath(Alignment alignment, Speed speed) {
         uint8_t leftWheelSpeed  = LEFT_SPEED;
         uint8_t rightWheelSpeed = RIGHT_SPEED;
     }
-    
 
     if      (speed == Speed::SLOW)    { leftWheelSpeed = LEFT_SPEED  - 20; rightWheelSpeed = RIGHT_SPEED - 20; }
     else if (speed == Speed::DEFAULT) { leftWheelSpeed = LEFT_SPEED;       rightWheelSpeed = RIGHT_SPEED;      }
@@ -235,11 +234,11 @@ void Robot::followRightLine() {
     bool s4 = lineSensor.getSensor(3);
     bool s5 = lineSensor.getSensor(4);
 
-    if      (s4 && s5) { leftWheelSpeed = LEFT_SPEED;      rightWheelSpeed = RIGHT_SPEED+31; }
-    else if (s3 && s4) { leftWheelSpeed = LEFT_SPEED;      rightWheelSpeed = RIGHT_SPEED+31; }
-    else if (s5)       { leftWheelSpeed = LEFT_SPEED;      rightWheelSpeed = RIGHT_SPEED-25; }
+    if      (s4 && s5)       { leftWheelSpeed = LEFT_SPEED;      rightWheelSpeed = RIGHT_SPEED+31; }
+    else if (s3 && s4)       { leftWheelSpeed = LEFT_SPEED;      rightWheelSpeed = RIGHT_SPEED+31; }
+    else if (s5)             { leftWheelSpeed = LEFT_SPEED;      rightWheelSpeed = RIGHT_SPEED-25; }
     else if (s2 || s3 || s4) { leftWheelSpeed = LEFT_SPEED; rightWheelSpeed = RIGHT_SPEED+25; }
-    else               { leftWheelSpeed = LEFT_SPEED;      rightWheelSpeed = RIGHT_SPEED-23; }
+    else                     { leftWheelSpeed = LEFT_SPEED;      rightWheelSpeed = RIGHT_SPEED-23; }
 
     motor.goForward(leftWheelSpeed, rightWheelSpeed);
 }
@@ -248,41 +247,38 @@ void Robot::followRightWall(Speed speed) {
     uint8_t leftWheelSpeed= LEFT_SPEED;
     uint8_t rightWheelSpeed= RIGHT_SPEED;
 
-    if      (speed == Speed::SLOW)    { leftWheelSpeed = LEFT_SPEED  - 35; rightWheelSpeed = RIGHT_SPEED - 35; }
-    else if (speed == Speed::DEFAULT) { leftWheelSpeed = LEFT_SPEED - 20;       rightWheelSpeed = RIGHT_SPEED - 20;      }
-    else if (speed == Speed::FAST)    { leftWheelSpeed = LEFT_SPEED  - 10; rightWheelSpeed = RIGHT_SPEED - 10; }
-
+    if      (speed == Speed::SLOW)    { leftWheelSpeed = LEFT_SPEED - 35; rightWheelSpeed = RIGHT_SPEED - 35; }
+    else if (speed == Speed::DEFAULT) { leftWheelSpeed = LEFT_SPEED - 20; rightWheelSpeed = RIGHT_SPEED - 20; }
+    else if (speed == Speed::FAST)    { leftWheelSpeed = LEFT_SPEED - 10; rightWheelSpeed = RIGHT_SPEED - 10; }
 
     bool s3 = lineSensor.getSensor(2);
     bool s4 = lineSensor.getSensor(3);
     bool s5 = lineSensor.getSensor(4);
 
-
-
-    if      (s4 && s5) {  leftWheelSpeed = LEFT_SPEED;      rightWheelSpeed = RIGHT_SPEED-5;  }
-    else if (s5)        { leftWheelSpeed = LEFT_SPEED;      rightWheelSpeed = RIGHT_SPEED + 50; }
-    else if (s3 && s4)  { leftWheelSpeed = LEFT_SPEED;      rightWheelSpeed = RIGHT_SPEED + 50; }
-    else                { leftWheelSpeed = LEFT_SPEED; rightWheelSpeed = RIGHT_SPEED - 55;      }
+    if      (s4 && s5) { leftWheelSpeed = LEFT_SPEED; rightWheelSpeed = RIGHT_SPEED-5;    }
+    else if (s5)       { leftWheelSpeed = LEFT_SPEED; rightWheelSpeed = RIGHT_SPEED + 50; }
+    else if (s3 && s4) { leftWheelSpeed = LEFT_SPEED; rightWheelSpeed = RIGHT_SPEED + 50; }
+    else               { leftWheelSpeed = LEFT_SPEED; rightWheelSpeed = RIGHT_SPEED - 55; }
 
     motor.goForward(leftWheelSpeed, rightWheelSpeed);
 }
 void Robot::followLeftWall(Speed speed) {
 
-    uint8_t leftWheelSpeed = LEFT_SPEED;
+    uint8_t leftWheelSpeed  = LEFT_SPEED;
     uint8_t rightWheelSpeed = RIGHT_SPEED;
 
     if      (speed == Speed::SLOW)    { leftWheelSpeed = LEFT_SPEED  - 35; rightWheelSpeed = RIGHT_SPEED - 35; }
-    else if (speed == Speed::DEFAULT) { leftWheelSpeed = LEFT_SPEED - 20;       rightWheelSpeed = RIGHT_SPEED - 20; }
+    else if (speed == Speed::DEFAULT) { leftWheelSpeed = LEFT_SPEED  - 20; rightWheelSpeed = RIGHT_SPEED - 20; }
     else if (speed == Speed::FAST)    { leftWheelSpeed = LEFT_SPEED  - 10; rightWheelSpeed = RIGHT_SPEED - 10; }
 
     bool s1 = lineSensor.getSensor(0);
     bool s2 = lineSensor.getSensor(1);
     bool s3 = lineSensor.getSensor(2);
 
-    if      (s1 && s2) { leftWheelSpeed = LEFT_SPEED;      rightWheelSpeed = RIGHT_SPEED; }
-    else if (s1)        { leftWheelSpeed = LEFT_SPEED+55;      rightWheelSpeed = RIGHT_SPEED; }
-    else if (s2 && s3)  { leftWheelSpeed = LEFT_SPEED+55;      rightWheelSpeed = RIGHT_SPEED; }
-    else                { leftWheelSpeed = LEFT_SPEED-30; rightWheelSpeed = RIGHT_SPEED;      } 
+    if      (s1 && s2)  { leftWheelSpeed = LEFT_SPEED;    rightWheelSpeed = RIGHT_SPEED; }
+    else if (s1)        { leftWheelSpeed = LEFT_SPEED+55; rightWheelSpeed = RIGHT_SPEED; }
+    else if (s2 && s3)  { leftWheelSpeed = LEFT_SPEED+55; rightWheelSpeed = RIGHT_SPEED; }
+    else                { leftWheelSpeed = LEFT_SPEED-30; rightWheelSpeed = RIGHT_SPEED; } 
 
     motor.goForward(leftWheelSpeed, rightWheelSpeed);
 }
@@ -295,22 +291,23 @@ void Robot::alignToTurn() {
     motor.stop();
     _delay_ms(300);
 
-    if (direction == 0) motor.goForward(0, RIGHT_SPEED - 10);
-    else                motor.goForward(LEFT_SPEED - 10, 0);
+    if (direction == 0) motor.goForward (0, RIGHT_SPEED - 10);
+    else                motor.goForward (LEFT_SPEED - 10, 0);
     _delay_ms(1750);
 }
 
 bool Robot::confirmTurn() {
-    if ((direction == 0 ? lineSensor.offTrackRight() : lineSensor.offTrackLeft()) && lineSensor.offTrackAmount() <= 2) return false;
-    else return true;
+    if ((direction == 0 ? lineSensor.offTrackRight() : lineSensor.offTrackLeft()) && lineSensor.offTrackAmount() <= 2) 
+        return false;
+    else
+        return true;
 }
 
 void Robot::detectObject(EEPROMAddress addr) {
     _delay_ms(500); 
     lineSensor.resetObjectCount();
-    // ticks = 0;
-    timer.startTimer();
 
+    timer.startTimer();
     motor.goForward(255, 255);
     _delay_ms(80);
     while (direction == 0 ? ticks < 198 : ticks < 196) {
@@ -322,12 +319,13 @@ void Robot::detectObject(EEPROMAddress addr) {
         else if (lineSensor.offTrackRight()){
             motor.goForward(LEFT_SPEED,RIGHT_SPEED);
         }
+    
     led.off();
     }
+
     eeprom.ecriture(addr, lineSensor.getNObjects());
     timer.stopTimer();
     ticks = 0; 
-    
 }
 
 void Robot::findRoom3() {
@@ -924,7 +922,7 @@ void Robot::switchLogic(Action& currentAction, Action& previousAction) {
             
             timer.startTimer();
             while (ticks < 350) {
-                followWall(Speed::SLOW);
+                followWall(Speed::DEFAULT);
             }
             timer.stopTimer();
             ticks = 0;

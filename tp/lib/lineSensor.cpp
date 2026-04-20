@@ -125,7 +125,6 @@ void LineSensor::findObject(EEPROMAddress addr) { //marc (adresse 11(B)-12(C))
         _delay_ms(200);
         if (!robotBumpLine()) { 
             nObjects_++;
-            eeprom_.ecriture(addr, nObjects_);
         }
         return;
     }

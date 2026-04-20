@@ -36,7 +36,7 @@ public:
     bool getPreviousDamageState() const { return previousDamageState_; }
     void setPreviousDamageState(bool state) { previousDamageState_ = state; }
 
-    void resetObjectCount() { nObjects_ = 0; }
+    void resetObjectCount() { nObjects_ = 0; previousDamageState_ = false;}
     uint8_t getNObjects() const { return nObjects_; }
 
     uint8_t getSensor(int index) const {

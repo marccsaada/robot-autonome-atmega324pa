@@ -117,13 +117,13 @@ void Interpreter::executeInstruction(uint8_t instruction, uint8_t operand) {
                robot->led.green();
                 _delay_ms(2000);
                 robot->led.off();
-                robot->direction = 0; 
+                robot->direction = 1; 
                 break;
             case TRG:
                 robot->led.red();
                 _delay_ms(2000);
                 robot->led.off();
-                robot->direction = 1; 
+                robot->direction = 0; 
                 break;
             case ATT:
                 robot->parkingOperand = operand;
