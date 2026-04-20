@@ -1,3 +1,14 @@
+/*
+Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
+Travail : TP Final
+Section # : 05
+Équipe # : 107111
+
+Description : Implémentation du capteur de distance. On fait une médiane sur plusieurs
+              lectures pour réduire le bruit, puis on balaie le local jusqu'à retrouver
+              la ligne et on enregistre le nombre d'objets détectés dans la mémoire externe.
+*/
+
 #define F_CPU 8000000UL
 #include "libstatique.hpp"
 #include "robot.hpp"

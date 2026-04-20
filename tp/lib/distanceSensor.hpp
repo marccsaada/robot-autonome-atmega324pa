@@ -1,3 +1,13 @@
+/*
+Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
+Travail : TP Final
+Section # : 05
+Équipe # : 107111
+
+Description : Capteur de distance infrarouge. Sert à détecter les poteaux pendant le balayage
+              d'un local, à compter les objets trouvés et à écrire le résultat en EEPROM.
+*/
+
 #ifndef CAPTEUR_DISTANCE_H
 #define CAPTEUR_DISTANCE_H
 

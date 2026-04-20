@@ -1,3 +1,13 @@
+/*
+Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
+Travail : TP Final
+Section # : 05
+Équipe # : 107111
+
+Description : Gestion des cinq capteurs de ligne du robot. Permet de savoir si le robot
+              est centré, décalé, contre un mur ou s'il a rencontré une zone endommagée.
+*/
+
 #pragma once
 #define F_CPU 8000000UL
 #include <avr/io.h>

@@ -1,12 +1,13 @@
-// /*
-// Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
-// Travail : TP9
-// Section # : 05
-// Équipe # : 107111
-// Correcteur : Abdul-wahab Chaarani
+/*
+Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
+Travail : TP Final
+Section # : 05
+Équipe # : 107111
 
-// Description : Implémentation de l'interpréteur : séquence de démarrage et boucle d'exécution.
-// */
+Description : Implémentation de l'interpréteur. Contient la séquence de démarrage, la
+              boucle principale qui lit les instructions en mémoire, et le dispatch des
+              opcodes vers les actions du robot.
+*/
 
 #include "interpreter.hpp"
 #include <util/delay.h>

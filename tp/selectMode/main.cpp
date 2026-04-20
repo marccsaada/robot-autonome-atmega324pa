@@ -1,13 +1,14 @@
-// /*
-// Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
-// Travail : TP Final
-// Section # : 05
-// Équipe # : 107111
+/*
+Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
+Travail : TP Final
+Section # : 05
+Équipe # : 107111
 
-// Description : Point d'entrée principal. Sélection du mode (instruction / exécution / rapport)
-//               par séquence DEL + bouton, puis dispatche vers le mode approprié.
-//               Entièrement piloté par interruptions (Timer1 CTC + INT0). Aucune scrutation.
-// */
+Description : Ancien point d'entrée du projet. Gérait la sélection du mode (instruction,
+              exécution ou rapport) via une séquence de DEL et le bouton, entièrement par
+              interruptions (Timer1 CTC et INT0). Le code a été déplacé vers app/main.cpp
+              et Robot::runProject, mais on garde ce fichier comme référence.
+*/
 
 // #include <avr/interrupt.h>
 // #include <avr/sleep.h>

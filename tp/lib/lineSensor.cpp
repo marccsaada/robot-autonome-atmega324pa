@@ -1,3 +1,13 @@
+/*
+Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
+Travail : TP Final
+Section # : 05
+Équipe # : 107111
+
+Description : Implémentation des capteurs de ligne. Lit les entrées du port A, gère le
+              comptage des zones endommagées et des objets, et écrit les résultats en EEPROM.
+*/
+
 #define F_CPU 8000000UL
 #include "libstatique.hpp"
 

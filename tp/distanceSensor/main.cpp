@@ -1,3 +1,14 @@
+/*
+Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
+Travail : TP Final
+Section # : 05
+Équipe # : 107111
+
+Description : Fichier de tests pour le capteur de distance. Sert uniquement à essayer
+              les fonctions de scan et de détection de poteaux pendant le développement.
+              Le code actif a été commenté une fois les tests terminés.
+*/
+
 #include <avr/io.h>
 #include <can.h>
 #include "robot.hpp"
