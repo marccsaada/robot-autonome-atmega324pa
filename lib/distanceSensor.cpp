@@ -1,0 +1,136 @@
+/*
+Auteurs : Jérémie Anglaret-Guirguis, Anis Benabdallah, Marc Abou-Saada, Yanis Ben Boudaoud
+Travail : TP Final
+Section # : 05
+Équipe # : 107111
+
+Description : Implémentation du capteur de distance. On fait une médiane sur plusieurs
+              lectures pour réduire le bruit, puis on balaie le local jusqu'à retrouver
+              la ligne et on enregistre le nombre d'objets détectés dans la mémoire externe.
+*/
+
+#define F_CPU 8000000UL
+#include "libstatique.hpp"
+#include "robot.hpp"
+#include "distanceSensor.hpp"
+#include "debug.hpp"
+
+DistanceSensor::DistanceSensor() : can_() {
+    DDRA &= ~(1 << PA5);
+    PORTA &= ~(1 << PA5);
+   _delay_ms(40);    //pas sur, a voir dans le datasheet.
+}
+
+DistanceSensor::~DistanceSensor() {};
+
+void DistanceSensor::sortArray(uint16_t array[], uint8_t size)
+{
+    for (uint8_t i = 1; i < size; i++)
+    {
+        uint16_t key = array[i];  
+        int8_t j = i - 1;
+
+        while (j >= 0 && array[j] > key)
+        {
+            array[j + 1] = array[j];
+            j--;
+        }
+
+        array[j + 1] = key;
+    }
+}
+
+
+uint16_t DistanceSensor::readADC() {
+    for (uint8_t i = 0; i < N_READINGS; i++) {
+        readings[i] = can_.lecture(5);
+        DEBUG_PRINT("  reading[", i);
+        DEBUG_PRINT("]: ", readings[i]);
+
+    }
+
+    sortArray(readings, N_READINGS);
+
+    uint16_t median = readings[N_READINGS / 2];
+
+    DEBUG_PRINT("ADC median: ", median);
+    return median;
+}
+
+
+
+// void DistanceSensor::playConfirmSequence(Robot& robot) {
+//     for (uint8_t i = 0; i < robot.noteCount; i++) {
+//         _delay_ms(125);
+//         robot.sound.playSound(robot.note[i]);
+//         _delay_ms(250);
+//         robot.sound.stopSound();
+//     }
+// }
+
+void DistanceSensor::blinkGreenClear(Robot& robot) {
+    for (uint8_t i = 0; i < 8; i++) {
+        robot.led.green();
+        _delay_ms(125);
+        robot.led.off();
+        _delay_ms(125);
+    }
+}
+
+void DistanceSensor::evacuatePoteau(Robot& robot) {
+    do {
+        // playConfirmSequence(robot);
+        robot.playEepromNotes();
+        _delay_ms(2000);
+    } while (readADC() >= POTEAU_THRESHOLD);
+
+    blinkGreenClear(robot);
+}
+
+void DistanceSensor::scanRoom(Robot& robot, EEPROMAddress addr , Direction dir) { //marc (adresse 10(A)-13(D))
+
+    uint8_t localCount = 0;
+    bool startMoving = true;
+
+    while (/*robot.lineSensor.robotMiddle()*/ robot.direction == 0 ? !robot.lineSensor.getSensor(4) : !robot.lineSensor.getSensor(0)) {
+        if (readADC() >= POTEAU_THRESHOLD) {
+            robot.led.green();
+            robot.motor.stop();
+            if (!objectPresent_) {
+                objectPresent_ = true;
+                localCount++;
+                
+            }
+            evacuatePoteau(robot);
+            objectPresent_ = false;
+            startMoving = true;
+        } else {
+            if (startMoving) {
+                if (robot.direction == 0) {
+                    robot.motor.goForward(200, 0);
+                    _delay_ms(25);
+                    robot.motor.spinRightSpeed(180);
+                } else {
+                    robot.motor.goBackward(200, 0);
+                    _delay_ms(25);
+                    robot.motor.spinLeftSpeed(180);
+                }
+                _delay_ms(25);
+                startMoving = false;
+            }
+            if (robot.direction == 0) robot.motor.spinRightSpeed(SPIN_SPEED);
+            else robot.motor.spinLeftSpeed(SPIN_SPEED);
+            // if (robot.direction == 0) robot.motor.spinRightSpeed(SPIN_SPEED);
+            // else robot.motor.spinLeftSpeed(SPIN_SPEED);
+            _delay_ms(SCAN_STEP_MS);
+        }
+    }
+    robot.motor.stop();
+    eeprom_.ecriture(addr, localCount);
+}
+
+
+
+
+
+
