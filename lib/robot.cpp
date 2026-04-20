@@ -549,9 +549,7 @@ void Robot::movementLogic(Action& currentAction, Action& previousAction) {
                             motor.goForward(LEFT_SPEED + 18, RIGHT_SPEED);
                         else
                             motor.goForward(LEFT_SPEED, RIGHT_SPEED + 10);
-                        led.red();
                     }
-                    led.off();
 
                     while (!lineSensor.robotMiddle()) {
                         if (direction == 0)
@@ -595,7 +593,6 @@ void Robot::movementLogic(Action& currentAction, Action& previousAction) {
             break;
 
         case Action::FIRST_CORRIDOR:
-            led.green();
             lineSensor.resetDamage();
             timer.startTimer();
 
@@ -752,12 +749,9 @@ void Robot::movementLogic(Action& currentAction, Action& previousAction) {
             else
                 motor.spinLeft(145);
 
-            motor.stop();
-            _delay_ms(500);
+            motor.stop();;
 
-            if (lineSensor.getNObjects() == 0) led.green();
-
-            _delay_ms(500);
+            _delay_ms(800);
 
             timer.stopTimer();
             ticks = 0;

@@ -56,7 +56,6 @@ ISR(TIMER1_COMPB_vect) {}
 ISR(INT0_vect) {
     if      (state == GREEN) { selectedMode = INSTRUCTION; state = DONE; robot.led.off(); }
     else if (state == RED)   { selectedMode = RAPPORT;     state = DONE; robot.led.off(); }
-    // else if (state == OFF1)  { selectedMode = EXECUTION;   state = DONE; }
 }
 int main() {
     robot.timer.setModeCTC(Timer::PRESCALE_64);
