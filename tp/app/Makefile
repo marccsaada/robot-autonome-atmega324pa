@@ -12,7 +12,7 @@
 # pour les microcontroleurs Atmel AVR sur 
 # Linux ou Unix, en utilisant l'outil AVR-GCC. 
 # Ce Makefile supporte C & C++
-https://cours.polymtl.ca/inf1900/tp/projet/
+
 
 #####      Details specifique a la cible       #####
 #####  Vous devez les adapter a votre projet   #####
@@ -23,7 +23,7 @@ MCU=atmega324pa
 
 # Nom de votre projet
 # (utilisez un seul mot, exemple: 'monprojet')
-PROJECTNAME=sensor
+PROJECTNAME=app
 
 # Fichiers sources
 # Utilisez le suffixe .cpp pour les fichiers C++

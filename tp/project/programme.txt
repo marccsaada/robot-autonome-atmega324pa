@@ -1,8 +1,0 @@
-dbt;
-trd;
-sgo 50;
-sgo 50;
-sgo 50;
-att 2;
-fin;
-

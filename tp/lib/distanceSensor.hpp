@@ -16,16 +16,16 @@ Description : Capteur de distance infrarouge. Sert à détecter les poteaux pend
 #include "can.h"
 #include "memoire_24.h"
 #include "eepromAdresses.hpp"
-static const uint16_t POTEAU_THRESHOLD = 100;
-static const uint16_t SPIN_SPEED       = 80;
+static const uint16_t POTEAU_THRESHOLD     = 100;
+static const uint16_t SPIN_SPEED           = 80;
 static const uint16_t FULL_ROTATION_MS     = 3150;
 static const uint16_t STOP_COMPENSATION_MS = 350;
 static const uint8_t  IMPULSE_SPEED        = 255;
 static const uint8_t  IMPULSE_MS           = 40;
-static const uint8_t  SCAN_STEP_MS     = 50;
-static const uint16_t NOTE_GAP_MS      = 125;
-static const uint16_t NOTE_DURATION_MS = 250;
-static const uint8_t  PORT_POSITION    = 5;
+static const uint8_t  SCAN_STEP_MS         = 50;
+static const uint16_t NOTE_GAP_MS          = 125;
+static const uint16_t NOTE_DURATION_MS     = 250;
+static const uint8_t  PORT_POSITION        = 5;
 class Robot;
 enum Direction { LEFT, RIGHT };
 
@@ -34,20 +34,13 @@ class DistanceSensor
 public:
 
     DistanceSensor();
-
     ~DistanceSensor();
 
     uint16_t readADC();
-
     bool isObjectDetected(uint16_t threshold);
-
     void sortArray(uint16_t array[], uint8_t size);
-
-
     void scanRoom(Robot& robot, EEPROMAddress addr ,Direction dir = LEFT);
-
     void evacuatePoteau(Robot& robot);
-
     void blinkGreenClear(Robot& robot);
 
 private:

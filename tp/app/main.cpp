@@ -13,20 +13,14 @@ Description : Point d'entrée principal. Sélection du mode (instruction / exéc
 #include <avr/sleep.h>
 #include <libstatique.hpp>
 
-// ── Constantes de sélection de mode ──────────────────────────────────────────
-
 static const uint16_t OCR1A_10MS     = 1249;
 static const uint16_t TICK_MS        = 10;
 static const uint16_t COLOR_DURATION = 2000;
 static const uint16_t OFF_DURATION   = 1000;
 static const uint16_t INIT_WAIT      = 2000;
 
-// ── Globaux ───────────────────────────────────────────────────────────────────
-
 Robot            robot;
 volatile uint16_t ticks = 0;
-
-// ── Machine à états de sélection ─────────────────────────────────────────────
 
 enum Mode  { INSTRUCTION, EXECUTION, RAPPORT };
 enum State { INIT, GREEN, OFF1, RED, DONE };
@@ -56,31 +50,26 @@ void handleModeSelection() {
     }
 }
 
-// ── ISR ───────────────────────────────────────────────────────────────────────
-
 ISR(TIMER1_COMPA_vect) { ticks++; }
 ISR(TIMER1_COMPB_vect) {}
 
 ISR(INT0_vect) {
     if      (state == GREEN) { selectedMode = INSTRUCTION; state = DONE; robot.led.off(); }
     else if (state == RED)   { selectedMode = RAPPORT;     state = DONE; robot.led.off(); }
-    else if (state == OFF1)  { selectedMode = EXECUTION;   state = DONE; }
+    // else if (state == OFF1)  { selectedMode = EXECUTION;   state = DONE; }
 }
-
-// ── Main ──────────────────────────────────────────────────────────────────────
-
 int main() {
     robot.timer.setModeCTC(Timer::PRESCALE_64);
     robot.timer.setOCRA(OCR1A_10MS);
     robot.timer.startTimer();
     robot.button.init();
     sei();
-
+   
     set_sleep_mode(SLEEP_MODE_IDLE);
     while (state != DONE) { sleep_mode(); handleModeSelection(); }
     robot.timer.stopTimer();
     ticks = 0;
-
+    robot.readEepromOperands();
     switch (selectedMode) {
         case INSTRUCTION: robot.runInstruction(); break;
         case EXECUTION:   robot.runProject();     break;
