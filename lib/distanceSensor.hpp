@@ -8,8 +8,7 @@ Description : Capteur de distance infrarouge. Sert à détecter les poteaux pend
               d'un local, à compter les objets trouvés et à écrire le résultat en EEPROM.
 */
 
-#ifndef CAPTEUR_DISTANCE_H
-#define CAPTEUR_DISTANCE_H
+#pragma once
 
 #include <avr/io.h>
 #include <util/delay.h>
@@ -46,16 +45,11 @@ public:
 private:
     can can_;
 
-    // uint8_t personCounter_ = 0;
-
     static const uint8_t N_READINGS = 7;
 
     uint16_t readings[N_READINGS];
 
-    // static const uint16_t EEPROM_ADDR_LOCAL_A = 0x0000; 
-
     Memoire24CXXX eeprom_;
+
     bool objectPresent_ = false;
 };
-
-#endif /* CAPTEUR_DISTANCE_H */

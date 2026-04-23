@@ -5,7 +5,7 @@ Section # : 05
 Équipe # : 107111
 
 Description : Implémentation de l'interpréteur. Contient la séquence de démarrage, la
-              boucle principale qui lit les instructions en mémoire, et le dispatch des
+              boucle principale qui lit les instructions en mémoire, et la répartition des
               opcodes vers les actions du robot.
 */
 
@@ -76,7 +76,6 @@ void Interpreter::execute() {
             finished = true;
     }
 
-    //robot->motor.stop();
 }
 
 
@@ -95,7 +94,7 @@ void Interpreter::confirm(){
         if (instr == TRD || instr == TRG) trInstr = instr;
         if (instr == ATT)                 attOp   = op;
 
-        if (instr == SGO) executeInstruction(instr, op);   //fait juste jouer le son. 
+        if (instr == SGO) executeInstruction(instr, op);  
     }
 
     _delay_ms(CONFIRM_DELAY_MS);

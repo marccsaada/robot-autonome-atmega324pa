@@ -20,8 +20,6 @@ extern volatile uint16_t ticks;
 
 LED led1(PORTB, PB0, PB2);
 
-// Ici je prends en compte quon utilise le mode qui detecte les zones sombres et non les zones claires.
-
 LineSensor::LineSensor() {
     DDRA &= ~((1 << PA0) | (1 << PA1) | (1 << PA2) | (1 << PA3) | (1 << PA4));
 };
@@ -70,16 +68,6 @@ bool LineSensor::isOnLeftLine() {
     return false;
 }
 
-// bool LineSensor::sensors345() {
-//     if ((PINA & (1 << sensor3)) && (PINA & (1 << sensor4)) && (PINA & (1 << sensor5))) {
-//         return true;
-//     }
-//     return false;
-// }
-
-
-
-
 bool LineSensor::isRightWall() {
     if ((PINA & (1 << sensor5))) {
         return true;
@@ -93,15 +81,11 @@ bool LineSensor::isOnRightLine() {
     return false;
 }
 
-// LEFT OFFSET : (PINA & (1 << sensor1) && ( (PINA & (1 << sensor4)) || (PINA & (1 << sensor5)) )
-// RIGHT OFFSET : (PINA & (1 << sensor5)) && ( (PINA & (1 << sensor1)) || (PINA & (1 << sensor2)) )
-// NO   OFFSET : (offTrackAmount() < 3) && ( (PINA & (1 << sensor2) || PINA & (1 << sensor3) || PINA & (1 << sensor4) )
-
-bool LineSensor::findDamage(EEPROMAddress addr) { //marc (adresse 14(OUEST)-15(EST))
+bool LineSensor::findDamage(EEPROMAddress addr) { 
     bool damagePresent = !robotBumpLine() && (
-        ((PINA & (1 << sensor1)) && ( (PINA & (1 << sensor4)) || (PINA & (1 << sensor5)) )) // LEFT OFFSET
-     || ((PINA & (1 << sensor5)) && ( (PINA & (1 << sensor1)) || (PINA & (1 << sensor2)) )) // RIGHT OFFSET
-     || ((offTrackAmount() < 3) && ( (PINA & (1 << sensor2)) || (PINA & (1 << sensor3)) || (PINA & (1 << sensor4)) )) // NO OFFSET
+        ((PINA & (1 << sensor1)) && ( (PINA & (1 << sensor4)) || (PINA & (1 << sensor5)) )) 
+     || ((PINA & (1 << sensor5)) && ( (PINA & (1 << sensor1)) || (PINA & (1 << sensor2)) )) 
+     || ((offTrackAmount() < 3) && ( (PINA & (1 << sensor2)) || (PINA & (1 << sensor3)) || (PINA & (1 << sensor4)) )) 
     );
 
     if (damagePresent) { 
@@ -115,7 +99,7 @@ bool LineSensor::findDamage(EEPROMAddress addr) { //marc (adresse 14(OUEST)-15(E
         if (!robotBumpLine()) {
             nDamage_++;
             led1.off();
-            eeprom_.ecriture(addr, nDamage_); //marc
+            eeprom_.ecriture(addr, nDamage_); 
             return true;
         }
     }
@@ -127,7 +111,7 @@ bool LineSensor::findDamage(EEPROMAddress addr) { //marc (adresse 14(OUEST)-15(E
 }
 
 
-void LineSensor::findObject(EEPROMAddress addr) { //marc (adresse 11(B)-12(C))
+void LineSensor::findObject(EEPROMAddress addr) { 
     bool objectPresent = offTrackAmount() >= 1;
 
     if (objectPresent) { 

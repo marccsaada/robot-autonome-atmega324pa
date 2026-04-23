@@ -63,10 +63,10 @@ public:
     void init();
 
     /** @brief Enables the button interrupt. */
-    void enableInterupt();
+    void enableInterrupt();
 
     /** @brief Disables the button interrupt. */
-    void disableInterupt();
+    void disableInterrupt();
 
 private:
     Mode mode_;

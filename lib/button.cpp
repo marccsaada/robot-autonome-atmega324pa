@@ -18,7 +18,7 @@ Button::Button(Button::Mode mode, Button::Location location) : mode_(mode) , loc
 }
 
 Button::~Button() {
-    disableInterupt();
+    disableInterrupt();
     switch (location_) {
         case Button::MOTHERBOARD: EICRA &= ~((1 << ISC01) | (1 << ISC00)); break;
         case Button::PD3_BUTTON:  EICRA &= ~((1 << ISC11) | (1 << ISC10)); break;
@@ -59,7 +59,7 @@ void Button::init() {
     sei();
 }
 
-void Button::enableInterupt() {
+void Button::enableInterrupt() {
     DEBUG_PRINT("Enabling button interrupt");
     switch (location_) {
         case Button::MOTHERBOARD: EIMSK |= (1 << INT0); break;
@@ -68,7 +68,7 @@ void Button::enableInterupt() {
     }
 }
 
-void Button::disableInterupt() {
+void Button::disableInterrupt() {
     DEBUG_PRINT("Disabling button interrupt");
         switch (location_) {
         case Button::MOTHERBOARD: EIMSK &= ~(1 << INT0); break;

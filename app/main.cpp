@@ -4,8 +4,8 @@ Travail : TP Final
 Section # : 05
 Équipe # : 107111
 
-Description : Point d'entrée principal. Sélection du mode (instruction / exécution / Report)
-              par séquence DEL + bouton, puis dispatche vers le mode approprié.
+Description : Point d'entrée principal. Sélection du mode (instruction / exécution / Rapport)
+              par séquence DEL + bouton, puis redirige vers le mode approprié.
               Entièrement piloté par interruptions (Timer1 CTC + INT0). Aucune scrutation.
 */
 
@@ -22,7 +22,7 @@ static const uint16_t INIT_WAIT      = 2000;
 Robot            robot;
 volatile uint16_t ticks = 0;
 
-enum Mode  { INSTRUCTION, EXECUTION, Report };
+enum Mode  { INSTRUCTION, EXECUTION, REPORT };
 enum State { INIT, GREEN, OFF1, RED, DONE };
 
 volatile State state        = INIT;
@@ -55,7 +55,7 @@ ISR(TIMER1_COMPB_vect) {}
 
 ISR(INT0_vect) {
     if      (state == GREEN) { selectedMode = INSTRUCTION; state = DONE; robot.led.off(); }
-    else if (state == RED)   { selectedMode = Report;     state = DONE; robot.led.off(); }
+    else if (state == RED)   { selectedMode = REPORT;     state = DONE; robot.led.off(); }
 }
 int main() {
     robot.timer.setModeCTC(Timer::PRESCALE_64);
@@ -72,7 +72,7 @@ int main() {
     switch (selectedMode) {
         case INSTRUCTION: robot.runInstruction(); break;
         case EXECUTION:   robot.runProject();     break;
-        case Report:     robot.runReport();     break;
+        case REPORT:     robot.runReport();     break;
     }
     while (true) {}
 }

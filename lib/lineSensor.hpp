@@ -25,21 +25,21 @@ public:
     LineSensor();
     ~LineSensor();
     
-    bool robotMiddle();         // Robot perfectly in the middle
-    bool offTrackLeft();   // Robot offset track to the left
-    bool offTrackRight();  // Robot offset track to the right
-    bool robotBumpLine();       // Robot bumping into the line
-    bool isLeftWall();          // Robot is against the left wall
+    bool robotMiddle();     
+    bool offTrackLeft();   
+    bool offTrackRight();  
+    bool robotBumpLine();  
+    bool isLeftWall();    
     bool isOnLeftLine();    
-    bool isRightWall();         // Robot is against the right wall
+    bool isRightWall();   
     bool isOnRightLine();            
-    bool sensors345(); // senseurs 3 4 et 5 actives (pour parking)
-    bool findDamage(EEPROMAddress addr);          // Robot found damage
+    bool sensors345(); 
+    bool findDamage(EEPROMAddress addr);  
     void findObject(EEPROMAddress addr);
 
-    uint8_t offTrackAmount();   // Amount of sensors that are off track (0-5)
+    uint8_t offTrackAmount(); 
 
-    uint8_t getNDamage() const { return nDamage_; } // Getter for nDamage_
+    uint8_t getNDamage() const { return nDamage_; } 
     void incrementDamage() { nDamage_++; }
     void resetDamage() { nDamage_ = 0; previousDamageState_ = false; }
 
@@ -53,14 +53,14 @@ public:
         if (index >= 0 && index < 5) {
             return (PINA & (1 << sensors_[index]));
         }
-        return 0; // Return 0 for invalid index
+        return 0; 
     }
     
     
 private:
     uint8_t sensors_[5] = {sensor1, sensor2, sensor3, sensor4, sensor5};
-    uint8_t nDamage_ = 0; // Number of times the robot has found damage
-    uint8_t nObjects_ = 0; // Number of times the robot has found an object
+    uint8_t nDamage_ = 0; 
+    uint8_t nObjects_ = 0; 
 
     bool     previousDamageState_ = false;
     bool     previousObjectState_ = false;

@@ -13,7 +13,7 @@ Description : Implémentation du contrôle individuel d'une roue via PWM et dire
 
 Wheel::Wheel(Timer &timer, uint8_t pinDirection, OCR ocrType)
     : timer_(&timer), pinDirection_(pinDirection), ocrType_(ocrType) {
-    DEBUG_PRINT(ocrType_ == OCR::A ? "Init Left wheel\n" : "Init Right wheel\n");
+    DEBUG_PRINT(ocrType_ == OCR::A ? "Init left wheel\n" : "Init right wheel\n");
     DEBUG_PRINT("pinDirection : ", static_cast<uint16_t>(pinDirection));
     if (pinDirection == PD4) {
         DDRD |= (1 << PD4) | (1<<PD6);
