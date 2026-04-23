@@ -6,7 +6,7 @@ Section # : 05
 
 Description : Regroupe les sous-systèmes du robot et toute la logique d'exécution du projet.
               Les méthodes de déplacement et la machine à états sont privées ; l'interface
-              publique se limite aux trois handlers de mode et aux membres matériels.
+              publique se limite aux trois gestionnaires de mode et aux membres matériels.
 */
 
 #pragma once
@@ -38,7 +38,7 @@ public:
     Memoire24CXXX  eeprom;
 
     // ── State used by Interpreter ─────────────────────────────────────────
-    uint8_t direction      = 1;   // 0 = left, 1 = right
+    uint8_t direction      = 1;   
     uint8_t note[3]        = {};
     uint8_t parkingOperand = 0;
     uint8_t noteCount      = 0;
@@ -49,7 +49,7 @@ public:
     void readEepromOperands();
 
     void runInstruction();
-    void runRapport();
+    void runReport();
     void runProject();
 
 private:
@@ -58,7 +58,6 @@ private:
     bool     firstTime    = true;
     uint8_t  roomCount    = 0;
     uint8_t  parkingCount = 0;
-    //test marc
     bool parkingReady = false;
 
     static constexpr uint8_t  LEFT_SPEED  = 110;

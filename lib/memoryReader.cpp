@@ -1,5 +1,5 @@
 /*
-Auteurs : Matthew Khouzam et Jerome Collin
+Auteurs : Matthew Khouzam et Jérôme Collin
 Description : Implémentation de la lecture séquentielle de la mémoire EEPROM externe.
 */
 
@@ -25,16 +25,16 @@ uint16_t Memory::getSize() {
 }
 
 uint8_t Memory::readInstruction() {
-    uint8_t octet = 0;
-    memory_.lecture(currentAddress_, &octet);
+    uint8_t byte = 0;
+    memory_.lecture(currentAddress_, &byte);
     currentAddress_ += INSTRUCTION_SIZE;
-    return octet;
+    return byte;
 }
 
 uint8_t Memory::readOperand() {
-    uint8_t octet = 0;
-    memory_.lecture(currentAddress_ - 1, &octet);
-    return octet;
+    uint8_t byte = 0;
+    memory_.lecture(currentAddress_ - 1, &byte);
+    return byte;
 }
 
 uint16_t Memory::getAddress() { return currentAddress_; }

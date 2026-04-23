@@ -17,6 +17,6 @@ enum EEPROMAddress : uint16_t {
     OBJECT_B      = 101,
     OBJECT_C      = 102,
     PERSON_D      = 103, 
-    DAMAGE_OUEST  = 104,
+    DAMAGE_WEST  = 104,
     DAMAGE_EST    = 105
 };

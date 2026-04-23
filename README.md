@@ -75,7 +75,7 @@ All mission logic lives in the `Robot` class (`lib/robot.hpp / robot.cpp`). The 
 main()
   ├── runInstruction()   ← receives + runs bytecode over UART
   ├── runProject()       ← autonomous mission (state machine below)
-  └── runRapport()       ← prints EEPROM inspection results over UART
+  └── runReport()       ← prints EEPROM inspection results over UART
 ```
 
 `runProject()` initializes counters, reads the parking target from EEPROM, then enters a loop:
@@ -115,7 +115,7 @@ PARKING → LEAVE_PARKING → AFTER_PARKING
 | `LEAVE_PARKING` | Maneuvers forward until the line sensor confirms center alignment on the main track. |
 | `AFTER_PARKING` | Follows the right (or left, depending on `direction`) wall until it bumps the first intersection line. |
 | `FIRST_TURN` | Executes `turnCorner()` — advances past the intersection, pivots 90°, then re-acquires the line. `confirmTurn()` validates the sensor reading before advancing. |
-| `FIRST_CORRIDOR` | Follows the main path. While traveling, `lineSensor.findDamage()` counts damaged zones and logs them to EEPROM (`DAMAGE_EST` or `DAMAGE_OUEST` depending on direction). |
+| `FIRST_CORRIDOR` | Follows the main path. While traveling, `lineSensor.findDamage()` counts damaged zones and logs them to EEPROM (`DAMAGE_EST` or `DAMAGE_WEST` depending on direction). |
 | `SECOND_TURN` | Same corner logic as FIRST_TURN, plus a short forward nudge to position the robot at the mouth of the room corridor. |
 | `SECOND_CORRIDOR` | Navigation hub of the mission. Routes to `PEOPLE_ROOM`, `OBJECT_ROOM`, or `THIRD_TURN` based on `roomCount` (0–4). Calls `findRoom3()` for rooms 1–3, which searches for the correct side-corridor entry. |
 | `PEOPLE_ROOM` | Calls `distanceSensor.scanRoom()` to sweep an IR rangefinder and count persons. Result written to EEPROM (`PERSON_A` / `PERSON_D`). Then pivots back to the corridor line. |

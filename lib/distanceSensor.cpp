@@ -48,7 +48,6 @@ void DistanceSensor::sortArray(uint16_t array[], uint8_t size)
     }
 }
 
-
 uint16_t DistanceSensor::readADC() {
     for (uint8_t i = 0; i < N_READINGS; i++) {
         readings[i] = can_.lecture(5);
@@ -65,17 +64,6 @@ uint16_t DistanceSensor::readADC() {
     return median;
 }
 
-
-
-// void DistanceSensor::playConfirmSequence(Robot& robot) {
-//     for (uint8_t i = 0; i < robot.noteCount; i++) {
-//         _delay_ms(125);
-//         robot.sound.playSound(robot.note[i]);
-//         _delay_ms(250);
-//         robot.sound.stopSound();
-//     }
-// }
-
 void DistanceSensor::blinkGreenClear(Robot& robot) {
     for (uint8_t i = 0; i < BLINK_COUNT; i++) {
         robot.led.green();
@@ -85,23 +73,22 @@ void DistanceSensor::blinkGreenClear(Robot& robot) {
     }
 }
 
-void DistanceSensor::evacuatePoteau(Robot& robot) {
+void DistanceSensor::evacuatePole(Robot& robot) {
     do {
-        // playConfirmSequence(robot);
         robot.playEepromNotes();
         _delay_ms(EVACUATION_RETRY_DELAY_MS);
-    } while (readADC() >= POTEAU_THRESHOLD);
+    } while (readADC() >= POLE_THRESHOLD);
 
     blinkGreenClear(robot);
 }
 
-void DistanceSensor::scanRoom(Robot& robot, EEPROMAddress addr , Direction dir) { //marc (adresse 10(A)-13(D))
+void DistanceSensor::scanRoom(Robot& robot, EEPROMAddress addr , Direction dir) { 
 
     uint8_t localCount = 0;
     bool startMoving = true;
 
-    while (/*robot.lineSensor.robotMiddle()*/ robot.direction == 0 ? !robot.lineSensor.getSensor(4) : !robot.lineSensor.getSensor(0)) {
-        if (readADC() >= POTEAU_THRESHOLD) {
+    while (robot.direction == 0 ? !robot.lineSensor.getSensor(4) : !robot.lineSensor.getSensor(0)) {
+        if (readADC() >= POLE_THRESHOLD) {
             robot.led.green();
             robot.motor.stop();
             if (!objectPresent_) {
@@ -109,7 +96,7 @@ void DistanceSensor::scanRoom(Robot& robot, EEPROMAddress addr , Direction dir) 
                 localCount++;
                 
             }
-            evacuatePoteau(robot);
+            evacuatePole(robot);
             objectPresent_ = false;
             startMoving = true;
         } else {
@@ -128,8 +115,6 @@ void DistanceSensor::scanRoom(Robot& robot, EEPROMAddress addr , Direction dir) 
             }
             if (robot.direction == 0) robot.motor.spinRightSpeed(SPIN_SPEED);
             else robot.motor.spinLeftSpeed(SPIN_SPEED);
-            // if (robot.direction == 0) robot.motor.spinRightSpeed(SPIN_SPEED);
-            // else robot.motor.spinLeftSpeed(SPIN_SPEED);
             _delay_ms(SCAN_STEP_MS);
         }
     }

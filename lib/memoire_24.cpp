@@ -314,7 +314,7 @@ uint8_t Memoire24CXXX::lecture(const uint16_t adresse, uint8_t *donnee,
 /* Les memoires eeprom i2c ne generent pas de signal d'acquittement pendant   */
 /* un cycle d'ecriture. Pour s'assurer que l'eeprom est libre pour l'ecriture */
 /* d'une ou de plusieurs nouvelles donnees, on transmet en boucle une         */
-/* condition de depart et un octet de controle d'ecriture et on attend un     */
+/* condition de depart et un byte de controle d'ecriture et on attend un     */
 /* signal d'acquittement. On peut ensuite entreprendre la procedure           */
 /* d'ecriture. Cette verification est placee au debut de la fonction car le   */
 /* temps d'acces permet a la condition de stop precedente de se completer.    */

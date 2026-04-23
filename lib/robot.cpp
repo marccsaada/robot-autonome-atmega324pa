@@ -154,7 +154,7 @@ void Robot::readEepromOperands() {
     }
 }
 
-void Robot::runRapport() {
+void Robot::runReport() {
     for (uint8_t i = 0; i < STARTUP_BLINK_COUNT; i++) {
         led.red();
         _delay_ms(STARTUP_BLINK_MS);
@@ -165,7 +165,7 @@ void Robot::runRapport() {
     UART uart;
     Memoire24CXXX eeprom;
 
-    const char* noms[EEPROM_ZONE_COUNT] = {
+    const char* names[EEPROM_ZONE_COUNT] = {
         "Local A      ", "Local B      ", "Local C      ",
         "Local D      ", "Couloir OUEST", "Couloir EST  ",
     };
@@ -175,17 +175,17 @@ void Robot::runRapport() {
                                    " personne(s)",
                                    " zone(s) endommagee(s)",
                                    " zone(s) endommagee(s)"};
-    uint8_t valeurs[EEPROM_ZONE_COUNT] = {0};
+    uint8_t values[EEPROM_ZONE_COUNT] = {0};
 
     for (uint8_t i = 0; i < EEPROM_ZONE_COUNT; i++)
-        eeprom.lecture(PERSON_A + i, &valeurs[i]);
+        eeprom.lecture(PERSON_A + i, &values[i]);
 
-    uart.UART_Transmission("Rapport de conformite\r\n\r\n");
+    uart.UART_Transmission("Report de conformite\r\n\r\n");
     uart.UART_Transmission("Emplacement     conformite     detail\r\n");
     uart.UART_Transmission(
         "--------------------------------------------------\r\n");
     for (uint8_t i = 0; i < EEPROM_ZONE_COUNT; i++)
-        printLine(uart, noms[i], valeurs[i], types[i]);
+        printLine(uart, names[i], values[i], types[i]);
 }
 
 void Robot::runInstruction() {
@@ -685,7 +685,7 @@ void Robot::movementLogic(Action& currentAction, Action& previousAction) {
 
             while (ticks < CORRIDOR_MAX_TICKS && !lineSensor.robotBumpLine()) {
                 if (lineSensor.findDamage(direction == 0 ? DAMAGE_EST
-                                                         : DAMAGE_OUEST))
+                                                         : DAMAGE_WEST))
                     followLine();
                 else
                     followPath(Alignment::DEFAULT, Speed::DEFAULT);
@@ -889,7 +889,7 @@ void Robot::movementLogic(Action& currentAction, Action& previousAction) {
             while (ticks < CORRIDOR_INITIAL_TICKS) followPath(Alignment::DEFAULT, Speed::DEFAULT);
             ticks = 0;
             while (ticks < CORRIDOR_MAX_TICKS && !lineSensor.robotBumpLine()) {
-                if (lineSensor.findDamage(direction == 0 ? DAMAGE_OUEST
+                if (lineSensor.findDamage(direction == 0 ? DAMAGE_WEST
                                                          : DAMAGE_EST))
                     followLine();
                 else
