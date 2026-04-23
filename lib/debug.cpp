@@ -11,6 +11,8 @@ Description : Implémentation des fonctions de débogage via UART.
 #include "debug.hpp"
 #include "UART.hpp"
 
+static const uint8_t UINT16_BUFFER_SIZE = 6;
+
 static UART uart;
 
 void debugPrint(const char* message) {
@@ -19,7 +21,7 @@ void debugPrint(const char* message) {
 }
 
 void debugPrint(uint16_t value) {
-    char buffer[6]; 
+    char buffer[UINT16_BUFFER_SIZE];
     itoa(value, buffer, 10);
     uart.UART_Transmission(buffer);
     uart.UART_Transmission("\n");

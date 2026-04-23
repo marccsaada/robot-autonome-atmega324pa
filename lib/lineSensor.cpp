@@ -11,6 +11,11 @@ Description : Implémentation des capteurs de ligne. Lit les entrées du port A,
 #define F_CPU 8000000UL
 #include "libstatique.hpp"
 
+static const uint8_t  SENSOR_COUNT         = 5;
+static const uint8_t  MAX_OFFTRACK_AMOUNT  = 4;
+static const uint16_t DAMAGE_DEBOUNCE_MS   = 30;
+static const uint16_t OBJECT_DEBOUNCE_MS   = 200;
+
 extern volatile uint16_t ticks;
 
 LED led1(PORTB, PB0, PB2);
@@ -106,8 +111,8 @@ bool LineSensor::findDamage(EEPROMAddress addr) { //marc (adresse 14(OUEST)-15(E
     }
     else if (!damagePresent && previousDamageState_) { 
         previousDamageState_ = false;
-        _delay_ms(30);
-        if (!robotBumpLine()) { 
+        _delay_ms(DAMAGE_DEBOUNCE_MS);
+        if (!robotBumpLine()) {
             nDamage_++;
             led1.off();
             eeprom_.ecriture(addr, nDamage_); //marc
@@ -132,8 +137,8 @@ void LineSensor::findObject(EEPROMAddress addr) { //marc (adresse 11(B)-12(C))
     }
     else if (!objectPresent && previousObjectState_) { 
         previousObjectState_ = false;
-        _delay_ms(200);
-        if (!robotBumpLine()) { 
+        _delay_ms(OBJECT_DEBOUNCE_MS);
+        if (!robotBumpLine()) {
             nObjects_++;
         }
         return;
@@ -144,14 +149,14 @@ void LineSensor::findObject(EEPROMAddress addr) { //marc (adresse 11(B)-12(C))
 
 uint8_t LineSensor::offTrackAmount() {
     uint8_t amount = 0;
-    for (uint8_t i = 0; i < 5; i++) {
+    for (uint8_t i = 0; i < SENSOR_COUNT; i++) {
         if (PINA & (1 << sensors_[i])) {
             amount++;
         }
     }
 
-    if (amount == 5)
-        amount = 4;
+    if (amount == SENSOR_COUNT)
+        amount = MAX_OFFTRACK_AMOUNT;
     return amount;
 }
 

@@ -11,6 +11,8 @@ Description : Implémentation de la gestion du bouton avec configuration des int
 #include "button.hpp"
 #include "debug.hpp"
 
+static const uint8_t DEBOUNCE_DELAY_MS = 30;
+
 Button::Button(Button::Mode mode, Button::Location location) : mode_(mode) , location_(location) {
     DEBUG_PRINT("Button constructor called");
 }
@@ -25,7 +27,7 @@ Button::~Button() {
 }
 
 bool Button::isPressed() {
-    _delay_ms(30);
+    _delay_ms(DEBOUNCE_DELAY_MS);
     switch (location_) {
         case Button::MOTHERBOARD: DEBUG_PRINT("MOTHERBOARD button is pressed"); return  (PIND & (1 << PD2));
         case Button::PD3_BUTTON:  DEBUG_PRINT("PD3 button is pressed");         return !(PIND & (1 << PD3));

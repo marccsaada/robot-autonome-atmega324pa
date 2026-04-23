@@ -5,15 +5,19 @@ Description : Implémentation de la lecture séquentielle de la mémoire EEPROM 
 
 #include "memoryReader.hpp"
 
+static const uint16_t INITIAL_ADDRESS   = 2;
+static const uint8_t  HIGH_BYTE_SHIFT   = 8;
+static const uint8_t  INSTRUCTION_SIZE  = 2;
+
 Memory::Memory() {
-    currentAddress_ = 2;
+    currentAddress_ = INITIAL_ADDRESS;
 }
 
 uint16_t Memory::readMemoryStart() {
     uint8_t high = 0, low  = 0;
     memory_.lecture(0, &high);
     memory_.lecture(1, &low);
-    return ((uint16_t)high << 8) | low;
+    return ((uint16_t)high << HIGH_BYTE_SHIFT) | low;
 }
 
 uint16_t Memory::getSize() {
@@ -23,7 +27,7 @@ uint16_t Memory::getSize() {
 uint8_t Memory::readInstruction() {
     uint8_t octet = 0;
     memory_.lecture(currentAddress_, &octet);
-    currentAddress_ += 2;
+    currentAddress_ += INSTRUCTION_SIZE;
     return octet;
 }
 

@@ -12,6 +12,12 @@ Description : Implémentation de la synthèse sonore PWM via Timer0 et calcul OC
 #include "sound.hpp"
 #include "debug.hpp"
 
+static const uint8_t  NOTE_MIN        = 45;
+static const uint8_t  NOTE_MAX        = 81;
+static const uint8_t  NOTE_ARRAY_OFFSET = 45;
+static const uint16_t SOUND_PRESCALER = 256;
+static const uint8_t  OCR_DIVISOR     = 2;
+
 Sound::Sound() : timer_(Timer::Id::TIMER0) {
     DDRB |= (1 << PB3);  
     DDRB |= (1 << PB1);
@@ -28,10 +34,10 @@ const float Sound::frequencies[] = {
 };
 
 void Sound::playSound(uint8_t note) {
-    if (note < 45 || note > 81)
+    if (note < NOTE_MIN || note > NOTE_MAX)
         return;
 
-    float f = frequencies[note - 45];
+    float f = frequencies[note - NOTE_ARRAY_OFFSET];
     uint16_t ocr = calculateOCR_(f);
 
     DEBUG_PRINT("note: ", note);
@@ -50,5 +56,5 @@ void Sound::stopSound() {
 }
 
 uint16_t Sound::calculateOCR_(float frequency) {
-    return (F_CPU / (2 * 256 * frequency));
+    return (F_CPU / (OCR_DIVISOR * SOUND_PRESCALER * frequency));
 }

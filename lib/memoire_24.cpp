@@ -33,6 +33,12 @@ Description : Implémentation du pilote I2C pour les mémoires EEPROM 24C128/256
 
 #include "memoire_24.h"
 
+static const uint32_t TWI_CLOCK_HZ      = 100000UL;
+static const uint8_t  BANK_MASK         = 0x03;
+static const uint8_t  INVALID_BANK      = 255;
+static const uint8_t  I2C_BASE_ADDRESS  = 0xA0;
+static const uint8_t  TWI_WRITE_COMPLETE = 0x18;
+
 #ifndef F_CPU
 /* fournir un avertissement mais non une erreur */
 # warning "F_CPU pas defini pour 'memoire_24.cpp'"
@@ -40,7 +46,7 @@ Description : Implémentation du pilote I2C pour les mémoires EEPROM 24C128/256
 #endif
 
 
-uint8_t Memoire24CXXX::m_adresse_peripherique = 0xA0;
+uint8_t Memoire24CXXX::m_adresse_peripherique = I2C_BASE_ADDRESS;
 
 /******************************************************************************/
 /* void Memoire24CXXX::Memoire24CXXX()                                        */
@@ -86,7 +92,7 @@ void Memoire24CXXX::init()
    // Initialisation de l'horloge de l'interface I2C
    TWSR = 0;
    // prediviseur
-   TWBR =  (F_CPU / 100000UL - 16) / 2;
+   TWBR =  (F_CPU / TWI_CLOCK_HZ - 16) / 2;
 
 }
 
@@ -100,11 +106,11 @@ void Memoire24CXXX::init()
 /******************************************************************************/
 uint8_t Memoire24CXXX::choisir_banc(const uint8_t banc)
 {
-   uint8_t temp = banc & 0x03;
-   uint8_t rv = 255;
+   uint8_t temp = banc & BANK_MASK;
+   uint8_t rv = INVALID_BANK;
    if(banc == temp)
    {
-      Memoire24CXXX::m_adresse_peripherique = (0xA0 | ( banc << 1 ));
+      Memoire24CXXX::m_adresse_peripherique = (I2C_BASE_ADDRESS | ( banc << 1 ));
       rv = Memoire24CXXX::m_adresse_peripherique;
    }
    return rv;
@@ -167,7 +173,7 @@ uint8_t Memoire24CXXX::lecture(const uint16_t adresse, uint8_t *donnee)
     TWCR = _BV(TWINT) | _BV(TWEN);     // R. a Z., interrupt. - Depart de transm.
     while ((TWCR & _BV(TWINT)) == 0)   // Attente de fin de transmission
       ;
-    if (TWSR==0x18)         // 0x18 = cycle d'ecriture termine
+    if (TWSR==TWI_WRITE_COMPLETE)         // 0x18 = cycle d'ecriture termine
        break;
   }
 
@@ -235,7 +241,7 @@ uint8_t Memoire24CXXX::lecture(const uint16_t adresse, uint8_t *donnee,
     TWCR = _BV(TWINT) | _BV(TWEN);       // R. a Z., interrupt. - Depart de transm.
     while ((TWCR & _BV(TWINT)) == 0)     // Attente de fin de transmission
        ;
-    if (TWSR==0x18)                      // 0x18 = cycle d'ecriture termine
+    if (TWSR==TWI_WRITE_COMPLETE)                      // 0x18 = cycle d'ecriture termine
        break;
   }
 
@@ -353,7 +359,7 @@ uint8_t Memoire24CXXX::ecriture(const uint16_t adresse, const uint8_t donnee)
     while ((TWCR & _BV(TWINT)) == 0)     // Attente de fin de transmission
        ;
 
-    if (TWSR==0x18)
+    if (TWSR==TWI_WRITE_COMPLETE)
        break;               // 0x18 = cycle d'ecriture termine
   }
 
@@ -440,7 +446,7 @@ uint8_t Memoire24CXXX::ecrire_page(const uint16_t adresse, uint8_t *donnee,
     while ((TWCR & _BV(TWINT)) == 0)     // Attente de fin de transmission
        ;
 
-    if (TWSR==0x18)
+    if (TWSR==TWI_WRITE_COMPLETE)
        break;               // 0x18 = cycle d'ecriture termine
   }
 

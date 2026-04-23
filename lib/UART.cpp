@@ -10,10 +10,14 @@ Description : Implémentation de la communication série UART (transmission et r
 
 #include "UART.hpp"
 
+static const uint8_t UBRR_HIGH_9600  = 0x00;
+static const uint8_t UBRR_LOW_9600   = 0xCF;
+static const uint8_t UCSR0A_RESET    = 0x00;
+
 UART::UART() {
-    UBRR0H = (0 >> 8);
-    UBRR0L = 0xCF;
-    UCSR0A = 0x00;
+    UBRR0H = UBRR_HIGH_9600;
+    UBRR0L = UBRR_LOW_9600;
+    UCSR0A = UCSR0A_RESET;
     UCSR0B = (1 << RXEN0) | (1 << TXEN0);
     UCSR0C = (1 << USBS0) | (3 << UCSZ00);
 }

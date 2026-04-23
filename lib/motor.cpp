@@ -12,9 +12,14 @@ Description : Implémentation du contrôleur de moteurs : avance, recul et rotat
 #include "debug.hpp"
 #include <util/delay.h>
 
+static const uint8_t DELAY_UNIT_MS           = 10;
+static const uint8_t SPIN_FIXED_SPEED        = 150;
+static const uint8_t SPIN_RIGHT_RATIO_DIVISOR = 5;
+static const uint8_t SPIN_LEFT_RATIO_DIVISOR  = 7;
+
 void Motor::delayFunction(uint8_t n) {
     for (uint8_t i = 0; i < n; ++i) {
-        _delay_ms(10);
+        _delay_ms(DELAY_UNIT_MS);
     }
 }
 
@@ -44,16 +49,16 @@ void Motor::goBackward(uint8_t speedValue1, uint8_t speedValue2) {
 
 void Motor::spinLeft(uint16_t angle) {
     DEBUG_PRINT("Motor::spinLeft()");
-    leftWheel_.goBackward(150);
-    rightWheel_.goForward(150);
+    leftWheel_.goBackward(SPIN_FIXED_SPEED);
+    rightWheel_.goForward(SPIN_FIXED_SPEED);
     delayFunction(angle);
     stop();
 }
 
 void Motor::spinRight(uint16_t angle) {
     DEBUG_PRINT("Motor::spinRight()");
-    leftWheel_.goForward(150);
-    rightWheel_.goBackward(150);
+    leftWheel_.goForward(SPIN_FIXED_SPEED);
+    rightWheel_.goBackward(SPIN_FIXED_SPEED);
     delayFunction(angle);
     stop();
 }
@@ -61,12 +66,12 @@ void Motor::spinRight(uint16_t angle) {
 void Motor::spinRightSpeed(uint8_t speed) {
     DEBUG_PRINT("Motor::spinRightSpeed()");
     leftWheel_.goForward(speed);
-    rightWheel_.goBackward(speed + speed/5);
+    rightWheel_.goBackward(speed + speed/SPIN_RIGHT_RATIO_DIVISOR);
 }
 
 void Motor::spinLeftSpeed(uint8_t speed) {
     DEBUG_PRINT("Motor::spinLeftSpeed()");
-    leftWheel_.goBackward(speed + speed/7);
+    leftWheel_.goBackward(speed + speed/SPIN_LEFT_RATIO_DIVISOR);
     rightWheel_.goForward(speed);
 }
 

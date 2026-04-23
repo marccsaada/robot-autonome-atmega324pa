@@ -15,10 +15,18 @@ Description : Implémentation du capteur de distance. On fait une médiane sur p
 #include "distanceSensor.hpp"
 #include "debug.hpp"
 
+static const uint16_t SENSOR_INIT_DELAY_MS    = 40;
+static const uint8_t  BLINK_COUNT             = 8;
+static const uint16_t BLINK_DURATION_MS       = 125;
+static const uint16_t EVACUATION_RETRY_DELAY_MS = 2000;
+static const uint8_t  SCAN_FORWARD_SPEED      = 200;
+static const uint8_t  SCAN_INITIAL_SPIN_SPEED = 180;
+static const uint16_t SCAN_INIT_DELAY_MS      = 25;
+
 DistanceSensor::DistanceSensor() : can_() {
     DDRA &= ~(1 << PA5);
     PORTA &= ~(1 << PA5);
-   _delay_ms(40);    //pas sur, a voir dans le datasheet.
+   _delay_ms(SENSOR_INIT_DELAY_MS);
 }
 
 DistanceSensor::~DistanceSensor() {};
@@ -69,11 +77,11 @@ uint16_t DistanceSensor::readADC() {
 // }
 
 void DistanceSensor::blinkGreenClear(Robot& robot) {
-    for (uint8_t i = 0; i < 8; i++) {
+    for (uint8_t i = 0; i < BLINK_COUNT; i++) {
         robot.led.green();
-        _delay_ms(125);
+        _delay_ms(BLINK_DURATION_MS);
         robot.led.off();
-        _delay_ms(125);
+        _delay_ms(BLINK_DURATION_MS);
     }
 }
 
@@ -81,7 +89,7 @@ void DistanceSensor::evacuatePoteau(Robot& robot) {
     do {
         // playConfirmSequence(robot);
         robot.playEepromNotes();
-        _delay_ms(2000);
+        _delay_ms(EVACUATION_RETRY_DELAY_MS);
     } while (readADC() >= POTEAU_THRESHOLD);
 
     blinkGreenClear(robot);
@@ -107,15 +115,15 @@ void DistanceSensor::scanRoom(Robot& robot, EEPROMAddress addr , Direction dir) 
         } else {
             if (startMoving) {
                 if (robot.direction == 0) {
-                    robot.motor.goForward(200, 0);
-                    _delay_ms(25);
-                    robot.motor.spinRightSpeed(180);
+                    robot.motor.goForward(SCAN_FORWARD_SPEED, 0);
+                    _delay_ms(SCAN_INIT_DELAY_MS);
+                    robot.motor.spinRightSpeed(SCAN_INITIAL_SPIN_SPEED);
                 } else {
-                    robot.motor.goBackward(200, 0);
-                    _delay_ms(25);
-                    robot.motor.spinLeftSpeed(180);
+                    robot.motor.goBackward(SCAN_FORWARD_SPEED, 0);
+                    _delay_ms(SCAN_INIT_DELAY_MS);
+                    robot.motor.spinLeftSpeed(SCAN_INITIAL_SPIN_SPEED);
                 }
-                _delay_ms(25);
+                _delay_ms(SCAN_INIT_DELAY_MS);
                 startMoving = false;
             }
             if (robot.direction == 0) robot.motor.spinRightSpeed(SPIN_SPEED);

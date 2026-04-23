@@ -18,6 +18,9 @@ Description : Implémentation de la classe CAN pour l'ATmega324PA.
 
 #include "can.h"
 
+static const uint8_t ADC_CHANNEL_MASK   = 0x07;
+static const uint8_t ADC_HIGH_BYTE_SHIFT = 8;
+
 // constructeur: initialisation du convertisseur
 can::can()
 {
@@ -56,7 +59,7 @@ can::lecture( uint8_t pos)
                 ( 1 << MUX2 ) | ( 1 << MUX1)  | ( 1 << MUX0 ));
 
    // selectionner l'entree voulue
-   ADMUX |= ((pos & 0x07) << MUX0) ;
+   ADMUX |= ((pos & ADC_CHANNEL_MASK) << MUX0) ;
 
    // demarrer la conversion
    ADCSRA |= ( 1 << ADSC );
@@ -70,7 +73,7 @@ can::lecture( uint8_t pos)
 
    // Aller chercher le resultat sur 16 bits.
    adcVal =   ADCL ;
-   adcVal +=  ADCH << 8;
+   adcVal +=  ADCH << ADC_HIGH_BYTE_SHIFT;
 
    // resultat sur 16 bits
    return adcVal;

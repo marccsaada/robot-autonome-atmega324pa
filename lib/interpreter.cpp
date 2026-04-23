@@ -12,6 +12,16 @@ Description : Implémentation de l'interpréteur. Contient la séquence de déma
 #include "interpreter.hpp"
 #include <util/delay.h>
 
+static const uint8_t  LED_CONFIRM_CYCLES    = 2;
+static const uint16_t LED_CONFIRM_BLINK_MS  = 300;
+static const uint8_t  MAX_NOTE_COUNT        = 3;
+static const uint16_t CONFIRM_DELAY_MS      = 2000;
+static const uint8_t  AMBER_CYCLES_PER_SEC  = 83;
+static const uint16_t AMBER_FLASH_INTERVAL_MS = 500;
+static const uint16_t SOUND_PRE_DELAY_MS    = 125;
+static const uint16_t SOUND_DURATION_MS     = 250;
+static const uint16_t DIRECTION_LED_DURATION_MS = 2000;
+
 
 
 Interpreter::Interpreter(Robot& robot)
@@ -23,17 +33,17 @@ Interpreter::Interpreter(Robot& robot)
 
 void Interpreter::startSequence() {
 
-    for (uint8_t i = 0; i < 2; i++) {
+    for (uint8_t i = 0; i < LED_CONFIRM_CYCLES; i++) {
         robot->led.red();
-        _delay_ms(300);
+        _delay_ms(LED_CONFIRM_BLINK_MS);
         robot->led.off();
-        _delay_ms(300);
+        _delay_ms(LED_CONFIRM_BLINK_MS);
     }
-    for (uint8_t i = 0; i < 2; i++) {
+    for (uint8_t i = 0; i < LED_CONFIRM_CYCLES; i++) {
         robot->led.green();
-        _delay_ms(300);
+        _delay_ms(LED_CONFIRM_BLINK_MS);
         robot->led.off();
-        _delay_ms(300);
+        _delay_ms(LED_CONFIRM_BLINK_MS);
     }
 }
 
@@ -88,43 +98,42 @@ void Interpreter::confirm(){
         if (instr == SGO) executeInstruction(instr, op);   //fait juste jouer le son. 
     }
 
-    _delay_ms(2000);
+    _delay_ms(CONFIRM_DELAY_MS);
 
-    if (trInstr != 0) executeInstruction(trInstr, 0);  //joue seulement la couleur selon la direction. 
+    if (trInstr != 0) executeInstruction(trInstr, 0);
 
-    _delay_ms(2000);
+    _delay_ms(CONFIRM_DELAY_MS);
 
-    for (uint8_t i = 0; i < attOp; i++) {   //selon operande de ATT, il clignote ambre.
-        for (uint8_t j = 0; j < 83; j++)
-            robot->led.amber();  
+    for (uint8_t i = 0; i < attOp; i++) {
+        for (uint8_t j = 0; j < AMBER_CYCLES_PER_SEC; j++)
+            robot->led.amber();
         robot->led.off();
-        _delay_ms(500);          
+        _delay_ms(AMBER_FLASH_INTERVAL_MS);
     }
 }
 
 void Interpreter::executeInstruction(uint8_t instruction, uint8_t operand) {
        switch (instruction) {
             case SGO:
-                if (robot->noteCount < 3) {
-                    // robot->note[robot->noteCount] = operand;
-                    _delay_ms(125);
-                      robot->sound.playSound(operand);
-                     _delay_ms(250);
+                if (robot->noteCount < MAX_NOTE_COUNT) {
+                    _delay_ms(SOUND_PRE_DELAY_MS);
+                    robot->sound.playSound(operand);
+                    _delay_ms(SOUND_DURATION_MS);
                     robot->sound.stopSound();
                     robot->noteCount++;
                 }
                 break;
             case TRD:
-               robot->led.green();
-                _delay_ms(2000);
+                robot->led.green();
+                _delay_ms(DIRECTION_LED_DURATION_MS);
                 robot->led.off();
-                robot->direction = 1; 
+                robot->direction = 1;
                 break;
             case TRG:
                 robot->led.red();
-                _delay_ms(2000);
+                _delay_ms(DIRECTION_LED_DURATION_MS);
                 robot->led.off();
-                robot->direction = 0; 
+                robot->direction = 0;
                 break;
             case ATT:
                 robot->parkingOperand = operand;
