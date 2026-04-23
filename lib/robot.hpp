@@ -9,6 +9,11 @@ Description : Regroupe les sous-systèmes du robot et toute la logique d'exécut
               publique se limite aux trois gestionnaires de mode et aux membres matériels.
 */
 
+/**
+ * @file robot.hpp
+ * @brief Aggregates all robot subsystems and the top-level execution logic.
+ */
+
 #pragma once
 #include "motor.hpp"
 #include "LED.hpp"
@@ -21,35 +26,57 @@ Description : Regroupe les sous-systèmes du robot et toute la logique d'exécut
 #include <avr/io.h>
 #include <util/delay.h>
 
+/**
+ * @brief Central robot object that owns all hardware subsystems and execution modes.
+ *
+ * Hardware peripherals are exposed as public members so that the Interpreter and
+ * other helpers can drive them directly. The navigation state machine and all
+ * low-level movement helpers are private.
+ */
 class Robot {
 public:
+    /** @brief Initialises the LED on PB0/PB2, the falling-edge button, and Timer 1. */
     Robot() : led(PORTB, PB0, PB2),
               button(Button::FALLING, Button::MOTHERBOARD),
               timer(Timer::TIMER1) {}
 
     // ── Hardware subsystems ───────────────────────────────────────────────
-    Motor          motor;
-    LED            led;
-    Sound          sound;
-    Button         button;
-    LineSensor     lineSensor;
-    DistanceSensor distanceSensor;
-    Timer          timer;
-    Memoire24CXXX  eeprom;
+    Motor          motor;          ///< Dual-wheel PWM motor controller.
+    LED            led;            ///< Bi-colour status LED (red / green / amber).
+    Sound          sound;          ///< Piezo buzzer for note playback.
+    Button         button;         ///< User push-button with debounce.
+    LineSensor     lineSensor;     ///< Five-channel line-detection array (PA0–PA4).
+    DistanceSensor distanceSensor; ///< Infrared distance sensor for pole/object detection.
+    Timer          timer;          ///< Hardware timer used for tick generation (Timer 1).
+    Memoire24CXXX  eeprom;         ///< External I²C EEPROM for persistent storage.
 
     // ── State used by Interpreter ─────────────────────────────────────────
-    uint8_t direction      = 1;   
-    uint8_t note[3]        = {};
-    uint8_t parkingOperand = 0;
-    uint8_t noteCount      = 0;
+    uint8_t direction      = 1;  ///< Travel direction: 1 = right, 0 = left.
+    uint8_t note[3]        = {}; ///< Up to three MIDI-like note indices to play.
+    uint8_t parkingOperand = 0;  ///< ATT operand encoding the target parking slot.
+    uint8_t noteCount      = 0;  ///< Number of notes loaded from EEPROM so far.
 
     // ── Public interface ──────────────────────────────────────────────────
+
+    /**
+     * @brief Busy-waits for a number of 10 ms timer ticks.
+     * @param multiplicator Number of 10 ms ticks to wait.
+     */
     void wait(uint16_t multiplicator);
+
+    /** @brief Plays the notes stored in the @c note array via the buzzer. */
     void playEepromNotes();
+
+    /** @brief Reads the direction, notes, and parking operand from external EEPROM. */
     void readEepromOperands();
 
+    /** @brief Runs the instruction-recording mode (receives and stores a program). */
     void runInstruction();
+
+    /** @brief Runs the report mode (reads EEPROM results and signals them via LED/sound). */
     void runReport();
+
+    /** @brief Runs the full autonomous project execution. */
     void runProject();
 
 private:

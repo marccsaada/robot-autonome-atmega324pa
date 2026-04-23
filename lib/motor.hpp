@@ -56,13 +56,28 @@ public:
      */
     void spinRight(uint16_t angle);
 
+    /**
+     * @brief Spins the robot right in place at a continuous PWM speed (no angle limit).
+     * @param speed PWM duty cycle (0–255) applied to the motors.
+     */
     void spinRightSpeed(uint8_t speed);
+
+    /**
+     * @brief Spins the robot left in place at a continuous PWM speed (no angle limit).
+     * @param speed PWM duty cycle (0–255) applied to the motors.
+     */
     void spinLeftSpeed(uint8_t speed);
 
     /** @brief Stops both motors. */
     void stop();
 
+    /**
+     * @brief Sets a custom PWM timer prescaler (phase-correct mode).
+     * @param prescaler Desired prescaler value from Timer::Prescaler.
+     */
     void setPrescaler(Timer::Prescaler prescaler) { timer_.setModePWM(Timer::PWMMode::PHASE_CORRECT, prescaler); }
+
+    /** @brief Restores the default PWM prescaler (PRESCALE_64, phase-correct mode). */
     void resetPrescaler() { timer_.setModePWM(Timer::PWMMode::PHASE_CORRECT, Timer::Prescaler::PRESCALE_64); }
 private:
     Timer timer_ = Timer::Id::TIMER2;
